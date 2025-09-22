@@ -1,243 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bedrock Portal</title>
-  <style>
-    :root{
-      --bg:#04040a;
-      --muted:#9aa3a8;
-      --accent:#8ef6c1;
-      --card-grad: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-    }
-    html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
-    *{box-sizing:border-box}
-    /* star canvas */
-    canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
-
-    /* page shell */
-    .wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:36px}
-    .card{width:100%;max-width:1100px;padding:22px;border-radius:12px;background:var(--card-grad);border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
-    .hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-    .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(180deg,#101217,#081018);display:grid;place-items:center;color:var(--accent);font-weight:700}
-    h1{margin:0;font-size:18px}
-    .muted{color:var(--muted);font-size:13px}
-
-    /* layout */
-    .cols{display:grid;grid-template-columns:260px 1fr;gap:18px}
-    nav.side{background:transparent;padding:12px;border-radius:8px}
-    nav.side button{display:block;width:100%;text-align:left;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;margin-bottom:8px;cursor:pointer}
-    .content{min-height:420px;padding:8px;border-radius:8px}
-
-    /* games category special */
-    .gamesHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .launchBig{
-      display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;border:0;background:var(--accent);color:#041010;font-weight:800;cursor:pointer;
-      box-shadow: 0 12px 34px rgba(10,20,20,0.45); font-size:15px;
-      transform:translateY(0); transition: transform .14s ease, box-shadow .14s ease;
-    }
-    .launchBig:active{ transform:translateY(2px); box-shadow:0 8px 26px rgba(10,20,20,0.35) }
-
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
-    .embedCard{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.03)}
-    iframe.embed{width:100%;height:360px;border:0;border-radius:6px;background:#000}
-    .note{font-size:13px;color:var(--muted);margin-top:8px}
-    .smallBtn{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#041010;font-weight:700;cursor:pointer}
-
-    @media (max-width:920px){ .cols{grid-template-columns:1fr} .grid{grid-template-columns:1fr} iframe.embed{height:300px} }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bedrock Portal</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<style>
+  body{margin:0;background:#03040a;color:#fff;font-family:Inter,system-ui,Arial;display:flex;flex-direction:column;align-items:center;}
+  canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+  header{position:relative;z-index:2;text-align:center;margin-top:30px;}
+  header img{width:80px;height:80px;}
+  header h1{margin:10px;font-size:28px;letter-spacing:4px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;width:90%;max-width:1000px;margin-top:30px;position:relative;z-index:2;}
+  .card{padding:20px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.005));border-radius:12px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);}
+  .card:hover{background:rgba(142,246,200,0.08);}
+</style>
 </head>
 <body>
-  <canvas id="bg" aria-hidden="true"></canvas>
+<canvas id="bg"></canvas>
 
-  <div class="wrap">
-    <div class="card" role="main" aria-live="polite">
-      <div class="hdr">
-        <div class="logo">BR</div>
-        <div>
-          <h1>Bedrock Portal</h1>
-          <div class="muted" id="who">friends-only lobby</div>
-        </div>
-        <div style="margin-left:auto">
-          <button id="signout" class="smallBtn">Sign out</button>
-        </div>
-      </div>
+<header>
+  <img src="logo.png" alt="Bedrock Logo">
+  <h1>BEDROCK PORTAL</h1>
+</header>
 
-      <div class="cols">
-        <nav class="side" aria-label="categories">
-          <button data-cat="games">Games</button>
-          <button data-cat="sites">Cool sites</button>
-          <button data-cat="tools">Tools</button>
-          <button data-cat="misc">Misc</button>
-        </nav>
+<div class="grid">
+  <div class="card" onclick="location.href='games.html'">🎮 Games</div>
+  <div class="card" onclick="alert('Other cool stuff coming soon!')">🌐 Websites</div>
+  <div class="card" onclick="alert('Fun stuff coming soon!')">✨ Fun Stuff</div>
+</div>
 
-        <section class="content" id="content">
-          <!-- GAMES CATEGORY -->
-          <div id="games" class="category">
-            <div class="gamesHeader">
-              <div>
-                <h2 style="margin:0">Games</h2>
-                <div class="muted">Embedded where possible • opens in new tab if blocked</div>
-              </div>
-
-              <!-- New big Launch button -->
-              <div>
-                <button id="launchGames" class="launchBig" title="Open Bedrock Games page">🚀 Launch Bedrock Games</button>
-              </div>
-            </div>
-
-            <div class="grid" style="margin-top:12px">
-              <!-- Example embedded game card (keeps same structure as before) -->
-              <div class="embedCard">
-                <strong>Ragdoll Archers (source)</strong>
-                <div class="note">If the frame looks blank, use "Open in new tab".</div>
-                <iframe class="embed" src="https://sites.google.com/view/hotdogmangoscar/ragdoll-archers?authuser=0"></iframe>
-                <div style="margin-top:8px;display:flex;gap:8px">
-                  <button class="smallBtn" onclick="openExternal('https://sites.google.com/view/hotdogmangoscar/ragdoll-archers?authuser=0')">Open in new tab</button>
-                </div>
-              </div>
-
-              <div class="embedCard">
-                <strong>Mini Itch Embed (example)</strong>
-                <div class="note">Fallback opens itch.io in a new tab.</div>
-                <iframe class="embed" src="https://itch.io/embed-upload/123456?link=1" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
-                <div style="margin-top:8px"><button class="smallBtn" onclick="openExternal('https://itch.io')">Open itch.io</button></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- OTHER CATEGORIES (unchanged) -->
-          <div id="sites" class="category" style="display:none">
-            <h2 style="margin-top:0">Cool sites</h2>
-            <div class="grid" style="margin-top:12px">
-              <div class="embedCard"><strong>Scratch</strong><div class="note">Open in new tab to play projects.</div>
-                <iframe class="embed" src="https://scratch.mit.edu/projects/53957912/embed"></iframe>
-                <div style="margin-top:8px"><button class="smallBtn" onclick="openExternal('https://scratch.mit.edu')">Open Scratch</button></div>
-              </div>
-              <div class="embedCard"><strong>Random Arcade</strong><div class="note">Search web games.</div>
-                <iframe class="embed" src="https://www.google.com/search?q=fun+web+games"></iframe>
-                <div style="margin-top:8px"><button class="smallBtn" onclick="openExternal('https://www.google.com/search?q=fun+web+games')">Open search</button></div>
-              </div>
-            </div>
-          </div>
-
-          <div id="tools" class="category" style="display:none">
-            <h2 style="margin-top:0">Tools</h2>
-            <div class="grid" style="margin-top:12px">
-              <div class="embedCard"><strong>GitHub</strong><div class="note">Browse projects & mods.</div>
-                <iframe class="embed" src="https://github.com"></iframe>
-                <div style="margin-top:8px"><button class="smallBtn" onclick="openExternal('https://github.com')">Open GitHub</button></div>
-              </div>
-              <div class="embedCard"><strong>Pixlr</strong><div class="note">Quick image edits.</div>
-                <iframe class="embed" src="https://pixlr.com/editor/"></iframe>
-                <div style="margin-top:8px"><button class="smallBtn" onclick="openExternal('https://pixlr.com')">Open Pixlr</button></div>
-              </div>
-            </div>
-          </div>
-
-          <div id="misc" class="category" style="display:none">
-            <h2 style="margin-top:0">Misc</h2>
-            <div class="muted">Drop in custom embeds or links — use the "Add link" button below</div>
-            <div style="margin-top:12px">
-              <button class="smallBtn" id="addLink">Add link</button>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    /* ---------------------------
-       STAR BACKGROUND (subtle)
-       --------------------------- */
-    (function(){
-      const c=document.getElementById('bg'), ctx=c.getContext('2d');
-      let w=c.width=innerWidth, h=c.height=innerHeight;
-      const S=Math.floor((w*h)/7000);
-      const stars=Array.from({length:S}, ()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6,t:Math.random()*6}));
-      function resize(){ w=c.width=innerWidth; h=c.height=innerHeight; }
-      addEventListener('resize', resize);
-      (function draw(){
-        ctx.clearRect(0,0,w,h);
-        const g=ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'rgba(8,10,16,0.9)'); g.addColorStop(1,'rgba(2,4,8,0.95)');
-        ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
-        const t=Date.now()/1000;
-        for(const s of stars){
-          const a = 0.6*(0.5 + 0.5*Math.sin(t + s.t));
-          ctx.globalAlpha = a;
-          ctx.beginPath(); ctx.fillStyle='white'; ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2); ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-        requestAnimationFrame(draw);
-      })();
-    })();
-
-    /* ---------------------------
-       ACCESS CONTROL
-       --------------------------- */
-    (function checkAuthorized(){
-      try {
-        const saved = localStorage.getItem('bedrock_auth') || '';
-        if (!saved) {
-          // no key — bounce back to launcher
-          location.href = 'index.html';
-        } else {
-          document.getElementById('who').textContent = 'signed in';
-        }
-      } catch (e) {
-        location.href = 'index.html';
-      }
-    })();
-
-    /* ---------------------------
-       NAV SWITCHING
-       --------------------------- */
-    document.querySelectorAll('nav.side button').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        document.querySelectorAll('.category').forEach(c=>c.style.display='none');
-        const id = btn.getAttribute('data-cat');
-        document.getElementById(id).style.display = '';
-      });
-    });
-
-    /* ---------------------------
-       SIGN OUT
-       --------------------------- */
-    document.getElementById('signout').addEventListener('click', ()=>{
-      try { localStorage.removeItem('bedrock_auth'); } catch(_) {}
-      location.href = 'index.html';
-    });
-
-    /* ---------------------------
-       LAUNCH GAMES BUTTON
-       --------------------------- */
-    document.getElementById('launchGames').addEventListener('click', ()=>{
-      // gentle animation hint (tiny scale)
-      const b = document.getElementById('launchGames');
-      b.style.transform = 'scale(0.98)';
-      setTimeout(()=> b.style.transform = '', 120);
-      // redirect to the games page
-      location.href = 'games.html';
-    });
-
-    /* ---------------------------
-       OPEN EXTERNAL HELPER
-       --------------------------- */
-    function openExternal(url){ window.open(url, '_blank', 'noopener'); }
-
-    /* ---------------------------
-       ADD LINK (misc)
-       --------------------------- */
-    document.getElementById('addLink').addEventListener('click', ()=>{
-      const url = prompt('Paste a URL to add to the misc page (include https://)') || '';
-      if(!url) return;
-      const card = document.createElement('div'); card.className='embedCard';
-      card.innerHTML = `<strong>Custom</strong><div class="note">${url}</div><div style="margin-top:8px"><button class="smallBtn" onclick="openExternal('${url.replace(/'/g,"\\'")}')">Open</button></div>`;
-      document.getElementById('misc').appendChild(card);
-    });
-  </script>
+<script>
+  // Starfield
+  (function(){
+    const c=document.getElementById('bg'),ctx=c.getContext('2d');
+    let w=c.width=innerWidth,h=c.height=innerHeight;
+    const S=Math.floor((w*h)/7000); const stars=[];
+    for(let i=0;i<S;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.8,t:Math.random()*10});
+    window.addEventListener('resize',()=>{w=c.width=innerWidth;h=c.height=innerHeight;});
+    (function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#010208';ctx.fillRect(0,0,w,h);
+    const t=Date.now()/1000; for(const s of stars){ctx.globalAlpha=0.6*(0.5+0.5*Math.sin(t+s.t));ctx.beginPath();ctx.fillStyle='white';ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2);ctx.fill();}
+    ctx.globalAlpha=1; requestAnimationFrame(draw);})();
+  })();
+</script>
 </body>
 </html>

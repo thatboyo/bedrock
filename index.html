@@ -3,161 +3,110 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Obsidian Client — Beta</title>
+  <title>BEDROCK LAUNCHER</title>
   <style>
-    /* Minimal, modern, responsive styles */
-    :root{
-      --bg:#0f1724; --card:#0b1220; --muted:#9aa6bf; --accent:#7c5cff;
-      --glass: rgba(255,255,255,0.04);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
+    :root{--bg:#03040a;--muted:#9aa3a8;--accent:#87f0c8;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
     *{box-sizing:border-box}
-    body{
-      margin:0; background:linear-gradient(180deg,#071024 0%, #061428 100%);
-      color:#e6eef8; min-height:100vh; -webkit-font-smoothing:antialiased;
-      display:flex; align-items:flex-start; justify-content:center; padding:36px;
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
+    .card{width:100%;max-width:720px;padding:36px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.03);box-shadow:0 18px 50px rgba(0,0,0,0.6);text-align:center}
+    h1{margin:0;font-size:28px;letter-spacing:6px;text-transform:uppercase;font-weight:700}
+    .welcome{margin-top:14px;color:var(--muted);font-size:15px}
+    .input-wrap{margin-top:26px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+    input[type="text"]{width:420px;max-width:86%;padding:14px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:15px}
+    button.launch{padding:14px 22px;border-radius:8px;border:0;cursor:pointer;background:var(--accent);color:#042424;font-weight:800;letter-spacing:1px;font-size:15px}
+    .status{margin-top:14px;color:var(--muted);font-size:14px}
+    .small{margin-top:10px;color:var(--muted);font-size:13px}
+    @media (max-width:480px){
+      h1{font-size:22px;letter-spacing:4px}
+      input[type="text"]{width:100%}
     }
-    .wrap{width:100%; max-width:980px}
-    header{
-      display:flex; align-items:center; justify-content:space-between; gap:16px;
-      margin-bottom:28px;
-    }
-    .brand{display:flex; gap:12px; align-items:center}
-    .logo{
-      width:48px; height:48px; border-radius:10px; background:linear-gradient(135deg,var(--accent),#2ab7f5);
-      display:grid; place-items:center; font-weight:700; color:#041226;
-      box-shadow: 0 6px 18px rgba(17,20,30,0.6);
-    }
-    h1{font-size:18px; margin:0}
-    nav a{
-      color:var(--muted); text-decoration:none; margin-left:12px; font-size:14px;
-    }
-    .top-cta{display:flex; gap:8px; align-items:center}
-    button{
-      background:var(--accent); border:0; color:white; padding:8px 12px; border-radius:10px; cursor:pointer;
-      font-weight:600;
-    }
-    main{
-      display:grid; grid-template-columns: 1fr 360px; gap:20px;
-      align-items:start;
-    }
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      padding:20px; border-radius:14px; box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    .hero h2{margin-top:6px; font-size:28px}
-    .muted{color:var(--muted); margin-top:6px}
-    .auth-box input{
-      width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);
-      background:transparent; color:inherit;
-      margin-bottom:8px;
-    }
-    .small{font-size:13px; color:var(--muted)}
-    footer{margin-top:18px; color:var(--muted); font-size:13px}
-    @media (max-width:880px){
-      main{grid-template-columns:1fr; padding-bottom:20px}
-      .logo{width:44px;height:44px}
-    }
+    /* subtle starfield behind (keeps file single) */
+    canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+    .wrap{position:relative;z-index:2}
   </style>
 </head>
 <body>
+  <canvas id="bg" aria-hidden="true"></canvas>
+
   <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo">OC</div>
-        <div>
-          <h1>Obsidian Client <span class="small">Beta 0.9</span></h1>
-          <div class="muted">Fast auth, minimal interface</div>
-        </div>
+    <div class="card" role="main" aria-live="polite">
+      <h1>BEDROCK CLIENT</h1>
+      <div class="welcome">paste the key and launch the portal — friends-only access</div>
+
+      <div class="input-wrap" style="margin-top:22px">
+        <input id="key" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" inputmode="text" />
+        <button id="launchBtn" class="launch">LAUNCH BEDROCK</button>
       </div>
 
-      <div class="top-cta">
-        <nav aria-label="Main">
-          <a href="#have">Already Have an Auth Key</a>
-          <a href="#buy">Buy an Auth Key</a>
-          <a href="#credits">Credits</a>
-          <a href="#about">About</a>
-        </nav>
-        <button id="buyBtn">Buy Auth Key</button>
-      </div>
-    </header>
-
-    <main>
-      <section class="card hero">
-        <h2>Welcome to Obsidian Client</h2>
-        <p class="muted">Secure access to the client. Paste an Auth Key to get started, or buy one instantly.</p>
-
-        <div style="margin-top:18px" class="auth-box">
-          <label class="small" for="auth">Enter Auth Key</label>
-          <input id="auth" placeholder="sk_live_***************" aria-label="Auth Key">
-          <div style="display:flex; gap:8px; margin-top:8px;">
-            <button id="useKey">Use Key</button>
-            <button id="clearKey" style="background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04);">Clear</button>
-          </div>
-          <p class="small" style="margin-top:10px" id="status">Status: <span class="muted">idle</span></p>
-        </div>
-
-        <footer>
-          <div id="about" style="margin-top:12px">
-            <strong>About:</strong> This is a static demo site — real auth & payments require a backend.
-          </div>
-        </footer>
-      </section>
-
-      <aside class="card">
-        <h3 style="margin:0 0 8px 0">Purchase</h3>
-        <p class="small">Instant Auth Keys via secure checkout.</p>
-        <div style="margin-top:12px">
-          <button id="checkout">Buy Auth Key — $4.99</button>
-        </div>
-
-        <hr style="opacity:.06; margin:14px 0">
-
-        <h4 style="margin:6px 0">Credits</h4>
-        <p class="small">Made with care. Theme: midnight indigo.</p>
-
-        <div style="margin-top:12px; font-size:13px; color:var(--muted)">
-          <div><strong>Version</strong>: 0.9</div>
-          <div style="margin-top:8px"><a href="#credits" style="color:var(--muted); text-decoration:underline">Full credits</a></div>
-        </div>
-      </aside>
-    </main>
+      <div id="status" class="status">Status: idle</div>
+      <div class="small">Tip: open as <code>?key=1234-1234-1234-1234</code> to auto-load.</div>
+    </div>
   </div>
 
   <script>
-    // Minimal client-only behavior for demo. Replace with real backend calls in production.
-    const statusEl = document.getElementById('status');
-    const authInput = document.getElementById('auth');
-    const useKeyBtn = document.getElementById('useKey');
-    const clearBtn = document.getElementById('clearKey');
-    const buyBtn = document.getElementById('buyBtn');
-    const checkoutBtn = document.getElementById('checkout');
+    /* tiny star background */
+    (function(){
+      const c = document.getElementById('bg'), ctx = c.getContext('2d');
+      let w=c.width=innerWidth, h=c.height=innerHeight;
+      const N = Math.floor((w*h)/7000);
+      const stars = Array.from({length:N}, ()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6,t:Math.random()*6}));
+      function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+      addEventListener('resize', resize);
+      (function draw(){
+        ctx.clearRect(0,0,w,h);
+        const g = ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'rgba(6,8,14,0.85)'); g.addColorStop(1,'rgba(1,2,6,0.9)');
+        ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+        const t = Date.now()/1000;
+        for(const s of stars){
+          const a = 0.6*(0.5 + 0.5*Math.sin(t + s.t));
+          ctx.globalAlpha = a;
+          ctx.beginPath(); ctx.fillStyle='white'; ctx.arc((s.x + Math.sin(t+s.t)*6)%w, (s.y + Math.cos(t+s.t)*3)%h, s.r, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.globalAlpha=1; requestAnimationFrame(draw);
+      })();
+    })();
 
-    function setStatus(t, cls){
-      statusEl.innerHTML = 'Status: <span>' + t + '</span>';
+    /* launcher logic */
+    const VALID_KEYS = ['1234-1234-1234-1234','bedrock-0000-0000-0000','james-only']; // edit it
+    const keyEl = document.getElementById('key');
+    const launchBtn = document.getElementById('launchBtn');
+    const status = document.getElementById('status');
+
+    function setStatus(s){ status.textContent = 'Status: ' + s; }
+
+    // prefill from ?key= and auto-launch if valid
+    (function prefill(){
+      try {
+        const params = new URL(location.href).searchParams;
+        const k = params.get('key') || '';
+        if (k) { keyEl.value = k; setStatus('key loaded from URL'); }
+        if (k && VALID_KEYS.includes(k)) {
+          setStatus('auto-launching…');
+          setTimeout(()=> doLaunch(k), 380);
+        }
+      } catch(e){}
+      // load saved
+      try { const s = localStorage.getItem('bedrock_auth'); if (s) keyEl.value = s; } catch(e){}
+    })();
+
+    function doLaunch(k){
+      if (!k) return setStatus('paste a key');
+      setStatus('verifying…');
+      setTimeout(()=>{
+        if (VALID_KEYS.includes(k)) {
+          try { localStorage.setItem('bedrock_auth', k); } catch(e){}
+          // redirect to portal.html (no auth UI there)
+          // pass key in hash to avoid it showing in server logs/links if you want: use ?key= if you prefer
+          window.location.href = 'portal.html';
+        } else {
+          setStatus('invalid key');
+        }
+      }, 450);
     }
 
-    useKeyBtn.onclick = () => {
-      const k = authInput.value.trim();
-      if(!k){ setStatus('no key provided'); return; }
-      // Example validation (client-side only)
-      if(k.length < 10){ setStatus('invalid key'); return; }
-      // pretend to validate...
-      setStatus('validating…');
-      setTimeout(()=> setStatus('authenticated'), 800);
-    };
-
-    clearBtn.onclick = ()=> {
-      authInput.value=''; setStatus('idle');
-    };
-
-    // Placeholder checkout — in real life you'd open Stripe Checkout session URL returned by your server
-    function openCheckout(){
-      alert('This demo does not do real payments. Implement Stripe Checkout + serverless endpoint for a real flow.');
-    }
-    buyBtn.onclick = openCheckout;
-    checkoutBtn.onclick = openCheckout;
+    launchBtn.addEventListener('click', ()=> doLaunch(keyEl.value.trim()));
+    keyEl.addEventListener('keydown', (e)=> { if(e.key==='Enter') doLaunch(keyEl.value.trim()); });
   </script>
 </body>
 </html>

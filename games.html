@@ -1,12 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bedrock — Games</title>
   <style>
     :root{
-      --bg:#04040a; --muted:#9aa3a8; --accent:#8ef6c1;
+      --bg:#04040a;
+      --muted:#9aa3a8;
+      --accent:#8ef6c1;
+      --card-grad: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
     html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
@@ -17,26 +20,32 @@
     .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(180deg,#0d1114,#061018);display:grid;place-items:center;color:var(--accent);font-weight:700}
     h1{margin:0;font-size:18px}
     .muted{color:var(--muted);font-size:13px}
-    /* layout: iframe on top, grid below */
+    /* layout: iframe (preview) on top, grid below */
+    .preview{
+      display:grid; grid-template-columns: 1fr 320px; gap:12px; align-items:start;
+    }
     .embedFrame{
       width:100%; height:520px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); overflow:hidden;
       box-shadow:0 12px 40px rgba(0,0,0,0.6); background:#000;
     }
-    .controls{display:flex;gap:10px;align-items:center;margin-top:8px}
+    .sidePanel{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border:1px solid rgba(255,255,255,0.02)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
     .smallBtn{background:var(--accent);color:#041010;border:0;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
     .tile{
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       border-radius:8px;padding:12px;border:1px solid rgba(255,255,255,0.03);
-      display:flex;flex-direction:column;gap:8px;min-height:86px;
+      display:flex;flex-direction:column;gap:8px;min-height:96px;
     }
     .tile h3{margin:0;font-size:15px}
     .tile .muted{font-size:12px}
     .tile .row{display:flex;gap:8px;margin-top:auto}
     .linkBtn{flex:1;padding:8px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:var(--muted);cursor:pointer}
     .openBtn{background:var(--accent);color:#041010;border:0;padding:8px;border-radius:8px;cursor:pointer}
-    @media (max-width:960px){ .grid{grid-template-columns:repeat(2,1fr)} .embedFrame{height:420px} }
-    @media (max-width:600px){ .grid{grid-template-columns:1fr} .embedFrame{height:360px} }
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    @media (max-width:1100px){ .grid{grid-template-columns:repeat(3,1fr)} .preview{grid-template-columns:1fr} .embedFrame{height:420px} }
+    @media (max-width:720px){ .grid{grid-template-columns:repeat(2,1fr)} .embedFrame{height:340px} }
+    @media (max-width:420px){ .grid{grid-template-columns:1fr} .embedFrame{height:300px} }
     footer{margin-top:8px;color:var(--muted);font-size:13px}
   </style>
 </head>
@@ -48,129 +57,166 @@
       <div class="logo">BR</div>
       <div>
         <h1>Bedrock — Games</h1>
-        <div class="muted">Embedded where possible • fallback opens in a new tab</div>
+        <div class="muted">Legal HTML5 embeds & browser games • fallback opens in new tab</div>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:8px; align-items:center">
+        <button id="backPortal" class="smallBtn">Back to Portal</button>
       </div>
     </header>
 
-    <!-- Top embed: the Hotdog Google Sites page (source of the list). -->
-    <div class="embedFrame" id="frameWrap" aria-live="polite">
-      <iframe id="sourceFrame" src="https://sites.google.com/view/hotdogmangoscar/ragdoll-archers?authuser=0"
-              style="width:100%;height:100%;border:0;background:#000" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+    <div class="preview">
+      <div class="embedFrame" id="frameWrap" aria-live="polite">
+        <iframe id="gameFrame" src="" style="width:100%;height:100%;border:0;background:#000" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+      </div>
+
+      <aside class="sidePanel">
+        <div style="font-weight:700">Now previewing</div>
+        <div id="previewTitle" style="margin-top:6px;font-size:15px">Nothing selected</div>
+        <div class="note" style="margin-top:8px">If the game preview is blank, click "Open in new tab". Some sites disallow embedding.</div>
+        <div class="controls" style="margin-top:12px">
+          <button id="openTab" class="smallBtn" disabled>Open in new tab</button>
+          <button id="reload" class="smallBtn" disabled>Reload preview</button>
+        </div>
+
+        <div style="margin-top:12px; color:var(--muted); font-size:13px">Tip: use the preview to test games. Favorites open directly.</div>
+      </aside>
     </div>
 
-    <div class="controls">
-      <button class="smallBtn" id="reloadFrame">Reload embed</button>
-      <button class="smallBtn" id="openSource">Open source page</button>
-      <div style="margin-left:auto" class="muted">Source: Hotdog :) Ragdoll Archers. (Embedded list used.)</div>
-    </div>
+    <section style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0">Playable Picks</h2>
+        <div class="muted">Hand-picked HTML5 games & embeds</div>
+      </div>
 
-    <!-- Grid of games (extracted from the Hotdog page) -->
-    <section id="gamesGrid" class="grid" aria-label="games list">
-      <!-- tiles injected by script -->
+      <div id="gamesGrid" class="grid" aria-label="games list">
+        <!-- tiles injected by script -->
+      </div>
     </section>
 
-    <footer>Tip: if an iframe appears blank, click "Open in new tab".</footer>
+    <footer>Built for friends • play responsibly • Bedrock 2025</footer>
   </div>
 
   <script>
     /***********************
-     * lightweight star bg
+     * STARFIELD (visual)
      ***********************/
-    (function starBg(){
-      const c = document.getElementById('bg'), ctx = c.getContext('2d');
-      let w = c.width = innerWidth, h = c.height = innerHeight;
-      const N = Math.floor((w*h)/7000);
-      const stars = Array.from({length:N}, ()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6,t:Math.random()*6}));
-      function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+    (function starfield(){
+      const canvas = document.getElementById('bg');
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = innerWidth;
+      let h = canvas.height = innerHeight;
+      const STAR_COUNT = Math.floor((w*h)/7000);
+      const stars = [];
+      function rand(min,max){ return Math.random()*(max-min)+min }
+      for(let i=0;i<STAR_COUNT;i++){
+        stars.push({ x: Math.random()*w, y: Math.random()*h, r: rand(0.4,1.8), z: rand(0.3,1), t: Math.random()*10 });
+      }
+      function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
       addEventListener('resize', resize);
-      (function draw(){
+      function draw(){
         ctx.clearRect(0,0,w,h);
-        const g = ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'rgba(8,10,16,0.9)'); g.addColorStop(1,'rgba(2,4,8,0.95)');
+        const g = ctx.createLinearGradient(0,0,w,h);
+        g.addColorStop(0,'rgba(10,12,18,0.9)'); g.addColorStop(1,'rgba(2,4,8,0.95)');
         ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
         const t = Date.now()/1000;
-        for(const s of stars){ const a = 0.6*(0.5+0.5*Math.sin(t+s.t)); ctx.globalAlpha=a; ctx.beginPath(); ctx.fillStyle='white'; ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2); ctx.fill(); }
-        ctx.globalAlpha=1; requestAnimationFrame(draw);
-      })();
+        for(const s of stars){
+          const x = (s.x + Math.sin(t*0.2 + s.t)*6) % w;
+          const y = (s.y + Math.cos(t*0.2 + s.t)*3) % h;
+          ctx.globalAlpha = 0.6 * s.z * (0.6 + Math.sin(t + s.t)*0.4);
+          ctx.beginPath(); ctx.fillStyle = 'white'; ctx.arc(x, y, s.r * s.z, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+      }
+      draw();
     })();
 
     /***********************
-     * Games extracted from Hotdog page
-     * Source: https://sites.google.com/view/hotdogmangoscar/ragdoll-archers
-     * (list pulled programmatically). :contentReference[oaicite:1]{index=1}
+     * GAME LIST (legal HTML5 / embeddable)
+     * Each entry: { title, src, external }
+     * - src: iframe src used to preview the game
+     * - external: fallback open-in-new-tab URL (usually same as src)
+     *
+     * NOTE: some hosts may block being framed; the fallback button opens the game in a new tab.
      ***********************/
-    const GAME_NAMES = [
-      "1v1.lol","2048","BitLife","Basketball Stars","Basket Random","Bottle Flip 3D","Cluster rush",
-      "Crossy Road","Car Crash Test 2","Cookie Clicker","Drift Hunters","Doodle Baseball","Doge miner",
-      "Donkey Kong","Elastic Face","Escape Road","Funny Shooter 2","Fall Boys","Friday Night Funkin",
-      "Five Nights At Freddy's","Geometry Dash Lite","Google Solitaire","Granny","Geometry Dash",
-      "Gunspin","Gladihoppers","Grow A Garden","Happy Wheels","Infinite Craft","Iron Snout","Moto X3m 3",
-      "Minecraft 1.5","Minecraft 1.8","Minecraft 1.12","Obby But Your On A Bike","Paper.io 2","Plants Vs Zombies",
-      "Papa's Freezeria","Retrobowl","Retro Bowl Collage","Ragdoll Archers","Run 3","Snail Bob","Snowball.io",
-      "Subway Surfers","Slope","Solar Smash","Snow Sled","Steal A Brainrot","Stick Man Hook","Tiny Fishing",
-      "Tetris","Time Shooter 3","Tag"
+    const GAMES = [
+      { title: "2048", src: "https://play2048.co/", external: "https://play2048.co/" },
+      { title: "Hextris", src: "https://hextris.github.io/hextris/", external: "https://hextris.github.io/hextris/" },
+      { title: "Little Alchemy 2", src: "https://littlealchemy2.com/", external: "https://littlealchemy2.com/" },
+      { title: "Slime Soccer (html5)", src: "https://www.crazygames.com/game/slime-volleyball", external: "https://www.crazygames.com/game/slime-volleyball" },
+      { title: "Paper.io 2 (html5)", src: "https://paper-io.com/play.html", external: "https://paper-io.com/play.html" },
+      { title: "Curve Fever (JSM)", src: "https://curvefever.pro/", external: "https://curvefever.pro/" },
+      { title: "Krunker (FPS)", src: "https://krunker.io/", external: "https://krunker.io/" },
+      { title: "Shell Shockers", src: "https://shellshock.io/", external: "https://shellshock.io/" },
+      { title: "Tetr.js (Tetris)", src: "https://tetr.io/", external: "https://tetr.io/" },
+      { title: "Agar.io", src: "https://agar.io/", external: "https://agar.io/" },
+      { title: "Paper Minecraft (html5 fan port)", src: "https://paper-minecraft.com/", external: "https://paper-minecraft.com/" },
+      { title: "Bomber (html5)", src: "https://www.classicreload.com/bomber.html", external: "https://www.classicreload.com/bomber.html" }
     ];
 
-    const gamesGrid = document.getElementById('gamesGrid');
-    const iframe = document.getElementById('sourceFrame');
-    const SOURCE_PAGE = 'https://sites.google.com/view/hotdogmangoscar/ragdoll-archers?authuser=0';
-
-    // helper: create google-search URL scoped to the Hotdog site (helps find the exact entry)
-    function searchHotdogQuery(name){
-      const q = encodeURIComponent('site:sites.google.com/view/hotdogmangoscar ' + name);
-      return 'https://www.google.com/search?q=' + q;
-    }
-
-    // build tiles
-    GAME_NAMES.forEach(name => {
-      const tile = document.createElement('div'); tile.className = 'tile';
+    // Build grid
+    const grid = document.getElementById('gamesGrid');
+    GAMES.forEach((g, i) => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
       tile.innerHTML = `
-        <h3>${name}</h3>
-        <div class="muted">Click "Embed" to try loading this game inside the top frame.</div>
+        <h3>${g.title}</h3>
+        <div class="muted">Preview or open in a new tab</div>
         <div class="row">
-          <button class="linkBtn" data-name="${name}" data-action="embed">Embed</button>
-          <button class="openBtn" data-url="${searchHotdogQuery(name)}" data-action="search">Open on Hotdog (search)</button>
+          <button class="linkBtn" data-i="${i}" data-action="preview">Preview</button>
+          <button class="openBtn" data-url="${g.external}" data-action="open">Open</button>
         </div>
       `;
-      gamesGrid.appendChild(tile);
+      grid.appendChild(tile);
     });
 
-    // click handling: embed tries to load the original Hotdog page and scroll to matching text,
-    // but cross-origin prevents scrolling into the iframe content. So we load the source page and
-    // tell the user to use the browser's find (Ctrl+F) if needed. If the site blocks framing,
-    // users can open the search link (new tab).
-    gamesGrid.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button');
+    // Preview / open logic
+    const frame = document.getElementById('gameFrame');
+    const previewTitle = document.getElementById('previewTitle');
+    const openTabBtn = document.getElementById('openTab');
+    const reloadBtn = document.getElementById('reload');
+
+    function setPreview(index){
+      const g = GAMES[index];
+      previewTitle.textContent = g.title;
+      // enable controls
+      openTabBtn.disabled = false;
+      reloadBtn.disabled = false;
+      openTabBtn.onclick = () => window.open(g.external, '_blank', 'noopener');
+      reloadBtn.onclick = () => {
+        // reload iframe (works even if blocked; will still attempt)
+        frame.src = g.src;
+      };
+      // set iframe src (may be blocked by target site)
+      frame.src = g.src;
+    }
+
+    grid.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button');
       if(!btn) return;
       const action = btn.dataset.action;
-      if(action === 'embed'){
-        const name = btn.dataset.name;
-        // try to load the page in the iframe (source already loaded by default)
-        setStatus(`Loading ${name} in frame — if it appears blank, use "Open on Hotdog".`);
-        // We could attempt to pass a fragment or query, but Google Sites won't necessarily use it.
-        // So we just reload the source (user can find the game inside the embedded page).
-        iframe.src = SOURCE_PAGE;
-        // small visual hint
-        btn.textContent = 'Loading…';
-        setTimeout(()=> btn.textContent = 'Embed', 900);
-      } else if(action === 'search'){
+      if(action === 'preview'){
+        const idx = Number(btn.dataset.i);
+        setPreview(idx);
+      } else if(action === 'open'){
         const url = btn.dataset.url;
         window.open(url, '_blank', 'noopener');
       }
     });
 
-    // simple helpers
-    function setStatus(t){
-      const el = document.querySelector('.muted');
-      if(el) el.textContent = t;
-    }
-
-    document.getElementById('reloadFrame').addEventListener('click', ()=>{
-      iframe.src = SOURCE_PAGE;
+    // quick "back to portal" handler
+    document.getElementById('backPortal').addEventListener('click', () => {
+      history.back();
     });
-    document.getElementById('openSource').addEventListener('click', ()=> window.open(SOURCE_PAGE, '_blank', 'noopener'));
 
-    // note: many external hosts block iframe embedding. If the embedded frame is blank,
-    // use the per-tile "Open on Hotdog (search)" button to jump to the game's entry or open directly.
+    // Try to auto-preview the first game on load
+    window.addEventListener('load', () => {
+      if(GAMES.length) setPreview(0);
+    });
+
+    // Small note: hosts change. If a preview is blank, clicking "Open" will always work (opens in new tab).
+    // If you want me to swap any of these picks for specific itch.io or PICO-8 embeds, tell me which ones
+    // and I will replace them with their official embed URLs (itch.io provides embed snippets that work).
   </script>
 </body>
 </html>

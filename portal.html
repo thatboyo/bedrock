@@ -734,11 +734,92 @@
     /* ---------------------------
        ENHANCED LAUNCH GAMES
        --------------------------- */
-    launch && launch.addEventListener('click', ()=>{
-      // Enhanced click feedback
-      launch.style.transform = 'scale(0.95)';
-      launch.style.transition = 'transform 0.1s ease';
+    if(launch) {
+      launch.addEventListener('click', ()=>{
+        // Enhanced click feedback
+        launch.style.transform = 'scale(0.95)';
+        launch.style.transition = 'transform 0.1s ease';
+        
+        setTimeout(()=> {
+          launch.style.transform = '';
+          launch.style.transition = '';
+          // Navigate to games.html
+          window.location.href = 'games.html';
+        }, 120);
+      });
+    }
+
+    /* ---------------------------
+       ENHANCED OPEN EXTERNAL helper
+       --------------------------- */
+    function openExternal(url){ 
+      // Add loading feedback
+      const originalCursor = document.body.style.cursor;
+      document.body.style.cursor = 'wait';
       
-      setTimeout(()=> {
-        launch.style.transform = '';
-        launch.style
+      window.open(url, '_blank', 'noopener,noreferrer');
+      
+      // Reset cursor after a short delay
+      setTimeout(() => {
+        document.body.style.cursor = originalCursor;
+      }, 500);
+    }
+
+    /* ---------------------------
+       PERFORMANCE OPTIMIZATIONS
+       --------------------------- */
+    
+    // Preload critical resources
+    const preloadLinks = [
+      'games.html',
+      'index.html'
+    ];
+    
+    preloadLinks.forEach(href => {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = href;
+      document.head.appendChild(link);
+    });
+
+    // Add smooth scroll behavior to any future scrollable content
+    document.documentElement.style.scrollBehavior = 'smooth';
+
+    // Add keyboard navigation support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.activeElement.tagName === 'BUTTON') {
+        document.activeElement.blur();
+      }
+      
+      // Arrow key navigation for nav buttons
+      if (e.target.matches('nav.side button')) {
+        const buttons = Array.from(navBtns);
+        const current = buttons.indexOf(e.target);
+        
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          const next = buttons[(current + 1) % buttons.length];
+          next.focus();
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prev = buttons[(current - 1 + buttons.length) % buttons.length];
+          prev.focus();
+        }
+      }
+    });
+
+    // Add focus styles for keyboard users
+    const style = document.createElement('style');
+    style.textContent = `
+      button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      
+      .toolTile:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+  </script>
+</body>
+</html>

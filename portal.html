@@ -6,337 +6,121 @@
   <title>Bedrock Portal</title>
   <link rel="icon" href="favicon.png" type="image/png">
   <style>
-    :root{
-      --bg:#04040a;
-      --muted:#9aa3a8;
-      --accent:#8ef6c1;
-      --card-grad: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    :root {
+      --bg: #03040a;
+      --muted: #9aa3a8;
+      --accent: #87f0c8;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
-    html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
-    *{box-sizing:border-box}
-
-    /* star canvas + stronger purple corner vignette */
-    #bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block}
-    .vignette{
-      position:fixed;inset:0;z-index:1;pointer-events:none;
-      background:
-        radial-gradient(50% 50% at 8% 10%, rgba(150,85,255,0.16), transparent 22%),
-        radial-gradient(60% 50% at 92% 90%, rgba(122,58,210,0.14), transparent 24%),
-        linear-gradient(180deg, rgba(12,6,20,0.06), rgba(2,2,6,0.12));
-      mix-blend-mode:screen;
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: #eef2f5;
     }
-
-    /* page shell */
-    .wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:36px}
-    .card{width:100%;max-width:1200px;padding:20px;border-radius:12px;background:var(--card-grad);border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
-    .hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg,#101217,#081018);display:grid;place-items:center;color:var(--accent);font-weight:700}
-    .logo img{width:48px;height:48px;border-radius:8px;display:block}
-    h1{margin:0;font-size:20px}
-    .muted{color:var(--muted);font-size:13px}
-
-    /* layout: left nav, right content */
-    .cols{display:grid;grid-template-columns:260px 1fr;gap:18px}
-    nav.side{padding:12px;border-radius:8px}
-    nav.side button{
-      display:block;width:100%;text-align:left;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);
-      background:transparent;color:inherit;margin-bottom:8px;cursor:pointer;font-weight:700;font-size:14px;
+    * { box-sizing: border-box; }
+    .layout {
+      display: flex; height: 100vh; width: 100vw;
     }
-    nav.side button.active{background:rgba(142,246,193,0.08)}
-    .content{min-height:520px;padding:12px;border-radius:8px}
-
-    /* Games view specifics */
-    .gamesHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .launchBig{
-      display:inline-flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;border:0;background:var(--accent);color:#041010;font-weight:900;cursor:pointer;
-      box-shadow: 0 12px 34px rgba(10,20,20,0.45); font-size:16px;
-      transition: transform .12s ease, box-shadow .12s ease;
+    nav {
+      width: 220px; padding: 20px;
+      background: rgba(255,255,255,0.02);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      display: flex; flex-direction: column; align-items: flex-start;
+      position: relative; z-index: 2;
     }
-    .launchBig:active{ transform:translateY(2px); box-shadow:0 8px 26px rgba(10,20,20,0.35) }
-
-    /* pulsing glow animation */
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 6px 18px rgba(142,246,193,0.20), 0 0 0 0 rgba(142,246,193,0.14); transform: translateY(0); }
-      50% { box-shadow: 0 10px 34px rgba(142,246,193,0.28), 0 0 40px 8px rgba(142,246,193,0.06); transform: translateY(-2px); }
-      100% { box-shadow: 0 6px 18px rgba(142,246,193,0.20), 0 0 0 0 rgba(142,246,193,0.00); transform: translateY(0); }
+    nav img {
+      width: 64px; margin-bottom: 24px;
     }
-    .launchBig.pulse { animation: pulseGlow 2s infinite ease-in-out; }
-
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
-    .tile{
-      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;padding:12px;border:1px solid rgba(255,255,255,0.03);
-      display:flex;flex-direction:column;gap:8px;min-height:86px;justify-content:space-between;
+    nav button {
+      all: unset;
+      cursor: pointer;
+      padding: 10px 14px;
+      margin: 6px 0;
+      border-radius: 8px;
+      color: var(--muted);
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
     }
-    .tile h3{margin:0;font-size:15px}
-    .tile p{margin:0;color:var(--muted);font-size:13px}
-    .tile .row{display:flex;gap:8px}
-    .smallBtn{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#041010;font-weight:700;cursor:pointer}
-
-    .note{font-size:13px;color:var(--muted);margin-top:8px}
-    .footRow{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
-
-    @media (max-width:920px){ .cols{grid-template-columns:1fr} .grid{grid-template-columns:1fr} }
+    nav button.active, nav button:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+    }
+    main {
+      flex: 1; padding: 40px;
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .launch {
+      padding: 18px 32px;
+      border: 0;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--accent);
+      color: #042424;
+      letter-spacing: 1px;
+      animation: pulse 2.2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(135,240,200,0.7); }
+      70% { box-shadow: 0 0 16px 10px rgba(135,240,200,0); }
+      100% { box-shadow: 0 0 0 0 rgba(135,240,200,0); }
+    }
+    /* stars + vignette */
+    canvas#bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
   </style>
 </head>
 <body>
   <canvas id="bg" aria-hidden="true"></canvas>
-  <div class="vignette" aria-hidden="true"></div>
 
-  <div class="wrap">
-    <div class="card" role="main" aria-live="polite">
-      <div class="hdr">
-        <div class="logo" aria-hidden="true">
-          <img src="favicon.png" alt="Bedrock logo">
-        </div>
-        <div>
-          <h1>Bedrock Portal</h1>
-          <div class="muted" id="who">friends-only lobby</div>
-        </div>
-
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-          <button id="signout" class="smallBtn" title="Sign out">Sign out</button>
-        </div>
-      </div>
-
-      <div class="cols">
-        <nav class="side" aria-label="categories">
-          <button data-cat="games" class="active">🎮 Games</button>
-          <button data-cat="sites">🌐 Cool sites</button>
-          <button data-cat="tools">🛠️ Tools</button>
-          <button data-cat="misc">✨ Misc</button>
-        </nav>
-
-        <section class="content" id="content">
-          <!-- GAMES -->
-          <div id="games" class="category">
-            <div class="gamesHeader">
-              <div>
-                <h2 style="margin:0">Games</h2>
-                <div class="muted">No embedded players here — click Launch to go to the games hub.</div>
-              </div>
-
-              <!-- Launch Bedrock Games -->
-              <div>
-                <button id="launchGames" class="launchBig pulse" title="Open Bedrock Games page">🚀 Launch Bedrock Games</button>
-              </div>
-            </div>
-
-            <div class="grid" style="margin-top:12px">
-              <!-- Tiles that link to games.html or external picks -->
-              <div class="tile">
-                <div>
-                  <h3>Bedrock Games Hub</h3>
-                  <p>Opens the dedicated games page with previews & picks.</p>
-                </div>
-                <div class="row">
-                  <button class="smallBtn" onclick="location.href='games.html'">Open Hub</button>
-                </div>
-              </div>
-
-              <div class="tile">
-                <div>
-                  <h3>Classic Arcade</h3>
-                  <p>Retro picks (Internet Archive) — opens in new tab.</p>
-                </div>
-                <div class="row">
-                  <button class="smallBtn" onclick="openExternal('https://archive.org/details/msdos_Doom_1993')">Open</button>
-                </div>
-              </div>
-
-              <div class="tile">
-                <div>
-                  <h3>2048 & Minis</h3>
-                  <p>Quick browser snacks and time-killers.</p>
-                </div>
-                <div class="row">
-                  <button class="smallBtn" onclick="openExternal('https://play2048.co/')">Open</button>
-                </div>
-              </div>
-
-              <div class="tile">
-                <div>
-                  <h3>Random Arcade</h3>
-                  <p>Shuffle browser games and microplays.</p>
-                </div>
-                <div class="row">
-                  <button class="smallBtn" onclick="openExternal('https://www.google.com/search?q=fun+web+games')">Search</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- SITES -->
-          <div id="sites" class="category" style="display:none">
-            <h2 style="margin-top:0">Cool sites</h2>
-            <div class="grid" style="margin-top:12px">
-              <div class="tile">
-                <div><h3>Scratch</h3><p>Open Scratch (projects need new tab).</p></div>
-                <div class="row"><button class="smallBtn" onclick="openExternal('https://scratch.mit.edu')">Open</button></div>
-              </div>
-
-              <div class="tile">
-                <div><h3>Itch.io</h3><p>Indie jams & browser embeds (some hosts block framing).</p></div>
-                <div class="row"><button class="smallBtn" onclick="openExternal('https://itch.io')">Open</button></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- TOOLS -->
-          <div id="tools" class="category" style="display:none">
-            <h2 style="margin-top:0">Tools</h2>
-            <div class="grid" style="margin-top:12px">
-              <div class="tile"><div><h3>GitHub</h3><p>Browse projects & mods.</p></div><div class="row"><button class="smallBtn" onclick="openExternal('https://github.com')">Open</button></div></div>
-              <div class="tile"><div><h3>Pixlr</h3><p>Quick image edits.</p></div><div class="row"><button class="smallBtn" onclick="openExternal('https://pixlr.com')">Open</button></div></div>
-            </div>
-          </div>
-
-          <!-- MISC -->
-          <div id="misc" class="category" style="display:none">
-            <h2 style="margin-top:0">Misc</h2>
-            <div class="muted">Drop in custom links — use the "Add link" button below</div>
-            <div style="margin-top:12px">
-              <button class="smallBtn" id="addLink">Add link</button>
-            </div>
-          </div>
-
-          <div class="footRow">
-            <div>Made for friends • low-stakes</div>
-            <div>Bedrock • 2025</div>
-          </div>
-        </section>
-      </div>
-    </div>
+  <div class="layout">
+    <nav>
+      <img src="favicon.png" alt="Bedrock Logo">
+      <button id="gamesBtn" class="active">Games</button>
+    </nav>
+    <main id="content">
+      <button class="launch" onclick="window.location.href='games.html'">LAUNCH BEDROCK GAMES</button>
+    </main>
   </div>
 
   <script>
-    /* ---------------------------
-       BIGGER STAR BACKGROUND (updated)
-       --------------------------- */
+    // redirect back if not authed
+    try {
+      if (!localStorage.getItem('bedrock_auth')) {
+        window.location.href = 'index.html';
+      }
+    } catch(e){}
+
+    // starfield background w/ purple vignette
     (function(){
-      const canvas = document.getElementById('bg');
-      const ctx = canvas.getContext('2d');
-      let w = canvas.width = innerWidth;
-      let h = canvas.height = innerHeight;
-
-      const STAR_COUNT = Math.floor((w*h)/3500);
-      const stars = [];
-      function rand(min,max){ return Math.random()*(max-min)+min }
-      for(let i=0;i<STAR_COUNT;i++){
-        stars.push({
-          x: Math.random()*w,
-          y: Math.random()*h,
-          z: rand(0.6,1.6),
-          r: rand(1.4,4.0), // bigger stars
-          vx: rand(-0.03,0.03),
-          vy: rand(-0.06,0.06),
-          t: Math.random()*10
-        });
-      }
-
-      function resize(){
-        w = canvas.width = innerWidth;
-        h = canvas.height = innerHeight;
-      }
+      const c = document.getElementById('bg'), ctx = c.getContext('2d');
+      let w=c.width=innerWidth, h=c.height=innerHeight;
+      const N = Math.floor((w*h)/5000);
+      const stars = Array.from({length:N}, ()=>({x:Math.random()*w,y:Math.random()*h,r:1.4+Math.random()*2,t:Math.random()*6}));
+      function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
       addEventListener('resize', resize);
-
-      function draw(){
+      (function draw(){
         ctx.clearRect(0,0,w,h);
-        // galaxy wash + slight purple tint handled by vignette layer
         const g = ctx.createLinearGradient(0,0,w,h);
-        g.addColorStop(0,'rgba(12,12,20,0.12)');
-        g.addColorStop(1,'rgba(2,6,12,0.22)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0,0,w,h);
-
-        const t = Date.now()/2200; // slower twinkle
+        g.addColorStop(0,'rgba(20,0,40,0.85)');
+        g.addColorStop(1,'rgba(3,4,10,0.9)');
+        ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+        const t = Date.now()/1000;
         for(const s of stars){
-          s.x += s.vx * (s.z*1.6);
-          s.y += s.vy * (s.z*1.6);
-          const tw = Math.abs(Math.sin(t + s.t));
-          if(s.x<0) s.x = w;
-          if(s.x>w) s.x = 0;
-          if(s.y<0) s.y = h;
-          if(s.y>h) s.y = 0;
-          ctx.beginPath();
-          ctx.globalAlpha = 0.75 * s.z * (0.3 + tw*0.7);
-          ctx.fillStyle = "white";
-          ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI*2);
+          const a = 0.6*(0.5+0.5*Math.sin(t+s.t));
+          ctx.globalAlpha=a;
+          ctx.beginPath(); ctx.fillStyle='white';
+          ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2);
           ctx.fill();
-          ctx.globalAlpha = 1;
         }
+        ctx.globalAlpha=1;
         requestAnimationFrame(draw);
-      }
-      draw();
+      })();
     })();
-
-    /* ---------------------------
-       ACCESS CONTROL
-       --------------------------- */
-    (function checkAuthorized(){
-      try {
-        const saved = localStorage.getItem('bedrock_auth') || '';
-        if (!saved) {
-          location.href = 'index.html';
-        } else {
-          document.getElementById('who').textContent = 'signed in';
-        }
-      } catch (e) {
-        location.href = 'index.html';
-      }
-    })();
-
-    /* ---------------------------
-       NAV SWITCHING + launch button pulsing control
-       --------------------------- */
-    const navBtns = document.querySelectorAll('nav.side button');
-    const launchBtn = document.getElementById('launchGames');
-    navBtns.forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        navBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const id = btn.getAttribute('data-cat');
-        document.querySelectorAll('.category').forEach(c=>c.style.display='none');
-        document.getElementById(id).style.display = '';
-        // animate pulse only when Games tab active
-        if(id === 'games') launchBtn.classList.add('pulse'); else launchBtn.classList.remove('pulse');
-      });
-    });
-
-    /* ---------------------------
-       SIGN OUT
-       --------------------------- */
-    document.getElementById('signout').addEventListener('click', ()=>{
-      try { localStorage.removeItem('bedrock_auth'); } catch(_) {}
-      location.href = 'index.html';
-    });
-
-    /* ---------------------------
-       LAUNCH GAMES BUTTON (animated)
-       --------------------------- */
-    launchBtn.addEventListener('click', ()=>{
-      // tiny click animation
-      launchBtn.style.transform = 'scale(0.98)';
-      setTimeout(()=> launchBtn.style.transform = '', 120);
-      // redirect
-      location.href = 'games.html';
-    });
-
-    /* ---------------------------
-       OPEN EXTERNAL HELPER
-       --------------------------- */
-    function openExternal(url){ window.open(url, '_blank', 'noopener'); }
-
-    /* ---------------------------
-       ADD LINK (misc)
-       --------------------------- */
-    document.getElementById('addLink').addEventListener('click', ()=>{
-      const url = prompt('Paste a URL to add to the misc page (include https://)') || '';
-      if(!url) return;
-      const card = document.createElement('div'); card.className='tile';
-      card.innerHTML = `<div><h3>Custom</h3><p>${url}</p></div><div class="row"><button class="smallBtn" onclick="openExternal('${url.replace(/'/g,"\\'")}')">Open</button></div>`;
-      document.getElementById('misc').appendChild(card);
-    });
   </script>
 </body>
 </html>

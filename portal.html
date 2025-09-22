@@ -11,13 +11,14 @@
       --muted:#9aa3a8;
       --accent:#8ef6c1;
       --purple-strong: rgba(160,76,255,0.18);
-      --purple-faint: rgba(140,90,240,0.05);
+      --purple-faint: rgba(140,90,240,0.06);
+      --tile-purple: rgba(145,80,240,0.08); /* subtle purple tile tint */
+      --tile-purple-hover: rgba(145,80,240,0.14); /* slightly stronger on hover */
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
-    /* page baseline */
     html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
     *{box-sizing:border-box}
-    a{color:inherit}
+    a{color:inherit;text-decoration:none}
 
     /* background layers */
     canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block}
@@ -37,15 +38,13 @@
       background:linear-gradient(180deg, rgba(255,255,255,0.006), rgba(255,255,255,0.003));
       border:1px solid rgba(255,255,255,0.03);
       box-shadow:0 14px 50px rgba(0,0,0,0.6);
-      position:relative;
-      overflow:visible;
+      position:relative; overflow:visible;
     }
-    /* purple ring */
     .card::before{
       content:"";
       position:absolute; inset:-8px; border-radius:18px; z-index:-1;
       background: linear-gradient(90deg, rgba(150,85,255,0.06), rgba(122,58,210,0.04));
-      filter: blur(12px); opacity:1; pointer-events:none;
+      filter: blur(12px); pointer-events:none;
     }
 
     /* header */
@@ -71,19 +70,26 @@
       transform:translateY(-2px);
     }
 
-    .content{min-height:520px;padding:14px;border-radius:10px}
+    .content{min-height:520px;padding:14px;border-radius:10px;display:flex;flex-direction:column}
 
-    /* Games */
-    .gamesHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    /* Games: centered area */
+    .gamesCenter {
+      flex:1; /* grow to available height */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:18px;
+      min-height:320px;
+    }
+
+    .gamesHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:920px}
     .launchBig{
       display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:12px;border:0;background:var(--accent);color:#041010;font-weight:900;cursor:pointer;
-      box-shadow: 0 12px 34px rgba(10,20,20,0.45); font-size:16px;
-      transition: transform .12s ease, box-shadow .12s ease;
-      outline: none;
+      box-shadow: 0 12px 34px rgba(10,20,20,0.45); font-size:16px; transition: transform .12s ease, box-shadow .12s ease; outline:none;
     }
     .launchBig:active{ transform:translateY(2px); box-shadow:0 8px 26px rgba(10,20,20,0.35) }
 
-    /* pulse animation (only applied when .pulse exists) */
     @keyframes pulseGlow {
       0% { box-shadow: 0 6px 18px rgba(142,246,193,0.12), 0 0 0 0 rgba(150,85,255,0.06); transform: translateY(0); }
       50% { box-shadow: 0 12px 34px rgba(142,246,193,0.20), 0 0 40px 12px rgba(150,85,255,0.08); transform: translateY(-3px); }
@@ -91,20 +97,34 @@
     }
     .launchBig.pulse { animation: pulseGlow 2s infinite ease-in-out; }
 
-    /* Tools grid */
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
-    .tile{
-      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-      border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,0.03);
-      display:flex;flex-direction:column;gap:8px;min-height:86px;justify-content:space-between;
+    /* Tools grid — tiles clickable */
+    .toolsGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+    .toolTile{
+      background: linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,0.03);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:110px;
+      cursor:pointer;
+      transition: background .12s ease, transform .12s ease, box-shadow .12s ease;
+      background-color: var(--tile-purple); /* subtle purple tint */
     }
-    .tile h3{margin:0;font-size:15px}
-    .tile p{margin:0;color:var(--muted);font-size:13px}
-    .smallBtn{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#041010;font-weight:700;cursor:pointer}
+    .toolTile:hover{
+      background-color: var(--tile-purple-hover);
+      transform: translateY(-6px);
+      box-shadow: 0 14px 36px rgba(120,60,220,0.08);
+    }
+    .toolTile h3{margin:0;font-size:16px}
+    .toolTile p{margin:0;color:var(--muted);font-size:13px}
+    .toolActions{display:flex;gap:10px;margin-top:10px}
+    .smallBtn{padding:8px 10px;border-radius:8px;border:0;background:rgba(255,255,255,0.06);color:#eafaf0;font-weight:700;cursor:pointer}
 
     .footRow{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
 
-    @media (max-width:920px){ .cols{grid-template-columns:1fr} .grid{grid-template-columns:1fr} }
+    @media (max-width:920px){ .cols{grid-template-columns:1fr} .toolsGrid{grid-template-columns:1fr} .gamesHeader{flex-direction:column;align-items:center} }
   </style>
 </head>
 <body>
@@ -143,58 +163,86 @@
             <p class="muted">Use the left nav to pick Games or Tools. Games is friends-only — you must LAUNCH from the games tab.</p>
           </div>
 
-          <!-- GAMES -->
+          <!-- GAMES (centered) -->
           <div id="games" class="tab" style="display:none">
-            <div class="gamesHeader">
-              <div>
-                <h2 style="margin:0">Games</h2>
-                <div class="muted">Press the big button to open the Bedrock Games hub.</div>
+            <div class="gamesCenter">
+              <div class="gamesHeader" role="region" aria-label="launch area">
+                <div>
+                  <h2 style="margin:0">Games</h2>
+                  <div class="muted">Press the big button to open the Bedrock Games hub.</div>
+                </div>
               </div>
 
-              <div>
-                <button id="launchGames" class="launchBig" title="Open Bedrock Games page">🚀 Launch Bedrock Games</button>
-              </div>
-            </div>
-
-            <div style="margin-top:22px;max-width:720px">
-              <p class="muted">The Games tab intentionally only contains the Launch button to keep the portal clean. The games hub will open in a new tab or same tab (your call).</p>
+              <!-- perfectly centered -->
+              <button id="launchGames" class="launchBig pulse" title="Open Bedrock Games page">🚀 Launch Bedrock Games</button>
+              <div style="max-width:720px;text-align:center;color:var(--muted);font-size:14px">The Games tab intentionally only contains the Launch button to keep the portal clean.</div>
             </div>
           </div>
 
-          <!-- TOOLS -->
+          <!-- TOOLS (tiles clickable) -->
           <div id="tools" class="tab" style="display:none">
             <h2 style="margin-top:0">Tools</h2>
-            <div class="muted">Web tools that usually work on Chromebooks — open in a new tab.</div>
+            <div class="muted">Web tools that usually work on Chromebooks — click a tile to open in a new tab.</div>
 
-            <div class="grid" style="margin-top:12px">
-              <div class="tile">
-                <div><h3>remove.bg</h3><p>Auto background remover.</p></div>
-                <div><button class="smallBtn" onclick="openExternal('https://www.remove.bg/')">Open</button></div>
+            <div class="toolsGrid" style="margin-top:12px">
+              <div class="toolTile" onclick="openExternal('https://www.remove.bg/')">
+                <div>
+                  <h3>remove.bg</h3>
+                  <p>Auto background remover — quick and easy.</p>
+                </div>
+                <div class="toolActions">
+                  <button class="smallBtn" onclick="openExternal('https://www.remove.bg/'); event.stopPropagation()">Open</button>
+                </div>
               </div>
 
-              <div class="tile">
-                <div><h3>Photopea</h3><p>Full-featured browser image editor (Photoshop-like).</p></div>
-                <div><button class="smallBtn" onclick="openExternal('https://www.photopea.com/')">Open</button></div>
+              <div class="toolTile" onclick="openExternal('https://www.photopea.com/')">
+                <div>
+                  <h3>Photopea</h3>
+                  <p>Photoshop-like editor that runs in your browser — great for Chromebooks.</p>
+                </div>
+                <div class="toolActions">
+                  <button class="smallBtn" onclick="openExternal('https://www.photopea.com/'); event.stopPropagation()">Open</button>
+                </div>
               </div>
 
-              <div class="tile">
-                <div><h3>Pixlr</h3><p>Quick photo edits, two modes (E/X).</p></div>
-                <div><button class="smallBtn" onclick="openExternal('https://pixlr.com/')">Open</button></div>
+              <div class="toolTile" onclick="openExternal('https://pixlr.com/')">
+                <div>
+                  <h3>Pixlr</h3>
+                  <p>Fast image edits with E/X modes.</p>
+                </div>
+                <div class="toolActions">
+                  <button class="smallBtn" onclick="openExternal('https://pixlr.com/'); event.stopPropagation()">Open</button>
+                </div>
               </div>
 
-              <div class="tile">
-                <div><h3>TinyPNG</h3><p>Compress PNG/JPG files to save upload size.</p></div>
-                <div><button class="smallBtn" onclick="openExternal('https://tinypng.com/')">Open</button></div>
+              <div class="toolTile" onclick="openExternal('https://tinypng.com/')">
+                <div>
+                  <h3>TinyPNG</h3>
+                  <p>Compress PNG / JPG files to shrink uploads.</p>
+                </div>
+                <div class="toolActions">
+                  <button class="smallBtn" onclick="openExternal('https://tinypng.com/'); event.stopPropagation()">Open</button>
+                </div>
               </div>
 
-              <div class="tile">
-                <div><h3>iLoveIMG</h3><p>Resize, convert, crop, PDF helpers.</p></div>
-                <div><button class="smallBtn" onclick="openExternal('https://www.iloveimg.com/')">Open</button></div>
+              <div class="toolTile" onclick="openExternal('https://www.iloveimg.com/')">
+                <div>
+                  <h3>iLoveIMG</h3>
+                  <p>Convert, resize, crop, and convert to PDF.</p>
+                </div>
+                <div class="toolActions">
+                  <button class="smallBtn" onclick="openExternal('https://www.iloveimg.com/'); event.stopPropagation()">Open</button>
+                </div>
               </div>
 
-              <div class="tile">
-                <div><h3>Canva</h3><p>Design templates; may require account.</p></div>
-                <div><button class="smallBtn" onclick="openExternal('https://www.canva.com/')">Open</button></div>
+              <div class="toolTile" onclick="openExternal('https://www.canva.com/')">
+                <div>
+                  <h3>Canva</h3>
+                  <p>Design templates & thumbnails (may require an account).</p>
+                </div>
+                <div class="toolActions">
+                  <button class="smallBtn" onclick="openExternal('https://www.canva.com/'); event.stopPropagation()">Open</button>
+                </div>
               </div>
             </div>
           </div>
@@ -282,25 +330,17 @@
     /* ---------------------------
        TABS + launch pulse control
        --------------------------- */
-    const tabButtons = document.querySelectorAll('nav.side button[data-tab], nav.side button');
-    // use dataset to identify, fallback to order
     const navBtns = document.querySelectorAll('nav.side button');
     navBtns.forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        // clear active
         navBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        // find target tab
         const tab = btn.getAttribute('data-tab') || btn.textContent.toLowerCase().trim();
-        // hide all tabs
         document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
-        // show target
         const el = document.getElementById(tab);
         if(el) el.style.display = '';
-        // control pulse on launch button
         const launch = document.getElementById('launchGames');
-        if(tab === 'games') { launch.classList.add('pulse'); }
-        else { launch.classList.remove('pulse'); }
+        if(tab === 'games') launch.classList.add('pulse'); else launch.classList.remove('pulse');
       });
     });
 
@@ -319,12 +359,12 @@
       const b = document.getElementById('launchGames');
       b.style.transform = 'scale(0.98)';
       setTimeout(()=> b.style.transform = '', 120);
-      // open games hub in same tab
+      // opens games.html in same tab
       location.href = 'games.html';
     });
 
     /* ---------------------------
-       OPEN EXTERNAL
+       OPEN EXTERNAL helper
        --------------------------- */
     function openExternal(url){ window.open(url, '_blank', 'noopener'); }
   </script>

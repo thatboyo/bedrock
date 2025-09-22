@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Bedrock — Games</title>
+  <style>
+    :root{
+      --bg:#04040a; --muted:#9aa3a8; --accent:#8ef6c1;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
+    *{box-sizing:border-box}
+    canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+    .wrap{position:relative;z-index:2;min-height:100vh;padding:28px;display:flex;flex-direction:column;gap:18px}
+    header{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(180deg,#0d1114,#061018);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    h1{margin:0;font-size:18px}
+    .muted{color:var(--muted);font-size:13px}
+    /* layout: iframe on top, grid below */
+    .embedFrame{
+      width:100%; height:520px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,0.6); background:#000;
+    }
+    .controls{display:flex;gap:10px;align-items:center;margin-top:8px}
+    .smallBtn{background:var(--accent);color:#041010;border:0;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .tile{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:8px;padding:12px;border:1px solid rgba(255,255,255,0.03);
+      display:flex;flex-direction:column;gap:8px;min-height:86px;
+    }
+    .tile h3{margin:0;font-size:15px}
+    .tile .muted{font-size:12px}
+    .tile .row{display:flex;gap:8px;margin-top:auto}
+    .linkBtn{flex:1;padding:8px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:var(--muted);cursor:pointer}
+    .openBtn{background:var(--accent);color:#041010;border:0;padding:8px;border-radius:8px;cursor:pointer}
+    @media (max-width:960px){ .grid{grid-template-columns:repeat(2,1fr)} .embedFrame{height:420px} }
+    @media (max-width:600px){ .grid{grid-template-columns:1fr} .embedFrame{height:360px} }
+    footer{margin-top:8px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <canvas id="bg" aria-hidden="true"></canvas>
+
+  <div class="wrap" id="app">
+    <header>
+      <div class="logo">BR</div>
+      <div>
+        <h1>Bedrock — Games</h1>
+        <div class="muted">Embedded where possible • fallback opens in a new tab</div>
+      </div>
+    </header>
+
+    <!-- Top embed: the Hotdog Google Sites page (source of the list). -->
+    <div class="embedFrame" id="frameWrap" aria-live="polite">
+      <iframe id="sourceFrame" src="https://sites.google.com/view/hotdogmangoscar/ragdoll-archers?authuser=0"
+              style="width:100%;height:100%;border:0;background:#000" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+    </div>
+
+    <div class="controls">
+      <button class="smallBtn" id="reloadFrame">Reload embed</button>
+      <button class="smallBtn" id="openSource">Open source page</button>
+      <div style="margin-left:auto" class="muted">Source: Hotdog :) Ragdoll Archers. (Embedded list used.)</div>
+    </div>
+
+    <!-- Grid of games (extracted from the Hotdog page) -->
+    <section id="gamesGrid" class="grid" aria-label="games list">
+      <!-- tiles injected by script -->
+    </section>
+
+    <footer>Tip: if an iframe appears blank, click "Open in new tab".</footer>
+  </div>
+
+  <script>
+    /***********************
+     * lightweight star bg
+     ***********************/
+    (function starBg(){
+      const c = document.getElementById('bg'), ctx = c.getContext('2d');
+      let w = c.width = innerWidth, h = c.height = innerHeight;
+      const N = Math.floor((w*h)/7000);
+      const stars = Array.from({length:N}, ()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6,t:Math.random()*6}));
+      function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+      addEventListener('resize', resize);
+      (function draw(){
+        ctx.clearRect(0,0,w,h);
+        const g = ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'rgba(8,10,16,0.9)'); g.addColorStop(1,'rgba(2,4,8,0.95)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+        const t = Date.now()/1000;
+        for(const s of stars){ const a = 0.6*(0.5+0.5*Math.sin(t+s.t)); ctx.globalAlpha=a; ctx.beginPath(); ctx.fillStyle='white'; ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2); ctx.fill(); }
+        ctx.globalAlpha=1; requestAnimationFrame(draw);
+      })();
+    })();
+
+    /***********************
+     * Games extracted from Hotdog page
+     * Source: https://sites.google.com/view/hotdogmangoscar/ragdoll-archers
+     * (list pulled programmatically). :contentReference[oaicite:1]{index=1}
+     ***********************/
+    const GAME_NAMES = [
+      "1v1.lol","2048","BitLife","Basketball Stars","Basket Random","Bottle Flip 3D","Cluster rush",
+      "Crossy Road","Car Crash Test 2","Cookie Clicker","Drift Hunters","Doodle Baseball","Doge miner",
+      "Donkey Kong","Elastic Face","Escape Road","Funny Shooter 2","Fall Boys","Friday Night Funkin",
+      "Five Nights At Freddy's","Geometry Dash Lite","Google Solitaire","Granny","Geometry Dash",
+      "Gunspin","Gladihoppers","Grow A Garden","Happy Wheels","Infinite Craft","Iron Snout","Moto X3m 3",
+      "Minecraft 1.5","Minecraft 1.8","Minecraft 1.12","Obby But Your On A Bike","Paper.io 2","Plants Vs Zombies",
+      "Papa's Freezeria","Retrobowl","Retro Bowl Collage","Ragdoll Archers","Run 3","Snail Bob","Snowball.io",
+      "Subway Surfers","Slope","Solar Smash","Snow Sled","Steal A Brainrot","Stick Man Hook","Tiny Fishing",
+      "Tetris","Time Shooter 3","Tag"
+    ];
+
+    const gamesGrid = document.getElementById('gamesGrid');
+    const iframe = document.getElementById('sourceFrame');
+    const SOURCE_PAGE = 'https://sites.google.com/view/hotdogmangoscar/ragdoll-archers?authuser=0';
+
+    // helper: create google-search URL scoped to the Hotdog site (helps find the exact entry)
+    function searchHotdogQuery(name){
+      const q = encodeURIComponent('site:sites.google.com/view/hotdogmangoscar ' + name);
+      return 'https://www.google.com/search?q=' + q;
+    }
+
+    // build tiles
+    GAME_NAMES.forEach(name => {
+      const tile = document.createElement('div'); tile.className = 'tile';
+      tile.innerHTML = `
+        <h3>${name}</h3>
+        <div class="muted">Click "Embed" to try loading this game inside the top frame.</div>
+        <div class="row">
+          <button class="linkBtn" data-name="${name}" data-action="embed">Embed</button>
+          <button class="openBtn" data-url="${searchHotdogQuery(name)}" data-action="search">Open on Hotdog (search)</button>
+        </div>
+      `;
+      gamesGrid.appendChild(tile);
+    });
+
+    // click handling: embed tries to load the original Hotdog page and scroll to matching text,
+    // but cross-origin prevents scrolling into the iframe content. So we load the source page and
+    // tell the user to use the browser's find (Ctrl+F) if needed. If the site blocks framing,
+    // users can open the search link (new tab).
+    gamesGrid.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button');
+      if(!btn) return;
+      const action = btn.dataset.action;
+      if(action === 'embed'){
+        const name = btn.dataset.name;
+        // try to load the page in the iframe (source already loaded by default)
+        setStatus(`Loading ${name} in frame — if it appears blank, use "Open on Hotdog".`);
+        // We could attempt to pass a fragment or query, but Google Sites won't necessarily use it.
+        // So we just reload the source (user can find the game inside the embedded page).
+        iframe.src = SOURCE_PAGE;
+        // small visual hint
+        btn.textContent = 'Loading…';
+        setTimeout(()=> btn.textContent = 'Embed', 900);
+      } else if(action === 'search'){
+        const url = btn.dataset.url;
+        window.open(url, '_blank', 'noopener');
+      }
+    });
+
+    // simple helpers
+    function setStatus(t){
+      const el = document.querySelector('.muted');
+      if(el) el.textContent = t;
+    }
+
+    document.getElementById('reloadFrame').addEventListener('click', ()=>{
+      iframe.src = SOURCE_PAGE;
+    });
+    document.getElementById('openSource').addEventListener('click', ()=> window.open(SOURCE_PAGE, '_blank', 'noopener'));
+
+    // note: many external hosts block iframe embedding. If the embedded frame is blank,
+    // use the per-tile "Open on Hotdog (search)" button to jump to the game's entry or open directly.
+  </script>
+</body>
+</html>

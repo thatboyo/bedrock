@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bedrock — Tools</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <style>
+    :root{
+      --bg:#04040a;
+      --muted:#9aa3a8;
+      --accent:#8ef6c1;
+      --purple-glow: rgba(160,76,255,0.18);
+      font-family: Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
+    *{box-sizing:border-box}
+    canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+    .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:
+      radial-gradient(40% 40% at 10% 10%, rgba(150,85,255,0.12), transparent 18%),
+      radial-gradient(50% 50% at 90% 90%, rgba(122,58,210,0.08), transparent 20%);mix-blend-mode:screen;}
+    .wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:36px}
+    .card{
+      width:100%;max-width:1180px;padding:18px;border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.007), rgba(255,255,255,0.004));
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 30px 6px rgba(140,90,240,0.02);
+    }
+    .hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg,#101217,#081018);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    .logo img{width:48px;height:48px;border-radius:8px;display:block}
+    h1{margin:0;font-size:20px}
+    .muted{color:var(--muted);font-size:13px}
+
+    .cols{display:grid;grid-template-columns:240px 1fr;gap:18px}
+    nav.side{padding:12px;border-radius:8px;display:flex;flex-direction:column;gap:8px}
+    nav.side button{
+      display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);
+      background:transparent;color:inherit;cursor:pointer;font-weight:700;font-size:14px;
+    }
+    nav.side button.active{ background: linear-gradient(90deg, rgba(142,246,193,0.06), rgba(140,90,240,0.03)); color:var(--accent); box-shadow:0 6px 18px rgba(140,90,240,0.03) }
+
+    .content{min-height:520px;padding:12px;border-radius:8px}
+    .topRow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+    .tile{
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+      border-radius:8px;padding:12px;border:1px solid rgba(255,255,255,0.03);
+      display:flex;flex-direction:column;gap:10px;min-height:100px;justify-content:space-between;
+    }
+    .tile h3{margin:0;font-size:15px}
+    .tile p{margin:0;color:var(--muted);font-size:13px}
+    .row{display:flex;gap:10px;align-items:center}
+    .smallBtn{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#041010;font-weight:700;cursor:pointer}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .footRow{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
+    @media (max-width:900px){ .cols{grid-template-columns:1fr} .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="card" role="main" aria-live="polite">
+      <div class="hdr">
+        <div class="logo"><img src="favicon.png" alt="Bedrock logo"></div>
+        <div>
+          <h1>Bedrock Tools</h1>
+          <div class="muted" id="who">friends-only tools</div>
+        </div>
+        <div style="margin-left:auto">
+          <button id="backBtn" class="smallBtn">Back</button>
+        </div>
+      </div>
+
+      <div class="cols">
+        <nav class="side" aria-label="tools nav">
+          <button data-cat="tools" class="active">🛠️ Tools</button>
+          <button data-cat="about">ℹ️ About</button>
+        </nav>
+
+        <section class="content" id="content">
+          <!-- TOOLS -->
+          <div id="tools" class="category">
+            <div class="topRow">
+              <div>
+                <h2 style="margin:0">Useful Web Tools</h2>
+                <div class="muted">These usually work on school Chromebooks (opens in new tab).</div>
+              </div>
+              <div>
+                <button id="openAll" class="smallBtn" title="Open all tools in new tabs">Open all</button>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="tile">
+                <div>
+                  <h3>remove.bg</h3>
+                  <p>Auto remove image backgrounds (fast & web-based).</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.remove.bg/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>Photopea</h3>
+                  <p>Photoshop-like editor that runs in the browser — great on Chromebooks.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.photopea.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>Pixlr</h3>
+                  <p>Simple image editor with two modes (E/X) — friendly and lightweight.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://pixlr.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>TinyPNG / TinyJPG</h3>
+                  <p>Compress images to save upload size or make files smaller.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://tinypng.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>iLoveIMG</h3>
+                  <p>Resize, convert, crop, and convert to PDF — handy utility pack.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.iloveimg.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>Canva (Web)</h3>
+                  <p>Design templates, posters, thumbnails — web editor (may require account).</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.canva.com/')">Open</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="note">If a page is blank, your school filter may block framing or the site. The Open button will always open the tool in a new tab.</div>
+          </div>
+
+          <!-- ABOUT -->
+          <div id="about" class="category" style="display:none">
+            <h2 style="margin-top:0">About Bedrock Tools</h2>
+            <p class="muted">This page collects web-native tools that usually work on Chromebooks. If any are blocked by your network, try opening them in a new tab or use a phone hotspot (if allowed).</p>
+            <div style="margin-top:12px">
+              <strong>Want another tool here?</strong>
+              <p class="muted">Tell me which one and I'll add it to the grid.</p>
+            </div>
+          </div>
+
+          <div class="footRow">
+            <div>Made for friends • low-stakes</div>
+            <div>Bedrock • 2025</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // starfield (bigger, denser)
+    (function(){
+      const c=document.getElementById('bg'), ctx=c.getContext('2d');
+      let w=c.width=innerWidth, h=c.height=innerHeight;
+      const N=Math.floor((w*h)/3500);
+      const stars=Array.from({length:N}, ()=>({x:Math.random()*w,y:Math.random()*h,r:1.6+Math.random()*2.6,t:Math.random()*8}));
+      addEventListener('resize', ()=>{w=c.width=innerWidth;h=c.height=innerHeight;});
+      (function draw(){
+        ctx.clearRect(0,0,w,h);
+        const g=ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'rgba(12,12,20,0.14)'); g.addColorStop(1,'rgba(2,6,12,0.24)');
+        ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+        const t=Date.now()/2200;
+        for(const s of stars){
+          s.x = (s.x + Math.sin(t+s.t)*0.6) % w;
+          s.y = (s.y + Math.cos(t+s.t)*0.4) % h;
+          ctx.globalAlpha = 0.75*(0.4 + 0.6*Math.abs(Math.sin(t+s.t)));
+          ctx.beginPath(); ctx.fillStyle='white'; ctx.arc((s.x+w)%w,(s.y+h)%h,s.r,0,Math.PI*2); ctx.fill();
+        }
+        ctx.globalAlpha=1; requestAnimationFrame(draw);
+      })();
+    })();
+
+    // access control: require signed-in key
+    (function checkAuthorized(){
+      try {
+        const saved = localStorage.getItem('bedrock_auth') || '';
+        if(!saved) location.href='index.html';
+        else document.getElementById('who').textContent = 'signed in';
+      } catch(e){ location.href='index.html'; }
+    })();
+
+    // nav switching
+    document.querySelectorAll('nav.side button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('nav.side button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const id = btn.getAttribute('data-cat');
+        document.querySelectorAll('.category').forEach(c=>c.style.display='none');
+        const el = document.getElementById(id);
+        if(el) el.style.display = '';
+      });
+    });
+
+    // helpers
+    function openExternal(url){ window.open(url, '_blank', 'noopener'); }
+    document.getElementById('backBtn').addEventListener('click', ()=> location.href='portal.html');
+
+    // open all (opens tools in new tabs)
+    document.getElementById('openAll').addEventListener('click', ()=>{
+      const urls = [
+        'https://www.remove.bg/',
+        'https://www.photopea.com/',
+        'https://pixlr.com/',
+        'https://tinypng.com/',
+        'https://www.iloveimg.com/',
+        'https://www.canva.com/'
+      ];
+      urls.forEach(u=>window.open(u, '_blank', 'noopener'));
+    });
+  </script>
+</body>
+</html>

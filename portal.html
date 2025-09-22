@@ -6,121 +6,356 @@
   <title>Bedrock Portal</title>
   <link rel="icon" href="favicon.png" type="image/png">
   <style>
-    :root {
-      --bg: #03040a;
-      --muted: #9aa3a8;
-      --accent: #87f0c8;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    :root{
+      --bg:#04040a;
+      --muted:#9aa3a8;
+      --accent:#8ef6c1;
+      --purple-strong: rgba(150,85,255,0.18);
+      --purple-faint: rgba(140,90,240,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
-    html, body {
-      height: 100%;
-      margin: 0;
-      background: var(--bg);
-      color: #eef2f5;
+    html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
+    *{box-sizing:border-box}
+    /* star canvas + purple vignette layer */
+    #bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block}
+    .vignette{
+      position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:
+        radial-gradient(50% 50% at 8% 10%, rgba(150,85,255,0.14), transparent 22%),
+        radial-gradient(60% 50% at 92% 90%, rgba(122,58,210,0.10), transparent 24%);
+      mix-blend-mode:screen;
     }
-    * { box-sizing: border-box; }
-    .layout {
-      display: flex; height: 100vh; width: 100vw;
+
+    /* page shell */
+    .wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:36px}
+    /* purple border + glow around the portal card */
+    .card{
+      width:100%;max-width:1180px;padding:18px;border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.007), rgba(255,255,255,0.004));
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow:
+        0 10px 40px rgba(0,0,0,0.6),
+        0 0 30px 6px rgba(140,90,240,0.02); /* faint glow */
+      position:relative;
+      outline: 2px solid transparent;
     }
-    nav {
-      width: 220px; padding: 20px;
-      background: rgba(255,255,255,0.02);
-      border-right: 1px solid rgba(255,255,255,0.05);
-      display: flex; flex-direction: column; align-items: flex-start;
-      position: relative; z-index: 2;
+    /* purple border ring (faded) */
+    .card::before{
+      content:"";
+      position:absolute; inset:-6px; border-radius:16px; z-index:-1;
+      background: linear-gradient(90deg, rgba(150,85,255,0.06), rgba(122,58,210,0.04));
+      filter: blur(12px);
+      opacity:0.95;
+      pointer-events:none;
     }
-    nav img {
-      width: 64px; margin-bottom: 24px;
+
+    .hdr{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg,#101217,#081018);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    .logo img{width:48px;height:48px;border-radius:8px;display:block}
+    h1{margin:0;font-size:20px}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* layout: left nav, right content */
+    .cols{display:grid;grid-template-columns:240px 1fr;gap:18px}
+    nav.side{padding:12px;border-radius:8px;display:flex;flex-direction:column;gap:8px}
+    nav.side button{
+      display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);
+      background:transparent;color:inherit;cursor:pointer;font-weight:700;font-size:14px;
     }
-    nav button {
-      all: unset;
-      cursor: pointer;
-      padding: 10px 14px;
-      margin: 6px 0;
-      border-radius: 8px;
-      color: var(--muted);
-      font-weight: 600;
-      transition: background 0.2s, color 0.2s;
+    nav.side button.active{ background: linear-gradient(90deg, rgba(142,246,193,0.06), rgba(140,90,240,0.03)); color:var(--accent); box-shadow:0 6px 18px rgba(140,90,240,0.03) }
+
+    .content{min-height:520px;padding:12px;border-radius:8px}
+
+    /* Games view specifics */
+    .gamesHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .launchBig{
+      display:inline-flex;align-items:center;gap:10px;padding:14px 20px;border-radius:12px;border:0;background:var(--accent);color:#041010;font-weight:900;cursor:pointer;
+      box-shadow: 0 12px 34px rgba(10,20,20,0.45); font-size:16px;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
-    nav button.active, nav button:hover {
-      background: rgba(255,255,255,0.05);
-      color: var(--accent);
+    .launchBig:active{ transform:translateY(2px); box-shadow:0 8px 26px rgba(10,20,20,0.35) }
+
+    /* pulsing glow animation */
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 6px 18px rgba(142,246,193,0.12), 0 0 0 0 rgba(150,85,255,0.08); transform: translateY(0); }
+      50% { box-shadow: 0 10px 34px rgba(142,246,193,0.22), 0 0 40px 12px rgba(150,85,255,0.06); transform: translateY(-2px); }
+      100% { box-shadow: 0 6px 18px rgba(142,246,193,0.12), 0 0 0 0 rgba(150,85,255,0.00); transform: translateY(0); }
     }
-    main {
-      flex: 1; padding: 40px;
-      position: relative; z-index: 2;
-      display: flex; align-items: center; justify-content: center;
+    .launchBig.pulse { animation: pulseGlow 2s infinite ease-in-out; }
+
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+    .tile{
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;padding:12px;border:1px solid rgba(255,255,255,0.03);
+      display:flex;flex-direction:column;gap:8px;min-height:86px;justify-content:space-between;
     }
-    .launch {
-      padding: 18px 32px;
-      border: 0;
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: 700;
-      cursor: pointer;
-      background: var(--accent);
-      color: #042424;
-      letter-spacing: 1px;
-      animation: pulse 2.2s infinite;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(135,240,200,0.7); }
-      70% { box-shadow: 0 0 16px 10px rgba(135,240,200,0); }
-      100% { box-shadow: 0 0 0 0 rgba(135,240,200,0); }
-    }
-    /* stars + vignette */
-    canvas#bg {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    }
+    .tile h3{margin:0;font-size:15px}
+    .tile p{margin:0;color:var(--muted);font-size:13px}
+    .smallBtn{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#041010;font-weight:700;cursor:pointer}
+
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .footRow{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
+
+    @media (max-width:900px){ .cols{grid-template-columns:1fr} .grid{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
   <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
 
-  <div class="layout">
-    <nav>
-      <img src="favicon.png" alt="Bedrock Logo">
-      <button id="gamesBtn" class="active">Games</button>
-    </nav>
-    <main id="content">
-      <button class="launch" onclick="window.location.href='games.html'">LAUNCH BEDROCK GAMES</button>
-    </main>
+  <div class="wrap">
+    <div class="card" role="main" aria-live="polite">
+      <div class="hdr">
+        <div class="logo" aria-hidden="true">
+          <img src="favicon.png" alt="Bedrock logo">
+        </div>
+        <div>
+          <h1>Bedrock Portal</h1>
+          <div class="muted" id="who">friends-only lobby</div>
+        </div>
+
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <button id="signout" class="smallBtn" title="Sign out">Sign out</button>
+        </div>
+      </div>
+
+      <div class="cols">
+        <nav class="side" aria-label="categories">
+          <button data-cat="games" class="active">🎮 Games</button>
+          <button data-cat="tools">🛠️ Tools</button>
+        </nav>
+
+        <section class="content" id="content">
+          <!-- GAMES -->
+          <div id="games" class="category">
+            <div class="gamesHeader">
+              <div>
+                <h2 style="margin:0">Games</h2>
+                <div class="muted">Open the games hub — no embeds here.</div>
+              </div>
+
+              <!-- Launch Bedrock Games -->
+              <div>
+                <button id="launchGames" class="launchBig pulse" title="Open Bedrock Games page">🚀 Launch Bedrock Games</button>
+              </div>
+            </div>
+
+            <div class="grid" style="margin-top:12px">
+              <div class="tile">
+                <div>
+                  <h3>Bedrock Games Hub</h3>
+                  <p>Open the dedicated games page with previews & picks.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="location.href='games.html'">Open Hub</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>Quick Arcade</h3>
+                  <p>Opens classic picks in a new tab (Internet Archive / HTML5).</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://archive.org/details/msdos_Doom_1993')">Open</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOOLS -->
+          <div id="tools" class="category" style="display:none">
+            <h2 style="margin-top:0">Tools</h2>
+            <div class="muted">Web tools that commonly work on school Chromebooks (may still be blocked by specific school filters).</div>
+
+            <div class="grid" style="margin-top:12px">
+              <div class="tile">
+                <div>
+                  <h3>remove.bg</h3>
+                  <p>Remove image backgrounds instantly (auto). Good for quick edits.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.remove.bg/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>Photopea</h3>
+                  <p>Photoshop-like editor that runs entirely in browser (great for Chromebooks).</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.photopea.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>Pixlr</h3>
+                  <p>Simple browser image editor (two modes: E and X).</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://pixlr.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>TinyPNG / TinyJPG</h3>
+                  <p>Compress PNG / JPG files quickly (useful for uploads).</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://tinypng.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>iloveimg — convert/resize</h3>
+                  <p>Image convert, resize, crop, and PDF helpers — lightweight tools.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.iloveimg.com/')">Open</button>
+                </div>
+              </div>
+
+              <div class="tile">
+                <div>
+                  <h3>Remove background (alternative)</h3>
+                  <p>Another quick background remover if remove.bg is blocked.</p>
+                </div>
+                <div class="row">
+                  <button class="smallBtn" onclick="openExternal('https://www.bgeraser.com/')">Open</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footRow">
+            <div>Made for friends • low-stakes</div>
+            <div>Bedrock • 2025</div>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 
   <script>
-    // redirect back if not authed
-    try {
-      if (!localStorage.getItem('bedrock_auth')) {
-        window.location.href = 'index.html';
-      }
-    } catch(e){}
-
-    // starfield background w/ purple vignette
+    /* ---------------------------
+       STAR BACKGROUND (bigger, denser)
+       --------------------------- */
     (function(){
-      const c = document.getElementById('bg'), ctx = c.getContext('2d');
-      let w=c.width=innerWidth, h=c.height=innerHeight;
-      const N = Math.floor((w*h)/5000);
-      const stars = Array.from({length:N}, ()=>({x:Math.random()*w,y:Math.random()*h,r:1.4+Math.random()*2,t:Math.random()*6}));
-      function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+      const canvas = document.getElementById('bg');
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = innerWidth;
+      let h = canvas.height = innerHeight;
+
+      const STAR_COUNT = Math.floor((w*h)/3500);
+      const stars = [];
+      function rand(min,max){ return Math.random()*(max-min)+min }
+      for(let i=0;i<STAR_COUNT;i++){
+        stars.push({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          z: rand(0.6,1.6),
+          r: rand(1.4,4.0),
+          vx: rand(-0.03,0.03),
+          vy: rand(-0.06,0.06),
+          t: Math.random()*10
+        });
+      }
+
+      function resize(){
+        w = canvas.width = innerWidth;
+        h = canvas.height = innerHeight;
+      }
       addEventListener('resize', resize);
-      (function draw(){
+
+      function draw(){
         ctx.clearRect(0,0,w,h);
+        // galaxy wash
         const g = ctx.createLinearGradient(0,0,w,h);
-        g.addColorStop(0,'rgba(20,0,40,0.85)');
-        g.addColorStop(1,'rgba(3,4,10,0.9)');
-        ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
-        const t = Date.now()/1000;
+        g.addColorStop(0,'rgba(12,12,20,0.14)');
+        g.addColorStop(1,'rgba(2,6,12,0.24)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,w,h);
+
+        const t = Date.now()/2200;
         for(const s of stars){
-          const a = 0.6*(0.5+0.5*Math.sin(t+s.t));
-          ctx.globalAlpha=a;
-          ctx.beginPath(); ctx.fillStyle='white';
-          ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2);
+          s.x += s.vx * (s.z*1.6);
+          s.y += s.vy * (s.z*1.6);
+          const tw = Math.abs(Math.sin(t + s.t));
+          if(s.x<0) s.x = w;
+          if(s.x>w) s.x = 0;
+          if(s.y<0) s.y = h;
+          if(s.y>h) s.y = 0;
+          ctx.beginPath();
+          ctx.globalAlpha = 0.75 * s.z * (0.3 + tw*0.7);
+          ctx.fillStyle = "white";
+          ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI*2);
           ctx.fill();
+          ctx.globalAlpha = 1;
         }
-        ctx.globalAlpha=1;
         requestAnimationFrame(draw);
-      })();
+      }
+      draw();
     })();
+
+    /* ---------------------------
+       ACCESS CONTROL
+       --------------------------- */
+    (function checkAuthorized(){
+      try {
+        const saved = localStorage.getItem('bedrock_auth') || '';
+        if (!saved) {
+          location.href = 'index.html';
+        } else {
+          document.getElementById('who').textContent = 'signed in';
+        }
+      } catch (e) {
+        location.href = 'index.html';
+      }
+    })();
+
+    /* ---------------------------
+       NAV SWITCHING + pulse control
+       --------------------------- */
+    const navBtns = document.querySelectorAll('nav.side button');
+    const launchBtn = document.getElementById('launchGames');
+    navBtns.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        navBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const id = btn.getAttribute('data-cat');
+        document.querySelectorAll('.category').forEach(c=>c.style.display='none');
+        const el = document.getElementById(id);
+        if(el) el.style.display = '';
+        // animate pulse only when Games tab active
+        if(id === 'games') launchBtn.classList.add('pulse'); else launchBtn.classList.remove('pulse');
+      });
+    });
+
+    /* ---------------------------
+       SIGN OUT
+       --------------------------- */
+    document.getElementById('signout').addEventListener('click', ()=>{
+      try { localStorage.removeItem('bedrock_auth'); } catch(_) {}
+      location.href = 'index.html';
+    });
+
+    /* ---------------------------
+       LAUNCH GAMES BUTTON
+       --------------------------- */
+    document.getElementById('launchGames').addEventListener('click', ()=>{
+      const b = document.getElementById('launchGames');
+      b.style.transform = 'scale(0.98)';
+      setTimeout(()=> b.style.transform = '', 120);
+      location.href = 'games.html';
+    });
+
+    /* ---------------------------
+       OPEN EXTERNAL HELPER
+       --------------------------- */
+    function openExternal(url){ window.open(url, '_blank', 'noopener'); }
   </script>
 </body>
 </html>

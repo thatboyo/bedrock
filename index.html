@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <link rel="icon" href="favicon.png" type="image/x-icon">
+  <link rel="icon" href="favicon.png" type="image/png">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>BEDROCK LAUNCHER</title>
@@ -9,7 +9,7 @@
     :root{--bg:#03040a;--muted:#9aa3a8;--accent:#87f0c8;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
     html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5}
     *{box-sizing:border-box}
-    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;position:relative;z-index:2}
     .card{width:100%;max-width:720px;padding:36px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.03);box-shadow:0 18px 50px rgba(0,0,0,0.6);text-align:center}
     h1{margin:0;font-size:28px;letter-spacing:6px;text-transform:uppercase;font-weight:700}
     .welcome{margin-top:14px;color:var(--muted);font-size:15px}
@@ -18,96 +18,60 @@
     button.launch{padding:14px 22px;border-radius:8px;border:0;cursor:pointer;background:var(--accent);color:#042424;font-weight:800;letter-spacing:1px;font-size:15px}
     .status{margin-top:14px;color:var(--muted);font-size:14px}
     .small{margin-top:10px;color:var(--muted);font-size:13px}
-    @media (max-width:480px){
-      h1{font-size:22px;letter-spacing:4px}
-      input[type="text"]{width:100%}
-    }
-    /* subtle starfield behind (keeps file single) */
+    @media (max-width:480px){h1{font-size:22px;letter-spacing:4px} input[type="text"]{width:100%}}
     canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
-    .wrap{position:relative;z-index:2}
   </style>
 </head>
 <body>
-  <canvas id="bg" aria-hidden="true"></canvas>
+  <canvas id="bg"></canvas>
 
   <div class="wrap">
-    <div class="card" role="main" aria-live="polite">
+    <div class="card">
       <h1>BEDROCK CLIENT</h1>
       <div class="welcome">paste the key and launch the portal</div>
-
-      <div class="input-wrap" style="margin-top:22px">
-        <input id="key" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" inputmode="text" />
+      <div class="input-wrap">
+        <input id="key" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" />
         <button id="launchBtn" class="launch">LAUNCH BEDROCK</button>
       </div>
-
       <div id="status" class="status">Status: idle</div>
       <div class="small">Tip: lock in</div>
     </div>
   </div>
 
   <script>
-    /* tiny star background */
+    // Starfield background
     (function(){
-      const c = document.getElementById('bg'), ctx = c.getContext('2d');
-      let w=c.width=innerWidth, h=c.height=innerHeight;
-      const N = Math.floor((w*h)/7000);
-      const stars = Array.from({length:N}, ()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6,t:Math.random()*6}));
-      function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
-      addEventListener('resize', resize);
-      (function draw(){
-        ctx.clearRect(0,0,w,h);
-        const g = ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'rgba(6,8,14,0.85)'); g.addColorStop(1,'rgba(1,2,6,0.9)');
-        ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
-        const t = Date.now()/1000;
-        for(const s of stars){
-          const a = 0.6*(0.5 + 0.5*Math.sin(t + s.t));
-          ctx.globalAlpha = a;
-          ctx.beginPath(); ctx.fillStyle='white'; ctx.arc((s.x + Math.sin(t+s.t)*6)%w, (s.y + Math.cos(t+s.t)*3)%h, s.r, 0, Math.PI*2); ctx.fill();
-        }
-        ctx.globalAlpha=1; requestAnimationFrame(draw);
-      })();
+      const c=document.getElementById('bg'),ctx=c.getContext('2d');
+      let w=c.width=innerWidth,h=c.height=innerHeight;
+      const N=Math.floor((w*h)/7000);
+      const stars=Array.from({length:N},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6,t:Math.random()*6}));
+      addEventListener('resize',()=>{w=c.width=innerWidth;h=c.height=innerHeight;});
+      (function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='black';ctx.fillRect(0,0,w,h);
+      const t=Date.now()/1000; for(const s of stars){ctx.globalAlpha=0.6*(0.5+0.5*Math.sin(t+s.t));ctx.beginPath();ctx.fillStyle='white';ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2);ctx.fill();}
+      ctx.globalAlpha=1; requestAnimationFrame(draw);})();
     })();
 
-    /* launcher logic */
-    const VALID_KEYS = ['1234-1234-1234-1234','bedrock-0000-0000-0000','james-only']; // edit it
-    const keyEl = document.getElementById('key');
-    const launchBtn = document.getElementById('launchBtn');
-    const status = document.getElementById('status');
+    // Launcher logic
+    const VALID_KEYS=['1234-1234-1234-1234','bedrock-0000-0000-0000','james-only'];
+    const keyEl=document.getElementById('key');
+    const launchBtn=document.getElementById('launchBtn');
+    const status=document.getElementById('status');
 
-    function setStatus(s){ status.textContent = 'Status: ' + s; }
-
-    // prefill from ?key= and auto-launch if valid
-    (function prefill(){
-      try {
-        const params = new URL(location.href).searchParams;
-        const k = params.get('key') || '';
-        if (k) { keyEl.value = k; setStatus('key loaded from URL'); }
-        if (k && VALID_KEYS.includes(k)) {
-          setStatus('auto-launching…');
-          setTimeout(()=> doLaunch(k), 380);
-        }
-      } catch(e){}
-      // load saved
-      try { const s = localStorage.getItem('bedrock_auth'); if (s) keyEl.value = s; } catch(e){}
-    })();
+    function setStatus(s){status.textContent='Status: '+s;}
 
     function doLaunch(k){
-      if (!k) return setStatus('paste a key');
+      if(!k) return setStatus('paste a key');
       setStatus('verifying…');
       setTimeout(()=>{
-        if (VALID_KEYS.includes(k)) {
-          try { localStorage.setItem('bedrock_auth', k); } catch(e){}
-          // redirect to portal.html (no auth UI there)
-          // pass key in hash to avoid it showing in server logs/links if you want: use ?key= if you prefer
-          window.location.href = 'portal.html';
-        } else {
-          setStatus('invalid key');
-        }
-      }, 450);
+        if(VALID_KEYS.includes(k)){
+          try{localStorage.setItem('bedrock_auth',k);}catch(e){}
+          window.location.href='portal.html';
+        } else { setStatus('invalid key'); }
+      },450);
     }
 
-    launchBtn.addEventListener('click', ()=> doLaunch(keyEl.value.trim()));
-    keyEl.addEventListener('keydown', (e)=> { if(e.key==='Enter') doLaunch(keyEl.value.trim()); });
+    launchBtn.addEventListener('click',()=>doLaunch(keyEl.value.trim()));
+    keyEl.addEventListener('keydown',(e)=>{if(e.key==='Enter') doLaunch(keyEl.value.trim());});
   </script>
 </body>
 </html>

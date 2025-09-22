@@ -1,89 +1,747 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bedrock — Retro Games</title>
-  <style>
-    :root{
-      --bg:#04040a;
-      --accent:#8ef6c1;
-      --muted:#9aa3a8;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-    }
-    html,body{margin:0;padding:0;height:100%;background:var(--bg);color:#fff;}
-    canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bedrock Games</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #04040a;
+    --bg-secondary: #0a0a12;
+    --muted: #9aa3a8;
+    --muted-hover: #b8c1c6;
+    --accent: #8ef6c1;
+    --accent-hover: #a8ffdb;
+    --purple-strong: rgba(150,85,255,0.25);
+    --purple-glow: rgba(150,85,255,0.15);
+    --tile-purple: rgba(138,75,230,0.14);
+    --tile-purple-hover: rgba(138,75,230,0.28);
+    --glass-border: rgba(255,255,255,0.08);
+    --glass-bg: rgba(255,255,255,0.02);
+    --shadow-strong: 0 25px 80px rgba(0,0,0,0.7);
+    --shadow-medium: 0 15px 50px rgba(0,0,0,0.4);
+    --shadow-soft: 0 8px 25px rgba(0,0,0,0.2);
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+  }
+  
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    color:#eef2f5;
+    overflow-x:hidden;
+    scroll-behavior: smooth;
+  }
+  
+  *{box-sizing:border-box}
+  a{color:inherit;text-decoration:none}
 
-    header{display:flex;align-items:center;padding:12px;gap:12px;position:relative;z-index:2;}
-    header img.logo{width:52px;height:52px;border-radius:10px;}
-    header h1{margin:0;font-size:18px;}
-    .muted{color:var(--muted);font-size:13px;}
-    #backPortal{position:absolute;right:12px;padding:6px 10px;border-radius:8px;border:0;background:var(--accent);color:#041010;cursor:pointer;}
+  /* Same background as portal */
+  canvas#bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    display:block;
+    filter: brightness(1.1);
+  }
+  
+  .vignette{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    background:
+      radial-gradient(45% 45% at 15% 15%, rgba(150,85,255,0.2), transparent 25%),
+      radial-gradient(55% 55% at 85% 85%, rgba(122,58,210,0.16), transparent 30%),
+      radial-gradient(35% 35% at 50% 50%, rgba(140,246,193,0.08), transparent 20%),
+      linear-gradient(180deg, rgba(8,6,14,0.06), rgba(2,2,6,0.12));
+    mix-blend-mode:screen;
+    animation: vignette-pulse 8s ease-in-out infinite;
+  }
 
-    .wrap{position:relative;z-index:2;padding:20px;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
-    .game{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;}
-    .game h3{margin:10px;text-align:center;font-size:15px;}
-    .game iframe{width:100%;height:200px;border:0;background:#000;}
-    .game button{margin:6px;padding:6px;border-radius:6px;border:0;background:var(--accent);color:#041010;font-weight:700;cursor:pointer;}
-    footer{margin-top:12px;color:var(--muted);font-size:13px;text-align:center;}
+  @keyframes vignette-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
 
-    @media(max-width:720px){.game iframe{height:180px;}}
-  </style>
+  .wrap{
+    position:relative;
+    z-index:2;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:32px;
+    animation: fade-in 0.8s ease-out;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .card{
+    width:100%;
+    max-width:1400px;
+    padding:24px;
+    border-radius:20px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%),
+      linear-gradient(180deg, var(--bg-secondary), var(--bg));
+    border:1px solid var(--glass-border);
+    box-shadow:var(--shadow-strong);
+    position:relative;
+    overflow:visible;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:-12px;
+    border-radius:24px;
+    z-index:-1;
+    background: linear-gradient(135deg, var(--purple-strong), var(--purple-glow));
+    filter: blur(20px);
+    pointer-events:none;
+    animation: glow-pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+  }
+
+  .hdr{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:24px;
+    padding-bottom:16px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  
+  .logo{
+    width:60px;
+    height:60px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#1a1a24,#0f1419);
+    display:grid;
+    place-items:center;
+    color:var(--accent);
+    font-weight:700;
+    box-shadow:var(--shadow-medium);
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  
+  .logo img{
+    width:50px;
+    height:50px;
+    border-radius:10px;
+    display:block;
+  }
+  
+  h1{
+    margin:0;
+    font-size:22px;
+    font-weight:800;
+    background: linear-gradient(135deg, #ffffff, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .muted{
+    color:var(--muted);
+    font-size:14px;
+    font-weight:500;
+  }
+
+  /* Stealth mode controls */
+  .controls {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .stealth-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,100,100,0.3);
+    background: rgba(255,100,100,0.1);
+    color: #ffaaaa;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+  }
+
+  .stealth-btn:hover {
+    background: rgba(255,100,100,0.2);
+    border-color: rgba(255,100,100,0.5);
+    color: #ffcccc;
+    transform: translateY(-1px);
+  }
+
+  .back-btn {
+    border-color: rgba(100,100,255,0.3);
+    background: rgba(100,100,255,0.1);
+    color: #aaaaff;
+  }
+
+  .back-btn:hover {
+    background: rgba(100,100,255,0.2);
+    border-color: rgba(100,100,255,0.5);
+    color: #ccccff;
+  }
+
+  /* Games grid */
+  .games-content {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+  }
+
+  .categories {
+    padding: 16px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(10px);
+    height: fit-content;
+  }
+
+  .category-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    width: 100%;
+    margin-bottom: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+  }
+
+  .category-btn:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+    color: var(--muted-hover);
+  }
+
+  .category-btn.active {
+    background: linear-gradient(135deg, rgba(142,246,193,0.08), rgba(140,90,240,0.08));
+    color: var(--accent);
+    border-color: rgba(142,246,193,0.2);
+    box-shadow: 0 12px 40px rgba(140,90,240,0.1);
+    transform: translateY(-2px);
+  }
+
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .game-card {
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background:
+      linear-gradient(135deg, var(--tile-purple), rgba(138,75,230,0.08)),
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .game-card:hover::before {
+    left: 100%;
+  }
+
+  .game-card:hover {
+    background:
+      linear-gradient(135deg, var(--tile-purple-hover), rgba(138,75,230,0.16)),
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 60px rgba(120,60,220,0.15);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .game-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 17px;
+    color: #e8d9ff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .game-card p {
+    margin: 0 0 16px 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 500;
+    flex-grow: 1;
+  }
+
+  .game-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .play-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 0;
+    background: rgba(142,246,193,0.1);
+    color: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+
+  .play-btn:hover {
+    background: rgba(142,246,193,0.2);
+    transform: translateY(-1px);
+  }
+
+  .category-section h2 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Search bar */
+  .search-bar {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    color: #eef2f5;
+    font-size: 14px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .search-bar:focus {
+    outline: none;
+    border-color: rgba(142,246,193,0.3);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .search-bar::placeholder {
+    color: var(--muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 920px) {
+    .games-content { grid-template-columns: 1fr; }
+    .categories { order: 1; margin-top: 20px; }
+    .games-grid { grid-template-columns: 1fr; }
+    .wrap { padding: 20px; }
+    .card { padding: 20px; }
+  }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 16px; }
+    .card { padding: 16px; }
+    .controls { flex-direction: column; gap: 8px; }
+  }
+</style>
 </head>
 <body>
-  <canvas id="bg"></canvas>
-
-  <header>
-    <!-- LOGO: swap "logo.png" with your uploaded image file -->
-    <img class="logo" src="logo.png" alt="Bedrock Logo">
-    <h1>Bedrock — Retro Games</h1>
-    <div class="muted">Legal HTML5 / Internet Archive embeds • fallback opens new tab</div>
-    <button id="backPortal">Back</button>
-  </header>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
 
   <div class="wrap">
-    <div class="grid" id="gamesGrid">
-      <!-- Games injected via JS -->
+    <div class="card">
+      <div class="hdr">
+        <div class="logo"><img src="favicon.png" alt="Bedrock logo"></div>
+        <div>
+          <h1>Bedrock Games</h1>
+          <div class="muted">Your digital playground</div>
+        </div>
+
+        <div class="controls">
+          <button class="stealth-btn" onclick="emergencyClose()" title="Quick close (Ctrl+W)">⚡ Quick Exit</button>
+          <button class="stealth-btn back-btn" onclick="window.close() || (window.location.href='portal.html')" title="Back to portal">← Portal</button>
+        </div>
+      </div>
+
+      <div class="games-content">
+        <div class="categories">
+          <input type="text" class="search-bar" placeholder="Search games..." id="searchBar">
+          
+          <button class="category-btn active" data-category="all">🎮 All Games</button>
+          <button class="category-btn" data-category="arcade">👾 Arcade</button>
+          <button class="category-btn" data-category="puzzle">🧩 Puzzle</button>
+          <button class="category-btn" data-category="strategy">🎯 Strategy</button>
+          <button class="category-btn" data-category="multiplayer">👥 Multiplayer</button>
+          <button class="category-btn" data-category="classic">🕹️ Classic</button>
+          <button class="category-btn" data-category="creative">🎨 Creative</button>
+        </div>
+
+        <div id="gamesContainer">
+          <div class="category-section" data-category="all">
+            <div class="games-grid" id="allGames">
+              <!-- Games will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <footer>Built for friends • play responsibly • Bedrock 2025</footer>
-
   <script>
-    // STARFIELD
+    /* Same starfield as portal */
     (function(){
-      const c=document.getElementById('bg'),ctx=c.getContext('2d');let w=c.width=innerWidth,h=c.height=innerHeight;
-      const S=Math.floor((w*h)/7000),stars=[];for(let i=0;i<S;i++)stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.8,t:Math.random()*10});
-      window.addEventListener('resize',()=>{w=c.width=innerWidth;h=c.height=innerHeight;});
-      (function draw(){
+      const canvas = document.getElementById('bg');
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = innerWidth;
+      let h = canvas.height = innerHeight;
+
+      const STAR_COUNT = Math.floor((w*h)/2800);
+      const stars = [];
+      function rand(min,max){ return Math.random()*(max-min)+min }
+      
+      for(let i=0;i<STAR_COUNT;i++){
+        stars.push({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          z: rand(0.4,1.8),
+          r: rand(1.2,4.5),
+          vx: rand(-0.04,0.04),
+          vy: rand(-0.08,0.08),
+          t: Math.random()*15,
+          color: Math.random() > 0.85 ? 'rgba(142,246,193,0.8)' : 'white'
+        });
+      }
+
+      function resize(){
+        w = canvas.width = innerWidth;
+        h = canvas.height = innerHeight;
+      }
+      addEventListener('resize', resize);
+
+      function draw(){
         ctx.clearRect(0,0,w,h);
-        ctx.fillStyle='black';ctx.fillRect(0,0,w,h);
-        const t=Date.now()/1000;
-        for(const s of stars){ctx.globalAlpha=0.6*(0.5+0.5*Math.sin(t+s.t));ctx.beginPath();ctx.fillStyle='white';ctx.arc((s.x+Math.sin(t+s.t)*6)%w,(s.y+Math.cos(t+s.t)*3)%h,s.r,0,Math.PI*2);ctx.fill();}
-        ctx.globalAlpha=1;requestAnimationFrame(draw);
-      })();
+        
+        const g = ctx.createRadialGradient(w/2,h/2,0,w/2,h/2,Math.max(w,h));
+        g.addColorStop(0,'rgba(8,6,14,0.1)');
+        g.addColorStop(0.5,'rgba(4,4,10,0.2)');
+        g.addColorStop(1,'rgba(2,2,6,0.3)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,w,h);
+
+        const t = Date.now()/2800;
+        
+        for(const s of stars){
+          s.x += s.vx * (s.z*1.8);
+          s.y += s.vy * (s.z*1.8);
+          
+          const tw = Math.abs(Math.sin(t + s.t)) * Math.abs(Math.cos(t*0.7 + s.t*0.5));
+          
+          if(s.x<0) s.x = w;
+          if(s.x>w) s.x = 0;
+          if(s.y<0) s.y = h;
+          if(s.y>h) s.y = 0;
+          
+          ctx.beginPath();
+          ctx.globalAlpha = 0.6 + 0.4 * s.z * (0.2 + tw*0.8);
+          ctx.fillStyle = s.color;
+          ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI*2);
+          ctx.fill();
+          
+          if(s.r > 3){
+            ctx.beginPath();
+            ctx.globalAlpha = 0.1 * s.z * tw;
+            ctx.arc(s.x, s.y, s.r * s.z * 2, 0, Math.PI*2);
+            ctx.fill();
+          }
+          
+          ctx.globalAlpha = 1;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
     })();
 
-    // GAMES LIST
-    const GAMES=[
-      {title:"NES Mega Pack",src:"https://archive.org/embed/NESMegaPack201808"},
-      {title:"Street Fighter II (SNES)",src:"https://archive.org/embed/sf2_snes"},
-      {title:"Donkey Kong Country (SNES)",src:"https://archive.org/embed/dkc_snes_2"},
-      {title:"Super Mario World (SNES)",src:"https://archive.org/embed/super-mario-world-super-nintendo"},
-      {title:"Ms. Pac-Man (NES)",src:"https://archive.org/embed/mspacman_nes_3"}
+    // Game database
+    const games = [
+      // Arcade Games
+      {
+        name: "Slope",
+        emoji: "⚡",
+        description: "Roll down the slope and avoid obstacles in this addictive 3D game.",
+        category: "arcade",
+        url: "https://slope-game.github.io/",
+        difficulty: "Medium"
+      },
+      {
+        name: "Run 3",
+        emoji: "🏃",
+        description: "Navigate through space tunnels in this endless running adventure.",
+        category: "arcade", 
+        url: "https://run-3.github.io/",
+        difficulty: "Easy"
+      },
+      {
+        name: "Chrome Dino",
+        emoji: "🦕",
+        description: "The classic offline Chrome dinosaur game, but always available.",
+        category: "arcade",
+        url: "https://chromedino.com/",
+        difficulty: "Easy"
+      },
+      {
+        name: "Flappy Bird",
+        emoji: "🐦",
+        description: "Navigate through pipes in this frustratingly fun flying game.",
+        category: "arcade",
+        url: "https://flappybird.io/",
+        difficulty: "Hard"
+      },
+
+      // Puzzle Games  
+      {
+        name: "2048",
+        emoji: "🔢",
+        description: "Combine tiles to reach the elusive 2048 number in this math puzzle.",
+        category: "puzzle",
+        url: "https://2048game.com/",
+        difficulty: "Medium"
+      },
+      {
+        name: "Tetris",
+        emoji: "🧱",
+        description: "The timeless block-stacking puzzle that started it all.",
+        category: "puzzle",
+        url: "https://tetris.com/play-tetris",
+        difficulty: "Medium"
+      },
+      {
+        name: "Cut the Rope",
+        emoji: "🍭",
+        description: "Feed candy to Om Nom by cutting ropes and solving physics puzzles.",
+        category: "puzzle", 
+        url: "https://cuttherope.ie/",
+        difficulty: "Easy"
+      },
+
+      // Strategy Games
+      {
+        name: "Chess",
+        emoji: "♟️",
+        description: "Classic chess against AI or other players online.",
+        category: "strategy",
+        url: "https://www.chess.com/play/computer",
+        difficulty: "Hard"
+      },
+      {
+        name: "Checkers",
+        emoji: "🔴",
+        description: "Strategic board game where you capture opponent's pieces.",
+        category: "strategy",
+        url: "https://www.gamesgames.com/game/checkers-classic",
+        difficulty: "Medium"
+      },
+
+      // Multiplayer Games
+      {
+        name: "Agar.io",
+        emoji: "🎯",
+        description: "Grow your cell and consume others in this multiplayer battle.",
+        category: "multiplayer",
+        url: "https://agar.io/",
+        difficulty: "Medium"
+      },
+      {
+        name: "Slither.io",
+        emoji: "🐍",
+        description: "Become the longest snake in this multiplayer arena.",
+        category: "multiplayer",
+        url: "https://slither.io/",
+        difficulty: "Easy"
+      },
+      {
+        name: "Shell Shockers",
+        emoji: "🥚",
+        description: "Egg-based multiplayer shooter with various game modes.",
+        category: "multiplayer",
+        url: "https://shellshock.io/",
+        difficulty: "Medium"
+      },
+
+      // Classic Games
+      {
+        name: "Pac-Man",
+        emoji: "👻",
+        description: "The classic arcade maze game that defined a generation.",
+        category: "classic",
+        url: "https://www.google.com/doodles/30th-anniversary-of-pac-man",
+        difficulty: "Easy"
+      },
+      {
+        name: "Snake",
+        emoji: "🐍",
+        description: "Classic Nokia phone game - grow your snake and avoid walls.",
+        category: "classic",
+        url: "https://playsnake.org/",
+        difficulty: "Easy"
+      },
+      {
+        name: "Asteroids",
+        emoji: "🚀",
+        description: "Destroy asteroids and UFOs in this classic space shooter.",
+        category: "classic",
+        url: "https://freeasteroids.org/",
+        difficulty: "Medium"
+      },
+
+      // Creative Games
+      {
+        name: "Minecraft Classic",
+        emoji: "⛏️", 
+        description: "Build and create in the browser version of the legendary game.",
+        category: "creative",
+        url: "https://classic.minecraft.net/",
+        difficulty: "Easy"
+      },
+      {
+        name: "Draw.io",
+        emoji: "✏️",
+        description: "Create diagrams, flowcharts, and drawings online.",
+        category: "creative",
+        url: "https://app.diagrams.net/",
+        difficulty: "Easy"
+      }
     ];
 
-    const grid=document.getElementById('gamesGrid');
-    GAMES.forEach(g=>{
-      const div=document.createElement('div');div.className='game';
-      div.innerHTML=`<h3>${g.title}</h3>
-        <iframe src="${g.src}" allowfullscreen></iframe>
-        <button onclick="window.open('${g.src}','_blank')">Open in new tab</button>`;
-      grid.appendChild(div);
+    // Emergency stealth functions
+    function emergencyClose() {
+      // Create about:blank window and redirect
+      const newWindow = window.open('about:blank', '_self');
+      newWindow.document.write('<title>New Tab</title><style>body{font-family:Arial;color:#333;text-align:center;padding:50px}</style><h1>Welcome to your new tab</h1><p>Nothing suspicious here... 😄</p>');
+    }
+
+    // Keyboard shortcut for quick exit
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'w') {
+        emergencyClose();
+      }
     });
 
-    document.getElementById('backPortal').addEventListener('click',()=>{history.back();});
+    // Game launching function with about:blank stealth
+    function launchGame(url, name) {
+      // Open in about:blank for stealth
+      const gameWindow = window.open('about:blank', '_blank');
+      gameWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>New Tab</title>
+          <style>
+            body { margin: 0; padding: 0; overflow: hidden; }
+            iframe { width: 100vw; height: 100vh; border: none; }
+            .loading { 
+              position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+              font-family: Arial; color: #333; text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="loading">Loading ${name}...</div>
+          <iframe src="${url}" onload="document.querySelector('.loading').style.display='none'"></iframe>
+        </body>
+        </html>
+      `);
+    }
+
+    // Populate games
+    function populateGames(gamesToShow = games) {
+      const container = document.getElementById('allGames');
+      container.innerHTML = '';
+
+      gamesToShow.forEach(game => {
+        const gameCard = document.createElement('div');
+        gameCard.className = 'game-card';
+        gameCard.innerHTML = `
+          <h3>${game.emoji} ${game.name}</h3>
+          <p>${game.description}</p>
+          <div class="game-meta">
+            <span>Difficulty: ${game.difficulty}</span>
+            <button class="play-btn" onclick="launchGame('${game.url}', '${game.name}')">Play →</button>
+          </div>
+        `;
+        container.appendChild(gameCard);
+      });
+    }
+
+    // Category filtering
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const category = btn.dataset.category;
+        const filteredGames = category === 'all' ? games : games.filter(g => g.category === category);
+        populateGames(filteredGames);
+      });
+    });
+
+    // Search functionality
+    document.getElementById('searchBar').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filteredGames = games.filter(game => 
+        game.name.toLowerCase().includes(query) || 
+        game.description.toLowerCase().includes(query)
+      );
+      populateGames(filteredGames);
+    });
+
+    // Initialize
+    populateGames();
   </script>
 </body>
 </html>

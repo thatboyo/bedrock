@@ -671,13 +671,7 @@
     box-shadow: 0 8px 25px rgba(0,0,0,0.2);
   }
 
-  /* Enhanced control buttons */
-  .controls {
-    margin-left: auto;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
+  /* Enhanced control buttons - REMOVED SIGN OUT STYLES */
 
   .footRow{
     display:flex;
@@ -844,9 +838,7 @@
           <div class="muted" id="who">friends-only sanctuary</div>
         </div>
 
-        <div class="controls">
-          <button id="signout" class="smallBtn" title="Sign out securely">← Sign out</button>
-        </div>
+
       </div>
 
       <div class="cols">
@@ -1170,6 +1162,28 @@
       
       // Continue creating particles
       setInterval(createParticle, 2000);
+    })();
+
+    /* ---------------------------
+       ACCESS CONTROL ENHANCED
+       --------------------------- */
+    (function checkAuthorized(){
+      try {
+        const saved = localStorage.getItem('bedrock_auth') || '';
+        if (!saved) {
+          document.body.style.transition = 'opacity 0.5s ease, filter 0.5s ease';
+          document.body.style.opacity = '0';
+          document.body.style.filter = 'blur(10px)';
+          setTimeout(() => location.href = 'index.html', 500);
+        } else {
+          document.getElementById('who').textContent = 'authenticated & secure ✓';
+        }
+      } catch (e) { 
+        document.body.style.transition = 'opacity 0.5s ease, filter 0.5s ease';
+        document.body.style.opacity = '0';
+        document.body.style.filter = 'blur(10px)';
+        setTimeout(() => location.href = 'index.html', 500);
+      }
     })();
 
     /* ---------------------------

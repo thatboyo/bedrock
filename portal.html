@@ -9,74 +9,150 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* --- Root Variables & Base Styles --- */
-  :root{
-    --bg: #04040a;
-    --bg-secondary: #0a0a12;
-    --muted: #9aa3a8;
-    --muted-hover: #b8c1c6;
-    --accent: #8ef6c1;
-    --accent-hover: #a8ffdb;
-    --purple-strong: rgba(150,85,255,0.25);
-    --purple-glow: rgba(150,85,255,0.15);
-    --tile-purple: rgba(138,75,230,0.14);
-    --tile-purple-hover: rgba(138,75,230,0.28);
-    --glass-border: rgba(255,255,255,0.08);
-    --shadow-strong: 0 25px 80px rgba(0,0,0,0.7);
-    --shadow-medium: 0 15px 50px rgba(0,0,0,0.4);
-    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  }
-  html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5;overflow-x:hidden;scroll-behavior:smooth;}
-  *{box-sizing:border-box} a{color:inherit;text-decoration:none}
+:root{
+  --bg:#04040a;
+  --bg-secondary:#0a0a12;
+  --muted:#9aa3a8;
+  --muted-hover:#b8c1c6;
+  --accent:#8ef6c1;
+  --accent-hover:#a8ffdb;
+  --purple-strong:rgba(150,85,255,0.25);
+  --purple-glow:rgba(150,85,255,0.15);
+  --tile-purple:rgba(138,75,230,0.14);
+  --tile-purple-hover:rgba(138,75,230,0.28);
+  --glass-border:rgba(255,255,255,0.08);
+  --shadow-strong:0 25px 80px rgba(0,0,0,0.7);
+  font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5;overflow-x:hidden;scroll-behavior:smooth;}
+*{box-sizing:border-box}
+a{color:inherit;text-decoration:none}
 
-  /* --- Canvas Background --- */
-  canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block;filter: brightness(1.1);}
-  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:
-    radial-gradient(45% 45% at 15% 15%, rgba(150,85,255,0.2), transparent 25%),
-    radial-gradient(55% 55% at 85% 85%, rgba(122,58,210,0.16), transparent 30%),
-    radial-gradient(35% 35% at 50% 50%, rgba(140,246,193,0.08), transparent 20%),
-    linear-gradient(180deg, rgba(8,6,14,0.06), rgba(2,2,6,0.12));
-    mix-blend-mode:screen;
-    animation: vignette-pulse 8s ease-in-out infinite;}
-  @keyframes vignette-pulse {0%,100%{opacity:1;}50%{opacity:0.85;}}
+/* Layout & Card */
+.wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px;}
+.card{width:100%;max-width:1180px;padding:24px;border-radius:20px;background:linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%), linear-gradient(180deg, var(--bg-secondary), var(--bg));border:1px solid var(--glass-border);box-shadow:var(--shadow-strong);position:relative;overflow:visible;backdrop-filter:blur(20px);}
 
-  /* --- Card & Layout --- */
-  .wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px;animation:fade-in 0.8s ease-out;}
-  @keyframes fade-in{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-  .card{width:100%;max-width:1180px;padding:24px;border-radius:20px;background:
-    linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%),
-    linear-gradient(180deg, var(--bg-secondary), var(--bg));
-    border:1px solid var(--glass-border);
-    box-shadow:var(--shadow-strong);position:relative;overflow:visible;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
-  .card::before{content:"";position:absolute;inset:-12px;border-radius:24px;z-index:-1;background: linear-gradient(135deg,var(--purple-strong),var(--purple-glow));filter:blur(20px);pointer-events:none;animation:glow-pulse 4s ease-in-out infinite;}
-  @keyframes glow-pulse{0%,100%{opacity:0.8;}50%{opacity:1;}}
+/* Header */
+.hdr{display:flex;align-items:center;gap:16px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.logo{width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,#1a1a24,#0f1419);display:grid;place-items:center;color:var(--accent);font-weight:700;box-shadow:0 15px 50px rgba(0,0,0,0.4);}
+.logo img{width:50px;height:50px;border-radius:10px;display:block;}
+h1{margin:0;font-size:22px;font-weight:800;background: linear-gradient(135deg, #ffffff, var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.muted{color:var(--muted);font-size:14px;font-weight:500;}
 
-  /* --- Header --- */
-  .hdr{display:flex;align-items:center;gap:16px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);}
-  .logo{width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,#1a1a24,#0f1419);display:grid;place-items:center;color:var(--accent);font-weight:700;box-shadow:var(--shadow-medium);border:1px solid rgba(255,255,255,0.1);}
-  .logo img{width:50px;height:50px;border-radius:10px;display:block;}
-  h1{margin:0;font-size:22px;font-weight:800;background: linear-gradient(135deg, #ffffff, var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-  .muted{color:var(--muted);font-size:14px;font-weight:500;}
+/* Columns */
+.cols{display:grid;grid-template-columns:260px 1fr;gap:24px;}
+nav.side{padding:16px;border-radius:16px;display:flex;flex-direction:column;gap:10px;background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);height: fit-content;}
+nav button{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;font-weight:600;font-size:14px;transition:all 0.2s;}
+nav button.active{background: linear-gradient(135deg, rgba(142,246,193,0.08), rgba(140,90,240,0.08)); color:var(--accent); border-color: rgba(142,246,193,0.2);}
 
-  /* --- Navigation --- */
-  .cols{display:grid;grid-template-columns:260px 1fr;gap:24px;}
-  nav.side{padding:16px;border-radius:16px;display:flex;flex-direction:column;gap:10px;background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);height:fit-content;}
-  nav .brand{display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin-bottom:8px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06);}
-  nav button{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;font-weight:600;font-size:14px;position: relative;overflow: hidden;transition:all 0.2s;}
-  nav button.active{background:linear-gradient(135deg, rgba(142,246,193,0.08), rgba(140,90,240,0.08));color:var(--accent);border-color: rgba(142,246,193,0.2);box-shadow:0 12px 40px rgba(140,90,240,0.1);transform:translateY(-2px);}
-  nav button:hover{background: rgba(255,255,255,0.05);border-color: rgba(255,255,255,0.08);color:var(--muted-hover);transform:translateY(-1px);}
+/* Content */
+.content{min-height:520px;padding:20px;border-radius:16px;display:flex;flex-direction:column;background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);}
+.tab{transition:opacity 0.3s ease;}
+.gamesCenter{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;min-height:360px;}
+.launchBig{padding:20px 36px;border-radius:20px;border:0;background: linear-gradient(135deg, var(--accent), var(--accent-hover));color:#041010;font-weight:900;cursor:pointer;font-size:18px;}
 
-  /* --- Content Tabs --- */
-  .content{min-height:520px;padding:20px;border-radius:16px;display:flex;flex-direction:column;background:linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);}
-  .tab{display:none;}
-  .tab.active{display:block;}
+/* Tools grid */
+.toolsGrid{display:grid;grid-template-columns:repeat(auto-fit, minmax(300px,1fr));gap:18px;margin-top:20px;}
+.toolTile{border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);min-height:130px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all 0.25s; background: linear-gradient(135deg, var(--tile-purple), rgba(138,75,230,0.08)), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); backdrop-filter: blur(10px);}
 
-  /* --- Launch Button --- */
-  .launchBig{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:20px 36px;border-radius:20px;border:0;background: linear-gradient(135deg, var(--accent), var(--accent-hover));color:#041010;font-weight:900;cursor:pointer;box-shadow: 0 20px 50px rgba(10,20,20,0.6);font-size:18px;transition: all 0.15s cubic-bezier(.2,.9,.3,1);position: relative;overflow: hidden;}
-  .launchBig.idle{animation: idlePulse 3s ease-in-out infinite;}
-  @keyframes idlePulse{0%{transform:scale(1);box-shadow:0 20px 50px rgba(10,20,20,0.6);}50%{transform:scale(1.04);box-shadow:0 25px 60px rgba(150,85,255,0.15);}100%{transform:scale(1);box-shadow:0 20px 50px rgba(10,20,20,0.6);}}
+/* Responsive */
+@media(max-width:920px){.cols{grid-template-columns:1fr}.toolsGrid{grid-template-columns:1fr}}
+@media(max-width:480px){.wrap{padding:16px}.card{padding:16px}.launchBig{padding:16px 28px;font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="hdr">
+      <div class="logo"><img src="favicon.png" alt="Bedrock logo"></div>
+      <div>
+        <h1>Bedrock Portal</h1>
+        <div class="muted" id="who">friends-only lobby</div>
+      </div>
+      <div style="margin-left:auto;">
+        <button id="signout">← Sign out</button>
+      </div>
+    </div>
 
-  /* --- Tools Tiles --- */
-  .toolsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:20px;}
-  .toolTile{border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);min-height:130px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;background:linear-gradient(135deg, var(--tile-purple), rgba(138,75,230,0.08)),linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(10px);}
-  .toolTile:hover{background:linear-gradient(135deg, var(--tile-purple-hover), rgba(138,75,230,0.16)),linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));transform:translateY(-8px) scale(1.02);box-shadow:
+    <div class="cols">
+      <nav class="side">
+        <div class="brand"><strong style="letter-spacing:2px;color:var(--accent);font-size:14px">BEDROCK</strong><span class="muted" style="font-size:12px">portal</span></div>
+        <button data-tab="home" class="active">🏠 Home</button>
+        <button data-tab="games">🎮 Games</button>
+        <button data-tab="tools">🛠️ Tools</button>
+      </nav>
+
+      <section class="content" id="content">
+        <div id="home" class="tab">
+          <h2>Welcome back</h2>
+          <p class="muted">Your personal portal is ready. Navigate using the sidebar.</p>
+        </div>
+
+        <div id="games" class="tab">
+          <div class="gamesCenter">
+            <h2>Games Hub</h2>
+            <button id="launchGames" class="launchBig">🚀 LAUNCH BEDROCK GAMES</button>
+          </div>
+        </div>
+
+        <div id="tools" class="tab">
+          <h2>Productivity Tools</h2>
+          <div class="toolsGrid">
+            <div class="toolTile" onclick="openExternal('https://www.remove.bg/')"><h3>🎭 remove.bg</h3></div>
+            <div class="toolTile" onclick="openExternal('https://www.photopea.com/')"><h3>🎨 Photopea</h3></div>
+            <div class="toolTile" onclick="openExternal('https://pixlr.com/')"><h3>✨ Pixlr</h3></div>
+            <div class="toolTile" onclick="openExternal('https://tinypng.com/')"><h3>📦 TinyPNG</h3></div>
+            <div class="toolTile" onclick="openExternal('https://www.iloveimg.com/')"><h3>🔧 iLoveIMG</h3></div>
+            <div class="toolTile" onclick="openExternal('https://www.canva.com/')"><h3>🎯 Canva</h3></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+// ----------------- TABS -----------------
+const tabs = document.querySelectorAll('.tab');
+const buttons = document.querySelectorAll('nav.side button');
+
+function showTab(tabId){
+  tabs.forEach(t => { t.style.display='none'; t.style.opacity='0'; });
+  const el = document.getElementById(tabId);
+  if(el){ el.style.display='block'; setTimeout(()=>el.style.opacity='1',50);}
+}
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    buttons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    showTab(btn.getAttribute('data-tab'));
+  });
+});
+
+// default tab
+showTab('home');
+buttons[0].classList.add('active');
+
+// ----------------- LAUNCH GAMES -----------------
+const launch = document.getElementById('launchGames');
+if(launch){
+  launch.addEventListener('click',()=>window.location.href='games.html');
+}
+
+// ----------------- SIGN OUT -----------------
+const signout = document.getElementById('signout');
+if(signout){
+  signout.addEventListener('click',()=>{
+    if(confirm('Are you sure you want to sign out?')){
+      localStorage.removeItem('bedrock_auth');
+      window.location.href='index.html';
+    }
+  });
+}
+
+// ----------------- TOOL TILES -----------------
+function openExternal(url){ window.open(url,'_blank','noopener,noreferrer'); }
+</script>
+</body>
+</html>

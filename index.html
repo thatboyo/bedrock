@@ -1173,28 +1173,6 @@
     })();
 
     /* ---------------------------
-       ACCESS CONTROL ENHANCED
-       --------------------------- */
-    (function checkAuthorized(){
-      try {
-        const saved = localStorage.getItem('bedrock_auth') || '';
-        if (!saved) {
-          document.body.style.transition = 'opacity 0.5s ease, filter 0.5s ease';
-          document.body.style.opacity = '0';
-          document.body.style.filter = 'blur(10px)';
-          setTimeout(() => location.href = 'index.html', 500);
-        } else {
-          document.getElementById('who').textContent = 'authenticated & secure ✓';
-        }
-      } catch (e) { 
-        document.body.style.transition = 'opacity 0.5s ease, filter 0.5s ease';
-        document.body.style.opacity = '0';
-        document.body.style.filter = 'blur(10px)';
-        setTimeout(() => location.href = 'index.html', 500);
-      }
-    })();
-
-    /* ---------------------------
        ULTRA-SMOOTH TAB SYSTEM
        --------------------------- */
     function showTab(tabName) {

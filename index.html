@@ -220,7 +220,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const ctx = canvas.getContext('2d');
       let w = canvas.width = innerWidth;
       let h = canvas.height = innerHeight;
-      const STAR_COUNT = Math.max(80, Math.floor((w*h)/2000));
+      const STAR_COUNT = Math.max(80, Math.floor((w*h)/7000));
       const stars = [];
       const nebula = [];
       function rand(min,max){ return Math.random()*(max-min)+min; }
@@ -232,8 +232,8 @@ window.addEventListener('DOMContentLoaded', () => {
         stars.push({
           x: Math.random()*w,
           y: Math.random()*h,
-          z: rand(0.35,2.0),
-          r: rand(0.8,4.2),
+          z: rand(0.2,1.0),
+          r: rand(0.5,2.0),
           vx: rand(-0.03,0.03),
           vy: rand(-0.06,0.06),
           t: Math.random()*15,

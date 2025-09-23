@@ -1413,18 +1413,24 @@
        INITIALIZE EVERYTHING
        --------------------------- */
     
-    // Populate games on load
-    populateGames();
-    
-    // Smooth entry animation
-    setTimeout(() => {
-      document.body.style.opacity = '1';
-    }, 100);
+    // Initialize everything immediately
+    document.addEventListener('DOMContentLoaded', function() {
+      populateGames();
+      
+      // Welcome message
+      setTimeout(() => {
+        showNotification('🎮 Welcome to your gaming sanctuary!');
+      }, 1500);
+    });
 
-    // Welcome message
-    setTimeout(() => {
-      showNotification('🎮 Welcome to your gaming sanctuary!');
-    }, 1500);
+    // Also run immediately in case DOMContentLoaded already fired
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        populateGames();
+      });
+    } else {
+      populateGames();
+    }
   </script>
 </body>
 </html>

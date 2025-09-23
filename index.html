@@ -51,6 +51,7 @@
   }
   
   a{color:inherit;text-decoration:none}
+
   /* Ultra-enhanced background layers */
   canvas#bg{
     position:fixed;
@@ -75,11 +76,13 @@
     mix-blend-mode: screen;
     animation: vignette-dance 12s ease-in-out infinite;
   }
+
   @keyframes vignette-dance {
     0%, 100% { opacity: 1; transform: scale(1); }
     33% { opacity: 0.9; transform: scale(1.02); }
     66% { opacity: 0.85; transform: scale(0.98); }
   }
+
   /* Floating particles */
   .particles {
     position: fixed;
@@ -88,6 +91,7 @@
     pointer-events: none;
     overflow: hidden;
   }
+
   .particle {
     position: absolute;
     width: 2px;
@@ -96,12 +100,14 @@
     border-radius: 50%;
     animation: float 15s infinite linear;
   }
+
   @keyframes float {
     0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
     10% { opacity: 1; }
     90% { opacity: 1; }
     100% { transform: translateY(-10vh) translateX(100px) scale(1); opacity: 0; }
   }
+
   /* Epic portal card */
   .wrap{
     position:relative;
@@ -113,6 +119,7 @@
     padding:32px;
     animation: grand-entrance 1.2s cubic-bezier(0.23, 1, 0.320, 1);
   }
+
   @keyframes grand-entrance {
     0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(10px); }
     50% { opacity: 0.8; transform: translateY(10px) scale(0.98); filter: blur(2px); }
@@ -133,6 +140,7 @@
     -webkit-backdrop-filter: blur(30px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .card:hover {
     transform: translateY(-2px);
     box-shadow: 
@@ -152,10 +160,12 @@
     pointer-events:none;
     animation: glow-breathe 6s ease-in-out infinite;
   }
+
   @keyframes glow-breathe {
     0%, 100% { opacity: 0.8; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.05); }
   }
+
   .card::after {
     content: "";
     position: absolute;
@@ -165,10 +175,12 @@
     background: linear-gradient(45deg, transparent, rgba(142,246,193,0.1), transparent, rgba(150,85,255,0.1), transparent);
     animation: border-glow 8s linear infinite;
   }
+
   @keyframes border-glow {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
   /* Premium header */
   .hdr{
     display:flex;
@@ -179,6 +191,7 @@
     border-bottom:1px solid rgba(255,255,255,0.08);
     position: relative;
   }
+
   .hdr::after {
     content: "";
     position: absolute;
@@ -190,6 +203,7 @@
     border-radius: 2px;
     animation: accent-slide 3s ease-in-out infinite;
   }
+
   @keyframes accent-slide {
     0%, 100% { width: 100px; opacity: 1; }
     50% { width: 200px; opacity: 0.7; }
@@ -210,6 +224,7 @@
     overflow: hidden;
     transition: all 0.3s ease;
   }
+
   .logo::before {
     content: "";
     position: absolute;
@@ -218,10 +233,12 @@
     animation: logo-spin 6s linear infinite;
     z-index: -1;
   }
+
   @keyframes logo-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
   .logo:hover {
     transform: scale(1.05) rotate(5deg);
     box-shadow: 
@@ -250,6 +267,7 @@
     text-shadow: 0 0 30px rgba(142,246,193,0.3);
     animation: text-glow 4s ease-in-out infinite;
   }
+
   @keyframes text-glow {
     0%, 100% { filter: brightness(1); }
     50% { filter: brightness(1.2); }
@@ -261,6 +279,7 @@
     font-weight:500;
     opacity: 0.9;
   }
+
   /* Epic layout */
   .cols{
     display:grid;
@@ -282,6 +301,7 @@
     position: relative;
     overflow: hidden;
   }
+
   nav.side::before {
     content: "";
     position: absolute;
@@ -292,6 +312,7 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
     animation: nav-shimmer 4s infinite;
   }
+
   @keyframes nav-shimmer {
     0% { left: -100%; }
     50% { left: -100%; }
@@ -308,6 +329,7 @@
     border-bottom:1px solid rgba(255,255,255,0.08);
     position: relative;
   }
+
   nav .brand strong {
     letter-spacing: 3px;
     color: var(--accent);
@@ -332,6 +354,7 @@
     position: relative;
     overflow: hidden;
   }
+
   nav button::before {
     content: '';
     position: absolute;
@@ -342,6 +365,7 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
     transition: left 0.6s ease;
   }
+
   nav button:hover::before {
     left: 100%;
   }
@@ -364,6 +388,7 @@
     transform:translateY(-3px) translateX(6px);
     text-shadow: 0 0 10px rgba(142,246,193,0.5);
   }
+
   nav button.active::after {
     content: "";
     position: absolute;
@@ -376,6 +401,7 @@
     border-radius: 2px;
     box-shadow: 0 0 10px var(--accent-glow);
   }
+
   .content{
     min-height:540px;
     padding:24px;
@@ -389,6 +415,7 @@
     position: relative;
     overflow: hidden;
   }
+
   .content::before {
     content: "";
     position: absolute;
@@ -399,6 +426,7 @@
     background: var(--gradient-accent);
     opacity: 0.6;
   }
+
   /* Ultra-enhanced Games section */
   .gamesCenter {
     flex:1;
@@ -410,6 +438,7 @@
     min-height:380px;
     position: relative;
   }
+
   .gamesCenter::before {
     content: "";
     position: absolute;
@@ -420,10 +449,12 @@
     animation: games-pulse 4s ease-in-out infinite;
     z-index: -1;
   }
+
   @keyframes games-pulse {
     0%, 100% { transform: scale(1); opacity: 0.5; }
     50% { transform: scale(1.5); opacity: 0.2; }
   }
+
   .launchBig{
     display:inline-flex;
     align-items:center;
@@ -448,6 +479,7 @@
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     letter-spacing: 0.5px;
   }
+
   .launchBig::before {
     content: '';
     position: absolute;
@@ -458,9 +490,11 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
     transition: left 0.8s ease;
   }
+
   .launchBig:hover::before {
     left: 100%;
   }
+
   .launchBig::after {
     content: "";
     position: absolute;
@@ -471,6 +505,7 @@
     opacity: 0;
     transition: opacity 0.3s ease;
   }
+
   .launchBig:hover::after {
     opacity: 0.3;
   }
@@ -481,6 +516,7 @@
       0 12px 30px rgba(10,20,20,0.5),
       0 0 20px rgba(142,246,193,0.2);
   }
+
   /* Enhanced idle pulse */
   @keyframes idlePulse {
     0% { 
@@ -503,6 +539,7 @@
     }
   }
   .launchBig.idle { animation: idlePulse 3.5s ease-in-out infinite; }
+
   /* Ultra hover effect */
   .launchBig.hovered { 
     transform: scale(1.12) rotateX(5deg); 
@@ -511,6 +548,7 @@
       0 0 0 1px rgba(255,255,255,0.3) inset,
       0 0 80px rgba(142,246,193,0.4);
   }
+
   /* Epic Tools tiles */
   .toolsGrid{
     display:grid;
@@ -535,6 +573,7 @@
     overflow: hidden;
     box-shadow: var(--shadow-soft);
   }
+
   .toolTile::before {
     content: '';
     position: absolute;
@@ -545,6 +584,7 @@
     opacity: 0;
     transition: opacity 0.3s ease;
   }
+
   .toolTile::after {
     content: '';
     position: absolute;
@@ -555,13 +595,16 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
     transition: left 0.6s ease;
   }
+
   .toolTile:hover::after {
     left: 100%;
   }
+
   .toolTile:hover::before {
     opacity: 1;
     animation: border-dance 2s linear infinite;
   }
+
   @keyframes border-dance {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -606,6 +649,7 @@
     position: relative;
     overflow: hidden;
   }
+
   .smallBtn::before {
     content: "";
     position: absolute;
@@ -616,15 +660,19 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
     transition: left 0.5s ease;
   }
+
   .smallBtn:hover::before {
     left: 100%;
   }
+
   .smallBtn:hover {
     background: rgba(255,255,255,0.2);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.2);
   }
+
   /* Enhanced control buttons - REMOVED SIGN OUT STYLES */
+
   .footRow{
     display:flex;
     justify-content:space-between;
@@ -636,6 +684,7 @@
     font-size:14px;
     font-weight:500;
   }
+
   .footRow::before {
     content: "";
     position: absolute;
@@ -647,6 +696,7 @@
     background: var(--gradient-accent);
     opacity: 0.6;
   }
+
   /* Responsive with extra polish */
   @media (max-width:920px){
     .cols{grid-template-columns:1fr}
@@ -656,6 +706,7 @@
     nav.side{order:1; margin-top:24px}
     .launchBig{padding:20px 36px; font-size:18px}
   }
+
   @media (max-width:480px){
     .wrap{padding:20px}
     .card{padding:20px}
@@ -664,15 +715,18 @@
     h1{font-size:22px}
     .controls{flex-direction:column; gap:10px}
   }
+
   /* Tab content animations */
   .tab {
     animation: tab-materialize 0.6s cubic-bezier(0.23, 1, 0.320, 1);
   }
+
   @keyframes tab-materialize {
     0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(5px); }
     50% { opacity: 0.5; transform: translateY(5px) scale(0.98); filter: blur(1px); }
     100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
   }
+
   /* Welcome section enhancements */
   .welcome-tip {
     margin-top: 28px;
@@ -683,6 +737,7 @@
     position: relative;
     overflow: hidden;
   }
+
   .welcome-tip::before {
     content: "";
     position: absolute;
@@ -693,6 +748,7 @@
     background: var(--gradient-accent);
     opacity: 0.8;
   }
+
   .welcome-tip-title {
     color: var(--accent);
     font-weight: 700;
@@ -702,42 +758,51 @@
     align-items: center;
     gap: 8px;
   }
+
   .welcome-tip-text {
     font-size: 14px;
     color: var(--muted);
     line-height: 1.5;
     margin: 0;
   }
+
   /* Scroll effects */
   html {
     scroll-behavior: smooth;
   }
+
   *:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 4px;
   }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: rgba(255,255,255,0.02);
     border-radius: 4px;
   }
+
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, var(--accent), var(--purple-glow));
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(142,246,193,0.3);
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, var(--accent-hover), var(--purple-strong));
   }
+
   /* Loading states */
   .loading {
     position: relative;
     overflow: hidden;
   }
+
   .loading::after {
     content: "";
     position: absolute;
@@ -748,6 +813,7 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
     animation: loading-shimmer 2s infinite;
   }
+
   @keyframes loading-shimmer {
     0% { left: -100%; }
     100% { left: 100%; }
@@ -760,6 +826,7 @@
   
   <!-- Floating particles -->
   <div class="particles" aria-hidden="true"></div>
+
   <div class="wrap">
     <div class="card" role="main" aria-live="polite">
       <div class="hdr">
@@ -770,7 +837,10 @@
           <h1>Bedrock Portal</h1>
           <div class="muted" id="who">friends-only sanctuary</div>
         </div>
+
+
       </div>
+
       <div class="cols">
         <nav class="side" aria-label="navigation">
           <div class="brand">
@@ -781,6 +851,7 @@
           <button data-tab="games">🎮 Games</button>
           <button data-tab="tools">🛠️ Tools</button>
         </nav>
+
         <section class="content" id="content">
           <!-- HOME -->
           <div id="home" class="tab">
@@ -800,6 +871,7 @@
                 Everything opens in new tabs or stealth windows, so you'll never lose your place in the portal. The games hub has emergency exit features built right in for maximum discretion.
               </p>
             </div>
+
             <div style="margin-top:28px;padding:20px;background:linear-gradient(135deg,rgba(150,85,255,0.06),rgba(150,85,255,0.02));border:1px solid rgba(150,85,255,0.1);border-radius:16px;position:relative;overflow:hidden">
               <div style="color:#c4b5fd;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px">
                 <span>🚀</span>
@@ -812,6 +884,7 @@
               <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-purple);opacity:0.6"></div>
             </div>
           </div>
+
           <!-- GAMES -->
           <div id="games" class="tab" style="display:none">
             <div class="gamesCenter" aria-label="games launch area">
@@ -823,14 +896,17 @@
                   Press the launch button to open your private gaming hub in stealth mode. Complete with emergency exits and ninja-level discretion.
                 </div>
               </div>
+
               <button id="launchGames" class="launchBig idle" title="Launch Bedrock Games Hub">
                 🚀 LAUNCH GAMING HUB
               </button>
+
               <div style="max-width:800px;text-align:center;color:var(--muted);font-size:15px;opacity:0.7;line-height:1.4">
                 <p style="margin:0">The gaming section maintains maximum stealth with about:blank windows and quick-exit features. Clean, focused, and completely under the radar.</p>
               </div>
             </div>
           </div>
+
           <!-- TOOLS -->
           <div id="tools" class="tab" style="display:none">
             <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);text-shadow:0 0 20px rgba(142,246,193,0.3)">
@@ -839,6 +915,7 @@
             <div class="muted" style="font-size:16px;line-height:1.5;margin-bottom:8px">
               Click any tile to launch powerful web-based tools in new tabs. All tools work flawlessly on any device, including locked-down Chromebooks.
             </div>
+
             <div class="toolsGrid">
               <div class="toolTile" onclick="openExternal('https://www.remove.bg/')">
                 <div>
@@ -851,6 +928,7 @@
                   </button>
                 </div>
               </div>
+
               <div class="toolTile" onclick="openExternal('https://www.photopea.com/')">
                 <div>
                   <h3>🎨 Photopea</h3>
@@ -862,6 +940,7 @@
                   </button>
                 </div>
               </div>
+
               <div class="toolTile" onclick="openExternal('https://pixlr.com/')">
                 <div>
                   <h3>✨ Pixlr</h3>
@@ -873,6 +952,7 @@
                   </button>
                 </div>
               </div>
+
               <div class="toolTile" onclick="openExternal('https://tinypng.com/')">
                 <div>
                   <h3>📦 TinyPNG</h3>
@@ -884,6 +964,7 @@
                   </button>
                 </div>
               </div>
+
               <div class="toolTile" onclick="openExternal('https://www.iloveimg.com/')">
                 <div>
                   <h3>🔧 iLoveIMG</h3>
@@ -895,6 +976,7 @@
                   </button>
                 </div>
               </div>
+
               <div class="toolTile" onclick="openExternal('https://www.canva.com/')">
                 <div>
                   <h3>🎯 Canva</h3>
@@ -908,6 +990,7 @@
               </div>
             </div>
           </div>
+
           <div class="footRow">
             <div>Crafted with ❤️ for trusted friends • low-stakes, maximum vibes</div>
             <div>Bedrock Portal • 2025 • v2.0</div>
@@ -916,6 +999,7 @@
       </div>
     </div>
   </div>
+
   <script>
     /* ---------------------------
        EPIC STARFIELD WITH NEBULA
@@ -925,6 +1009,7 @@
       const ctx = canvas.getContext('2d');
       let w = canvas.width = innerWidth;
       let h = canvas.height = innerHeight;
+
       const STAR_COUNT = Math.floor((w*h)/2400);
       const stars = [];
       const nebula = [];
@@ -946,6 +1031,7 @@
           twinkleSpeed: rand(0.5, 2.0)
         });
       }
+
       // Create nebula clouds
       for(let i=0;i<8;i++){
         nebula.push({
@@ -958,11 +1044,13 @@
           color: Math.random() > 0.5 ? 'rgba(142,246,193,' : 'rgba(168,85,247,'
         });
       }
+
       function resize(){
         w = canvas.width = innerWidth;
         h = canvas.height = innerHeight;
       }
       addEventListener('resize', resize);
+
       function draw(){
         ctx.clearRect(0,0,w,h);
         
@@ -973,11 +1061,13 @@
         g1.addColorStop(1,'rgba(2,2,8,0.35)');
         ctx.fillStyle = g1;
         ctx.fillRect(0,0,w,h);
+
         const g2 = ctx.createRadialGradient(w*0.7,h*0.7,0,w*0.7,h*0.7,Math.max(w,h)*0.5);
         g2.addColorStop(0,'rgba(20,8,25,0.08)');
         g2.addColorStop(1,'transparent');
         ctx.fillStyle = g2;
         ctx.fillRect(0,0,w,h);
+
         const t = Date.now()/3200;
         
         // Draw nebula
@@ -1045,6 +1135,7 @@
       }
       draw();
     })();
+
     /* ---------------------------
        FLOATING PARTICLES
        --------------------------- */
@@ -1072,6 +1163,7 @@
       // Continue creating particles
       setInterval(createParticle, 2000);
     })();
+
     /* ---------------------------
        ACCESS CONTROL DISABLED FOR RECOVERY
        --------------------------- */
@@ -1098,6 +1190,7 @@
     
     // Temporary bypass - just set the status text
     document.getElementById('who').textContent = 'access restored ✓';
+
     /* ---------------------------
        ULTRA-SMOOTH TAB SYSTEM
        --------------------------- */
@@ -1139,12 +1232,14 @@
         activeBtn.classList.add('active');
       }
     }
+
     // Enhanced button listeners
     document.querySelector('[data-tab="home"]').addEventListener('click', () => showTab('home'));
     document.querySelector('[data-tab="games"]').addEventListener('click', () => showTab('games'));
     document.querySelector('[data-tab="tools"]').addEventListener('click', () => showTab('tools'));
+
     /* ---------------------------
-       EPIC LAUNCH BUTTON - FIXED VERSION
+       EPIC LAUNCH BUTTON
        --------------------------- */
     const launch = document.getElementById('launchGames');
     if(launch){
@@ -1182,53 +1277,39 @@
           launch.style.transform = '';
           launch.style.transition = '';
           
-          // Create cloaked window approach
-          const win = window.open('', '_blank');
+          // Open games hub in cloaked about:blank window
+          const gamesWindow = window.open('about:blank', '_blank');
           
-          if(win) {
-            // Method 1: Direct navigation (most compatible)
-            win.location = 'games.html';
-            
-            // Method 2: Fallback with iframe (if direct navigation fails)
-            setTimeout(() => {
-              try {
-                // Check if we can access the window
-                if(win.closed) return;
-                
-                // If the direct navigation didn't work, use iframe approach
-                if(!win.location.href.includes('games.html')) {
-                  const doc = win.document;
-                  doc.open();
-                  doc.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                      <title>New Tab</title>
-                      <style>
-                        * { margin: 0; padding: 0; box-sizing: border-box; }
-                        html, body { height: 100%; overflow: hidden; }
-                        iframe { width: 100%; height: 100%; border: none; display: block; }
-                      </style>
-                    </head>
-                    <body>
-                      <iframe src="games.html" allowfullscreen></iframe>
-                    </body>
-                    </html>
-                  `);
-                  doc.close();
-                }
-              } catch(e) {
-                // If we can't access the window due to cross-origin, that's fine
-                // The direct navigation should have worked
-              }
-            }, 100);
-          } else {
-            // Popup was blocked, show a message
-            alert('Pop-up blocked! Please allow pop-ups for this site to access the games hub.');
-          }
+          // Fetch the games.html content and inject it
+          fetch('games.html')
+            .then(response => response.text())
+            .then(html => {
+              gamesWindow.document.open();
+              gamesWindow.document.write(html);
+              gamesWindow.document.close();
+            })
+            .catch(() => {
+              // Fallback: create a simple redirect page
+              gamesWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <title>New Tab</title>
+                  <style>
+                    body { margin: 0; padding: 0; overflow: hidden; }
+                    iframe { width: 100vw; height: 100vh; border: none; }
+                  </style>
+                </head>
+                <body>
+                  <iframe src="games.html"></iframe>
+                </body>
+                </html>
+              `);
+            });
         }, 150);
       });
     }
+
     // Add flash keyframe
     const flashStyle = document.createElement('style');
     flashStyle.textContent = `
@@ -1239,6 +1320,7 @@
       }
     `;
     document.head.appendChild(flashStyle);
+
     /* ---------------------------
        ENHANCED SIGN OUT
        --------------------------- */
@@ -1259,6 +1341,7 @@
         }
       });
     }
+
     /* ---------------------------
        PREMIUM EXTERNAL LINKS
        --------------------------- */
@@ -1291,6 +1374,7 @@
         setTimeout(() => indicator.remove(), 300);
       }, 1000);
     }
+
     /* ---------------------------
        ADVANCED INTERACTIONS
        --------------------------- */
@@ -1326,6 +1410,7 @@
         }
       }
     });
+
     // Mouse tracking for subtle parallax
     document.addEventListener('mousemove', (e) => {
       const x = e.clientX / window.innerWidth;
@@ -1337,6 +1422,7 @@
       document.querySelector('.card').style.transform = 
         `perspective(1000px) rotateX(${(y - 0.5) * 2}deg) rotateY(${(x - 0.5) * 2}deg)`;
     });
+
     // Performance monitoring
     let frameCount = 0;
     let lastTime = performance.now();
@@ -1362,6 +1448,7 @@
     }
     
     checkPerformance();
+
     // Initialize with smooth entry
     setTimeout(() => {
       document.body.style.opacity = '1';

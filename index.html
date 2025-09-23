@@ -679,36 +679,6 @@
     align-items: center;
   }
 
-  #signout {
-    background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.1));
-    border: 1px solid rgba(239,68,68,0.3);
-    color: #fca5a5;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #signout::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transition: left 0.5s ease;
-  }
-
-  #signout:hover::before {
-    left: 100%;
-  }
-
-  #signout:hover {
-    background: linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.2));
-    border-color: rgba(239,68,68,0.5);
-    color: #fecaca;
-    box-shadow: 0 8px 25px rgba(239,68,68,0.2);
-  }
-
   .footRow{
     display:flex;
     justify-content:space-between;

@@ -1105,14 +1105,6 @@
       <div class="toolNote">Arrow keys to play. Classic vibes.</div>
     </div>
 
-    <!-- Random Useless Fact -->
-    <div class="miniCard" id="factCard">
-      <h3>🤓 Random Useless Fact</h3>
-      <button class="small" id="factBtn">Tell me</button>
-      <div id="factOut" style="margin-top:8px;font-weight:800"></div>
-    </div>
-  </div>
-
   <!-- emoji rain container -->
   <div id="emojiZone" class="emojiRain" aria-hidden="true"></div>
   <div id="virusOverlay"></div>
@@ -1230,33 +1222,7 @@
     // preload one
     rollPoke();
 
-    /* ---------------- AI ROAST ---------------- */
-    const roastGo = document.getElementById('roastGo');
-    const roastMild = document.getElementById('roastMild');
-    const roastOut = document.getElementById('roastOut');
-    const roastName = document.getElementById('roastName');
-
-    const roasts = [
-      "You have the charm of a dial-up tone.",
-      "You're like a software update: nobody asked for it and it takes forever.",
-      "You'd lose a staring contest with a mannequin.",
-      "You bring everyone so much joy… when you leave the room.",
-      "You're the reason the gene pool needs a lifeguard."
-    ];
-    const mildRoasts = [
-      "Cute energy. Slightly glitchy.",
-      "You're like a semi-objective opinion — mostly correct but suspicious.",
-      "Adorable attempt. 6/10 would recommend retrying."
-    ];
-    roastGo.addEventListener('click', ()=>{
-      const who = roastName.value || 'you';
-      roastOut.textContent = `${who}, ${roasts[Math.floor(Math.random()*roasts.length)]}`;
-    });
-    roastMild.addEventListener('click', ()=>{
-      const who = roastName.value || 'friend';
-      roastOut.textContent = `${who}, ${mildRoasts[Math.floor(Math.random()*mildRoasts.length)]}`;
-    });
-
+  
     /* ---------------- NOISE MAKER ---------------- */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playOsc(freq, dur=0.6, type='sine'){
@@ -1355,131 +1321,7 @@
       mashOut.textContent = mash(w1,w2);
     });
 
-    /* ---------------- WHEEL OF RANDOMNESS ---------------- */
-    const wheel = document.getElementById('wheel');
-    const spinWheel = document.getElementById('spinWheel');
-    const wheelInput = document.getElementById('wheelInput');
-    const wheelResult = document.getElementById('wheelResult');
-
-    function buildWheel(){
-      wheel.innerHTML = '';
-      const items = wheelInput.value.split(',').map(s=>s.trim()).filter(Boolean);
-      if(items.length===0) { wheel.innerHTML = '<div class="mutedSmall">Add options above</div>'; return; }
-      const n = items.length;
-      items.forEach((it,i)=>{
-        const seg = document.createElement('div');
-        seg.className='seg';
-        const rot = (360/n)*i;
-        seg.style.transform = `rotate(${rot}deg)`;
-        seg.style.background = `conic-gradient(rgba(255,255,255,0.02), transparent 20deg)`;
-        seg.innerHTML = `<div style="transform:rotate(${360/n/2}deg);width:100%;display:flex;align-items:center;justify-content:center;pointer-events:none">${it}</div>`;
-        wheel.appendChild(seg);
-      });
-    }
-    buildWheel();
-    wheelInput.addEventListener('change', buildWheel);
-    spinWheel.addEventListener('click', ()=>{
-      buildWheel();
-      const items = wheelInput.value.split(',').map(s=>s.trim()).filter(Boolean);
-      if(!items.length) return;
-      const spins = 360*3 + Math.floor(Math.random()*360);
-      wheel.style.transition = 'transform 3s cubic-bezier(.1,.8,.2,1)';
-      wheel.style.transform = `rotate(${spins}deg)`;
-      setTimeout(()=>{
-        const actual = (spins % 360);
-        const slice = 360/items.length;
-        const idx = Math.floor(((360-actual)+slice/2)/slice) % items.length;
-        wheelResult.textContent = items[idx];
-        wheel.style.transition = '';
-      }, 3000);
-    });
-
-    /* ---------------- CHAOS BUTTON ---------------- */
-    const chaosBtn = document.getElementById('chaosBtn');
-    const emojiZone = document.getElementById('emojiZone');
-    const emojiRainBtn = document.getElementById('emojiRain');
-    const shakeBtn = document.getElementById('shakeBtn');
-    function emojiRain(){
-      const emojis = ['✨','🔥','🍕','💥','🫠','😈','🌈','🍪','⚡','🐶','👻'];
-      for(let i=0;i<30;i++){
-        const el = document.createElement('div');
-        el.className='emoji';
-        el.style.left = (Math.random()*100)+'%';
-        el.style.top = (-10-Math.random()*20)+'vh';
-        el.style.fontSize = (12+Math.random()*32)+'px';
-        el.style.animationDuration = (2+Math.random()*3)+'s';
-        el.textContent = pick(emojis);
-        emojiZone.appendChild(el);
-        setTimeout(()=> el.remove(), 5000 + Math.random()*2000);
-      }
-    }
-    function screenShake(){
-      const b = document.body;
-      b.animate([{transform:'translate(0,0)'},{transform:'translate(8px,-6px)'},{transform:'translate(-6px,7px)'},{transform:'translate(0,0)'}], {duration:450,iterations:1});
-    }
-    chaosBtn.addEventListener('click', ()=>{
-      // random effect
-      const v = Math.random();
-      if(v<0.35) emojiRain();
-      else if(v<0.6) screenShake();
-      else if(v<0.8){
-        document.body.style.background = `linear-gradient(135deg, rgba(${randInt(0,255)},${randInt(0,255)},${randInt(0,255)},0.08), rgba(${randInt(0,255)},${randInt(0,255)},${randInt(0,255)},0.05))`;
-        setTimeout(()=> document.body.style.background = '', 3000);
-      } else {
-        playGlitch();
-        emojiRain();
-      }
-    });
-    emojiRainBtn.addEventListener('click', emojiRain);
-    shakeBtn.addEventListener('click', screenShake);
-
-    /* ---------------- STICKER DROPPER ---------------- */
-    const stickArea = document.getElementById('stickArea');
-    function spawnSticker(ch){
-      const el = document.createElement('div');
-      el.className = 'sticker';
-      el.textContent = ch;
-      el.style.left = (10 + Math.random()*60) + '%';
-      el.style.top = (10 + Math.random()*60) + '%';
-      el.style.fontSize = '40px';
-      stickArea.appendChild(el);
-      makeDraggable(el);
-    }
-    document.querySelectorAll('.stickThumb').forEach(t=>{
-      t.addEventListener('click', ()=> spawnSticker(t.dataset.src || t.textContent || '⭐'));
-    });
-    document.getElementById('clearSticks').addEventListener('click', ()=> stickArea.innerHTML='');
-
-    function makeDraggable(el){
-      let ox=0, oy=0, dragging=false;
-      el.addEventListener('pointerdown', (e)=>{
-        el.setPointerCapture(e.pointerId);
-        dragging=true;
-        ox = e.clientX - el.offsetLeft;
-        oy = e.clientY - el.offsetTop;
-      });
-      window.addEventListener('pointermove', (e)=>{
-        if(!dragging) return;
-        const r = stickArea.getBoundingClientRect();
-        let nx = e.clientX - r.left - ox;
-        let ny = e.clientY - r.top - oy;
-        nx = Math.max(0, Math.min(r.width - el.clientWidth, nx));
-        ny = Math.max(0, Math.min(r.height - el.clientHeight, ny));
-        el.style.left = (nx / r.width * 100) + '%';
-        el.style.top = (ny / r.height * 100) + '%';
-      });
-      window.addEventListener('pointerup', ()=> dragging=false);
-    }
-
-    /* ---------------- FAKE VIRUS ---------------- */
-    const virusOverlay = document.getElementById('virusOverlay');
-    document.getElementById('virusGo').addEventListener('click', ()=>{
-      virusOverlay.style.display = 'block';
-      // flashing glitch
-      virusOverlay.animate([{opacity:0},{opacity:1},{opacity:0.2}], {duration:800, iterations:10});
-    });
-    document.getElementById('virusStop').addEventListener('click', ()=> virusOverlay.style.display = 'none');
-
+   
     /* ---------------- ASCII CONVERTER ---------------- */
     const asciiFile = document.getElementById('asciiFile'), asciiOut = document.getElementById('asciiOut');
     document.getElementById('asciiGo').addEventListener('click', ()=>{
@@ -1511,18 +1353,7 @@
       img.src = url;
     });
 
-    /* ---------------- PET BLOB ---------------- */
-    const petVisual = document.getElementById('petVisual');
-    const petHappy = document.getElementById('petHappy');
-    const feedPet = document.getElementById('feedPet'), playPet = document.getElementById('playPet'), renamePet = document.getElementById('renamePet'), petNameDisplay = document.getElementById('petNameDisplay');
-    let pet = JSON.parse(localStorage.getItem('petBlob_v1') || '{}') || {name:'Blob',happy:5};
-    function savePet(){ localStorage.setItem('petBlob_v1', JSON.stringify(pet)); updatePet(); }
-    function updatePet(){ petNameDisplay.textContent = pet.name || 'Blob'; petHappy.textContent = pet.happy || 0; petVisual.textContent = pet.name?.[0]?.toUpperCase() || 'B'; petVisual.style.transform = `scale(${1 + (pet.happy||0)/15})`; }
-    feedPet.addEventListener('click', ()=>{ pet.happy = (pet.happy||0) + 2; savePet(); });
-    playPet.addEventListener('click', ()=>{ pet.happy = (pet.happy||0) + 1; savePet(); playGlitch(); });
-    renamePet.addEventListener('click', ()=>{ const n = prompt('Rename pet', pet.name||'Blob'); if(n) { pet.name = n; savePet(); }});
-    updatePet();
-
+  
     /* ---------------- SNAKE GAME ---------------- */
     const sCanvas = document.getElementById('snakeCanvas'); const sCtx = sCanvas.getContext('2d');
     const snakeStart = document.getElementById('snakeStart'), snakeReset = document.getElementById('snakeReset');
@@ -1590,16 +1421,6 @@
     });
     resetSnake(); drawSnake();
 
-    /* ---------------- RANDOM FACT ---------------- */
-    const factBtn = document.getElementById('factBtn'); const factOut = document.getElementById('factOut');
-    const facts = [
-      "Bananas are berries but strawberries aren't.",
-      "A group of flamingos is called a flamboyance.",
-      "Wombat poop is cube-shaped.",
-      "Honey never spoils—ancient edible honey exists.",
-      "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid."
-    ];
-    factBtn.addEventListener('click', ()=> factOut.textContent = pick(facts));
 
     /* ---------------- HELPERS ---------------- */
     function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }

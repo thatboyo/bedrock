@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bedrock Portal</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: linear-gradient(135deg, #020208 0%, #0a0a15 50%, #04040a 100%);
+    --bg-secondary: #0a0a12;
+    --muted: #9aa3a8;
+    --muted-hover: #b8c1c6;
+    --accent: #8ef6c1;
+    --accent-hover: #a8ffdb;
+    --accent-glow: rgba(142,246,193,0.4);
+    --purple-strong: rgba(150,85,255,0.3);
+    --purple-glow: rgba(150,85,255,0.2);
+    --purple-subtle: rgba(138,75,230,0.08);
+    --tile-purple: rgba(138,75,230,0.16);
+    --tile-purple-hover: rgba(138,75,230,0.32);
+    --glass-border: rgba(255,255,255,0.12);
+    --glass-bg: rgba(255,255,255,0.04);
+    --shadow-epic: 0 35px 100px rgba(0,0,0,0.8), 0 15px 60px rgba(150,85,255,0.1);
+    --shadow-strong: 0 25px 80px rgba(0,0,0,0.7);
+    --shadow-medium: 0 15px 50px rgba(0,0,0,0.4);
+    --shadow-soft: 0 8px 25px rgba(0,0,0,0.2);
+    --gradient-accent: linear-gradient(135deg, var(--accent), #6ee7b7, var(--accent-hover));
+    --gradient-purple: linear-gradient(135deg, #a855f7, #8b5cf6, #7c3aed);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 100%);
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-feature-settings: 'liga' 1, 'kern' 1, 'ss01' 1;
+  }
+  
+  html,body{
+    height:100%;
+    margin:0;
+    background: var(--bg);
+    background-attachment: fixed;
+    color:#f8fafc;
+    overflow-x:hidden;
+    scroll-behavior: smooth;
+    font-weight: 400;
+  }
+  
+  *{
+    box-sizing:border-box;
+  }
+  
+  a{color:inherit;text-decoration:none}
+
+  /* Ultra-enhanced background layers */
+  canvas#bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    display:block;
+    filter: brightness(1.2) contrast(1.1);
+  }
+  
+  .vignette{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    background:
+      radial-gradient(50% 50% at 20% 20%, rgba(150,85,255,0.25), transparent 30%),
+      radial-gradient(60% 60% at 80% 80%, rgba(122,58,210,0.20), transparent 35%),
+      radial-gradient(40% 40% at 50% 10%, rgba(142,246,193,0.12), transparent 25%),
+      radial-gradient(35% 35% at 10% 80%, rgba(236,72,153,0.08), transparent 20%),
+      linear-gradient(180deg, rgba(8,6,14,0.08), rgba(2,2,6,0.15));
+    mix-blend-mode: screen;
+    animation: vignette-dance 12s ease-in-out infinite;
+  }
+
+  @keyframes vignette-dance {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    33% { opacity: 0.9; transform: scale(1.02); }
+    66% { opacity: 0.85; transform: scale(0.98); }
+  }
+
+  /* Floating particles */
+  .particles {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(142,246,193,0.6);
+    border-radius: 50%;
+    animation: float 15s infinite linear;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) translateX(100px) scale(1); opacity: 0; }
+  }
+
+  /* Epic portal card */
+  .wrap{
+    position:relative;
+    z-index:2;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:32px;
+    animation: grand-entrance 1.2s cubic-bezier(0.23, 1, 0.320, 1);
+  }
+
+  @keyframes grand-entrance {
+    0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(10px); }
+    50% { opacity: 0.8; transform: translateY(10px) scale(0.98); filter: blur(2px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+  
+  .card{
+    width:100%;
+    max-width:1200px;
+    padding:28px;
+    border-radius:24px;
+    background: var(--gradient-glass);
+    border:1px solid var(--glass-border);
+    box-shadow: var(--shadow-epic);
+    position:relative;
+    overflow:visible;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 45px 120px rgba(0,0,0,0.9), 
+      0 25px 80px rgba(150,85,255,0.15),
+      0 0 0 1px rgba(255,255,255,0.1) inset;
+  }
+  
+  .card::before{
+    content:"";
+    position:absolute;
+    inset:-15px;
+    border-radius:28px;
+    z-index:-1;
+    background: linear-gradient(135deg, var(--purple-strong), var(--purple-glow), rgba(142,246,193,0.1));
+    filter: blur(25px);
+    pointer-events:none;
+    animation: glow-breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes glow-breathe {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 26px;
+    z-index: -1;
+    background: linear-gradient(45deg, transparent, rgba(142,246,193,0.1), transparent, rgba(150,85,255,0.1), transparent);
+    animation: border-glow 8s linear infinite;
+  }
+
+  @keyframes border-glow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Premium header */
+  .hdr{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:20px;
+    padding-bottom:20px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    position: relative;
+  }
+
+  .hdr::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100px;
+    height: 2px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+    animation: accent-slide 3s ease-in-out infinite;
+  }
+
+  @keyframes accent-slide {
+    0%, 100% { width: 100px; opacity: 1; }
+    50% { width: 200px; opacity: 0.7; }
+  }
+  
+  .logo{
+    width:68px;
+    height:68px;
+    border-radius:16px;
+    background: linear-gradient(135deg,#1e1e2e,#16161d);
+    display:grid;
+    place-items:center;
+    color:var(--accent);
+    font-weight:800;
+    box-shadow: var(--shadow-medium);
+    border:1px solid rgba(255,255,255,0.12);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .logo::before {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    background: conic-gradient(from 0deg, transparent, var(--accent-glow), transparent, var(--purple-glow), transparent);
+    animation: logo-spin 6s linear infinite;
+    z-index: -1;
+  }
+
+  @keyframes logo-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .logo:hover {
+    transform: scale(1.05) rotate(5deg);
+    box-shadow: 
+      0 20px 60px rgba(142,246,193,0.3),
+      0 0 30px rgba(142,246,193,0.2) inset;
+  }
+  
+  .logo img{
+    width:54px;
+    height:54px;
+    border-radius:12px;
+    display:block;
+    z-index: 1;
+    position: relative;
+  }
+  
+  h1{
+    margin:0;
+    font-size:26px;
+    font-weight:900;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent) 50%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 30px rgba(142,246,193,0.3);
+    animation: text-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes text-glow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+  }
+  
+  .muted{
+    color:var(--muted);
+    font-size:15px;
+    font-weight:500;
+    opacity: 0.9;
+  }
+
+  /* Epic layout */
+  .cols{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:28px;
+  }
+  
+  nav.side{
+    padding:20px;
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    background: var(--gradient-glass);
+    border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(15px);
+    height: fit-content;
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    overflow: hidden;
+  }
+
+  nav.side::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    animation: nav-shimmer 4s infinite;
+  }
+
+  @keyframes nav-shimmer {
+    0% { left: -100%; }
+    50% { left: -100%; }
+    100% { left: 100%; }
+  }
+  
+  nav .brand{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:flex-start;
+    margin-bottom:12px;
+    padding-bottom:16px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    position: relative;
+  }
+
+  nav .brand strong {
+    letter-spacing: 3px;
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 800;
+    text-shadow: 0 0 20px rgba(142,246,193,0.4);
+  }
+  
+  nav button{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 18px;
+    border-radius:14px;
+    border:1px solid transparent;
+    background:transparent;
+    color:inherit;
+    cursor:pointer;
+    font-weight:600;
+    font-size:15px;
+    transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  nav button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.6s ease;
+  }
+
+  nav button:hover::before {
+    left: 100%;
+  }
+  
+  nav button:hover{
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
+    transform:translateY(-2px) translateX(4px);
+    color:var(--muted-hover);
+    box-shadow: var(--shadow-soft);
+  }
+  
+  nav button.active{
+    background: linear-gradient(135deg, rgba(142,246,193,0.12), rgba(140,90,240,0.12));
+    color:var(--accent);
+    border-color: rgba(142,246,193,0.3);
+    box-shadow:
+      0 15px 45px rgba(140,90,240,0.15),
+      0 0 20px rgba(142,246,193,0.1) inset;
+    transform:translateY(-3px) translateX(6px);
+    text-shadow: 0 0 10px rgba(142,246,193,0.5);
+  }
+
+  nav button.active::after {
+    content: "";
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .content{
+    min-height:540px;
+    padding:24px;
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    background: var(--gradient-glass);
+    border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(15px);
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-accent);
+    opacity: 0.6;
+  }
+
+  /* Ultra-enhanced Games section */
+  .gamesCenter {
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:32px;
+    min-height:380px;
+    position: relative;
+  }
+
+  .gamesCenter::before {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(142,246,193,0.1), transparent 70%);
+    border-radius: 50%;
+    animation: games-pulse 4s ease-in-out infinite;
+    z-index: -1;
+  }
+
+  @keyframes games-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.5); opacity: 0.2; }
+  }
+
+  .launchBig{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    padding:24px 48px;
+    border-radius:24px;
+    border:0;
+    background: var(--gradient-accent);
+    color:#0a0a0a;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow: 
+      0 25px 60px rgba(10,20,20,0.7),
+      0 0 0 1px rgba(255,255,255,0.15) inset,
+      0 0 40px rgba(142,246,193,0.3);
+    font-size:20px;
+    transition: all 0.2s cubic-bezier(.2,.9,.3,1);
+    outline:none;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
+  }
+
+  .launchBig::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.8s ease;
+  }
+
+  .launchBig:hover::before {
+    left: 100%;
+  }
+
+  .launchBig::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 27px;
+    background: linear-gradient(45deg, var(--accent), var(--accent-hover), var(--accent));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .launchBig:hover::after {
+    opacity: 0.3;
+  }
+  
+  .launchBig:active{
+    transform:translateY(4px) scale(0.96);
+    box-shadow:
+      0 12px 30px rgba(10,20,20,0.5),
+      0 0 20px rgba(142,246,193,0.2);
+  }
+
+  /* Enhanced idle pulse */
+  @keyframes idlePulse {
+    0% { 
+      transform: scale(1); 
+      box-shadow: 
+        0 25px 60px rgba(10,20,20,0.7),
+        0 0 40px rgba(142,246,193,0.3);
+    }
+    50% { 
+      transform: scale(1.05); 
+      box-shadow: 
+        0 30px 80px rgba(150,85,255,0.2),
+        0 0 60px rgba(142,246,193,0.4);
+    }
+    100% { 
+      transform: scale(1); 
+      box-shadow: 
+        0 25px 60px rgba(10,20,20,0.7),
+        0 0 40px rgba(142,246,193,0.3);
+    }
+  }
+  .launchBig.idle { animation: idlePulse 3.5s ease-in-out infinite; }
+
+  /* Ultra hover effect */
+  .launchBig.hovered { 
+    transform: scale(1.12) rotateX(5deg); 
+    box-shadow: 
+      0 40px 100px rgba(150,85,255,0.3),
+      0 0 0 1px rgba(255,255,255,0.3) inset,
+      0 0 80px rgba(142,246,193,0.4);
+  }
+
+  /* Epic Tools tiles */
+  .toolsGrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+    gap:24px;
+    margin-top:24px;
+  }
+  
+  .toolTile{
+    border-radius:20px;
+    padding:24px;
+    border:1px solid rgba(255,255,255,0.08);
+    min-height:150px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    cursor:pointer;
+    transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--gradient-glass);
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .toolTile::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    background: linear-gradient(45deg, transparent, rgba(142,246,193,0.1), transparent, rgba(150,85,255,0.1), transparent);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .toolTile::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .toolTile:hover::after {
+    left: 100%;
+  }
+
+  .toolTile:hover::before {
+    opacity: 1;
+    animation: border-dance 2s linear infinite;
+  }
+
+  @keyframes border-dance {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .toolTile:hover{
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+    transform:translateY(-12px) scale(1.03);
+    box-shadow:
+      0 35px 80px rgba(120,60,220,0.2),
+      0 0 40px rgba(142,246,193,0.1) inset;
+    border-color: rgba(255,255,255,0.15);
+  }
+  
+  .toolTile h3{
+    margin:0 0 12px 0;
+    font-size:19px;
+    color:#f1f5f9;
+    font-weight:800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .toolTile p{
+    margin:0 0 20px 0;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.5;
+    font-weight:500;
+    flex-grow:1;
+  }
+  
+  .smallBtn{
+    padding:12px 20px;
+    border-radius:12px;
+    border:0;
+    background: rgba(255,255,255,0.1);
+    color:#f1f5f9;
+    font-weight:700;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    font-size:14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .smallBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .smallBtn:hover::before {
+    left: 100%;
+  }
+
+  .smallBtn:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  }
+
+  /* Enhanced control buttons */
+  .controls {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  #signout {
+    background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.1));
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #signout::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  #signout:hover::before {
+    left: 100%;
+  }
+
+  #signout:hover {
+    background: linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.2));
+    border-color: rgba(239,68,68,0.5);
+    color: #fecaca;
+    box-shadow: 0 8px 25px rgba(239,68,68,0.2);
+  }
+
+  .footRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:24px;
+    padding-top:20px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    color:var(--muted);
+    font-size:14px;
+    font-weight:500;
+  }
+
+  .footRow::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 1px;
+    background: var(--gradient-accent);
+    opacity: 0.6;
+  }
+
+  /* Responsive with extra polish */
+  @media (max-width:920px){
+    .cols{grid-template-columns:1fr}
+    .toolsGrid{grid-template-columns:1fr}
+    .wrap{padding:24px}
+    .card{padding:24px}
+    nav.side{order:1; margin-top:24px}
+    .launchBig{padding:20px 36px; font-size:18px}
+  }
+
+  @media (max-width:480px){
+    .wrap{padding:20px}
+    .card{padding:20px}
+    .launchBig{padding:18px 32px; font-size:17px}
+    .cols{gap:20px}
+    h1{font-size:22px}
+    .controls{flex-direction:column; gap:10px}
+  }
+
+  /* Tab content animations */
+  .tab {
+    animation: tab-materialize 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+  }
+
+  @keyframes tab-materialize {
+    0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(5px); }
+    50% { opacity: 0.5; transform: translateY(5px) scale(0.98); filter: blur(1px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+
+  /* Welcome section enhancements */
+  .welcome-tip {
+    margin-top: 28px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(142,246,193,0.08), rgba(140,90,240,0.05));
+    border: 1px solid rgba(142,246,193,0.15);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-tip::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-accent);
+    opacity: 0.8;
+  }
+
+  .welcome-tip-title {
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .welcome-tip-text {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Scroll effects */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent), var(--purple-glow));
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(142,246,193,0.3);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--accent-hover), var(--purple-strong));
+  }
+
+  /* Loading states */
+  .loading {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: loading-shimmer 2s infinite;
+  }
+
+  @keyframes loading-shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  
+  <!-- Floating particles -->
+  <div class="particles" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="card" role="main" aria-live="polite">
+      <div class="hdr">
+        <div class="logo" aria-hidden="true">
+          <img src="favicon.png" alt="Bedrock logo">
+        </div>
+        <div>
+          <h1>Bedrock Portal</h1>
+          <div class="muted" id="who">friends-only sanctuary</div>
+        </div>
+
+        <div class="controls">
+          <button id="signout" class="smallBtn" title="Sign out securely">← Sign out</button>
+        </div>
+      </div>
+
+      <div class="cols">
+        <nav class="side" aria-label="navigation">
+          <div class="brand">
+            <strong>BEDROCK</strong>
+            <span class="muted" style="font-size:13px;opacity:0.8">portal nexus</span>
+          </div>
+          <button data-tab="home" class="active">🏠 Home</button>
+          <button data-tab="games">🎮 Games</button>
+          <button data-tab="tools">🛠️ Tools</button>
+        </nav>
+
+        <section class="content" id="content">
+          <!-- HOME -->
+          <div id="home" class="tab">
+            <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);text-shadow:0 0 20px rgba(142,246,193,0.3)">
+              Welcome back, friend
+            </h2>
+            <p class="muted" style="font-size:16px;line-height:1.6;margin-bottom:0">
+              Your personal command center is online and ready. Navigate through the cosmos using the sidebar to access your Games hub or productivity Tools. The Games section is exclusively for trusted friends — hit that glorious launch button to enter the digital playground.
+            </p>
+            
+            <div class="welcome-tip">
+              <div class="welcome-tip-title">
+                <span>✨</span>
+                Pro tip for stealth mode
+              </div>
+              <p class="welcome-tip-text">
+                Everything opens in new tabs or stealth windows, so you'll never lose your place in the portal. The games hub has emergency exit features built right in for maximum discretion.
+              </p>
+            </div>
+
+            <div style="margin-top:28px;padding:20px;background:linear-gradient(135deg,rgba(150,85,255,0.06),rgba(150,85,255,0.02));border:1px solid rgba(150,85,255,0.1);border-radius:16px;position:relative;overflow:hidden">
+              <div style="color:#c4b5fd;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+                <span>🚀</span>
+                System Status
+              </div>
+              <div style="font-size:14px;color:var(--muted);display:flex;justify-content:space-between;align-items:center">
+                <span>Portal Status: Online</span>
+                <span style="color:var(--accent);font-weight:600">All systems go</span>
+              </div>
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-purple);opacity:0.6"></div>
+            </div>
+          </div>
+
+          <!-- GAMES -->
+          <div id="games" class="tab" style="display:none">
+            <div class="gamesCenter" aria-label="games launch area">
+              <div style="width:100%;max-width:800px;text-align:center">
+                <h2 style="margin:0;font-weight:900;font-size:32px;background:linear-gradient(135deg,#ffffff,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 30px rgba(142,246,193,0.3)">
+                  Games Universe
+                </h2>
+                <div class="muted" style="margin-top:12px;font-size:17px;line-height:1.5;opacity:0.9">
+                  Press the launch button to open your private gaming hub in stealth mode. Complete with emergency exits and ninja-level discretion.
+                </div>
+              </div>
+
+              <button id="launchGames" class="launchBig idle" title="Launch Bedrock Games Hub">
+                🚀 LAUNCH GAMING HUB
+              </button>
+
+              <div style="max-width:800px;text-align:center;color:var(--muted);font-size:15px;opacity:0.7;line-height:1.4">
+                <p style="margin:0">The gaming section maintains maximum stealth with about:blank windows and quick-exit features. Clean, focused, and completely under the radar.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- TOOLS -->
+          <div id="tools" class="tab" style="display:none">
+            <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);text-shadow:0 0 20px rgba(142,246,193,0.3)">
+              Productivity Arsenal
+            </h2>
+            <div class="muted" style="font-size:16px;line-height:1.5;margin-bottom:8px">
+              Click any tile to launch powerful web-based tools in new tabs. All tools work flawlessly on any device, including locked-down Chromebooks.
+            </div>
+
+            <div class="toolsGrid">
+              <div class="toolTile" onclick="openExternal('https://www.remove.bg/')">
+                <div>
+                  <h3>🎭 Remove.bg</h3>
+                  <p>AI-powered background removal that works like pure magic. Upload any image and watch the background vanish instantly with pixel-perfect precision.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.remove.bg/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
+
+              <div class="toolTile" onclick="openExternal('https://www.photopea.com/')">
+                <div>
+                  <h3>🎨 Photopea</h3>
+                  <p>Full-featured Photoshop alternative that runs entirely in your browser. Perfect for Chromebooks and professional-grade image editing without installations.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.photopea.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
+
+              <div class="toolTile" onclick="openExternal('https://pixlr.com/')">
+                <div>
+                  <h3>✨ Pixlr</h3>
+                  <p>Lightning-fast image editor with Express and Pro modes. Ideal for quick touch-ups, social media content, and creative projects on the go.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://pixlr.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
+
+              <div class="toolTile" onclick="openExternal('https://tinypng.com/')">
+                <div>
+                  <h3>📦 TinyPNG</h3>
+                  <p>Compress PNG and JPG images without losing visual quality. Essential for web optimization, faster uploads, and saving precious storage space.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://tinypng.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
+
+              <div class="toolTile" onclick="openExternal('https://www.iloveimg.com/')">
+                <div>
+                  <h3>🔧 iLoveIMG</h3>
+                  <p>Swiss army knife for images. Convert formats, resize, crop, merge into PDFs, and perform dozens of other image operations — all in one elegant platform.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.iloveimg.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
+
+              <div class="toolTile" onclick="openExternal('https://www.canva.com/')">
+                <div>
+                  <h3>🎯 Canva</h3>
+                  <p>Professional design platform with thousands of templates. Create stunning graphics, presentations, social media content, and marketing materials effortlessly.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.canva.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footRow">
+            <div>Crafted with ❤️ for trusted friends • low-stakes, maximum vibes</div>
+            <div>Bedrock Portal • 2025 • v2.0</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ---------------------------
+       EPIC STARFIELD WITH NEBULA
+       --------------------------- */
+    (function(){
+      const canvas = document.getElementById('bg');
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = innerWidth;
+      let h = canvas.height = innerHeight;
+
+      const STAR_COUNT = Math.floor((w*h)/2400);
+      const stars = [];
+      const nebula = [];
+      
+      function rand(min,max){ return Math.random()*(max-min)+min }
+      
+      // Create diverse star field
+      for(let i=0;i<STAR_COUNT;i++){
+        stars.push({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          z: rand(0.3,2.0),
+          r: rand(0.8,5.0),
+          vx: rand(-0.05,0.05),
+          vy: rand(-0.1,0.1),
+          t: Math.random()*20,
+          color: Math.random() > 0.88 ? 'rgba(142,246,193,0.9)' : 
+                 Math.random() > 0.94 ? 'rgba(168,85,247,0.8)' : 'white',
+          twinkleSpeed: rand(0.5, 2.0)
+        });
+      }
+
+      // Create nebula clouds
+      for(let i=0;i<8;i++){
+        nebula.push({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          r: rand(80,200),
+          vx: rand(-0.02,0.02),
+          vy: rand(-0.02,0.02),
+          opacity: rand(0.02,0.08),
+          color: Math.random() > 0.5 ? 'rgba(142,246,193,' : 'rgba(168,85,247,'
+        });
+      }
+
+      function resize(){
+        w = canvas.width = innerWidth;
+        h = canvas.height = innerHeight;
+      }
+      addEventListener('resize', resize);
+
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+        
+        // Enhanced background with depth
+        const g1 = ctx.createRadialGradient(w*0.3,h*0.3,0,w*0.3,h*0.3,Math.max(w,h)*0.6);
+        g1.addColorStop(0,'rgba(10,8,20,0.15)');
+        g1.addColorStop(0.5,'rgba(6,4,14,0.25)');
+        g1.addColorStop(1,'rgba(2,2,8,0.35)');
+        ctx.fillStyle = g1;
+        ctx.fillRect(0,0,w,h);
+
+        const g2 = ctx.createRadialGradient(w*0.7,h*0.7,0,w*0.7,h*0.7,Math.max(w,h)*0.5);
+        g2.addColorStop(0,'rgba(20,8,25,0.08)');
+        g2.addColorStop(1,'transparent');
+        ctx.fillStyle = g2;
+        ctx.fillRect(0,0,w,h);
+
+        const t = Date.now()/3200;
+        
+        // Draw nebula
+        for(const n of nebula){
+          n.x += n.vx;
+          n.y += n.vy;
+          
+          if(n.x < -n.r) n.x = w + n.r;
+          if(n.x > w + n.r) n.x = -n.r;
+          if(n.y < -n.r) n.y = h + n.r;
+          if(n.y > h + n.r) n.y = -n.r;
+          
+          const pulse = Math.abs(Math.sin(t * 0.3 + n.x * 0.001));
+          ctx.beginPath();
+          ctx.globalAlpha = n.opacity * pulse;
+          const g = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);
+          g.addColorStop(0, n.color + (n.opacity * 2) + ')');
+          g.addColorStop(1, 'transparent');
+          ctx.fillStyle = g;
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+          ctx.fill();
+        }
+        
+        // Draw enhanced stars
+        for(const s of stars){
+          s.x += s.vx * (s.z*2);
+          s.y += s.vy * (s.z*2);
+          
+          const twinkle = Math.abs(Math.sin(t * s.twinkleSpeed + s.t)) * 
+                         Math.abs(Math.cos(t * s.twinkleSpeed * 0.7 + s.t * 0.5));
+          
+          // Wrap around edges
+          if(s.x<0) s.x = w;
+          if(s.x>w) s.x = 0;
+          if(s.y<0) s.y = h;
+          if(s.y>h) s.y = 0;
+          
+          // Main star
+          ctx.beginPath();
+          ctx.globalAlpha = 0.7 + 0.3 * s.z * (0.3 + twinkle*0.7);
+          ctx.fillStyle = s.color;
+          ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI*2);
+          ctx.fill();
+          
+          // Glow for bigger/special stars
+          if(s.r > 3 || s.color !== 'white'){
+            ctx.beginPath();
+            ctx.globalAlpha = 0.15 * s.z * twinkle;
+            ctx.arc(s.x, s.y, s.r * s.z * 3, 0, Math.PI*2);
+            ctx.fill();
+          }
+          
+          // Sparkle effect for colored stars
+          if(s.color !== 'white' && twinkle > 0.8){
+            ctx.beginPath();
+            ctx.globalAlpha = 0.4 * twinkle;
+            ctx.fillStyle = s.color;
+            ctx.arc(s.x + rand(-2,2), s.y + rand(-2,2), 1, 0, Math.PI*2);
+            ctx.fill();
+          }
+          
+          ctx.globalAlpha = 1;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    /* ---------------------------
+       FLOATING PARTICLES
+       --------------------------- */
+    (function createParticles(){
+      const container = document.querySelector('.particles');
+      
+      function createParticle(){
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(particle);
+        
+        setTimeout(() => {
+          particle.remove();
+        }, 20000);
+      }
+      
+      // Create initial particles
+      for(let i = 0; i < 12; i++){
+        setTimeout(createParticle, i * 1000);
+      }
+      
+      // Continue creating particles
+      setInterval(createParticle, 2000);
+    })();
+
+    /* ---------------------------
+       ACCESS CONTROL ENHANCED
+       --------------------------- */
+    (function checkAuthorized(){
+      try {
+        const saved = localStorage.getItem('bedrock_auth') || '';
+        if (!saved) {
+          document.body.style.transition = 'opacity 0.5s ease, filter 0.5s ease';
+          document.body.style.opacity = '0';
+          document.body.style.filter = 'blur(10px)';
+          setTimeout(() => location.href = 'index.html', 500);
+        } else {
+          document.getElementById('who').textContent = 'authenticated & secure ✓';
+        }
+      } catch (e) { 
+        document.body.style.transition = 'opacity 0.5s ease, filter 0.5s ease';
+        document.body.style.opacity = '0';
+        document.body.style.filter = 'blur(10px)';
+        setTimeout(() => location.href = 'index.html', 500);
+      }
+    })();
+
+    /* ---------------------------
+       ULTRA-SMOOTH TAB SYSTEM
+       --------------------------- */
+    function showTab(tabName) {
+      // Hide all tabs with fade out
+      const tabs = ['home', 'games', 'tools'];
+      tabs.forEach(tab => {
+        const el = document.getElementById(tab);
+        if(el) {
+          el.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(10px)';
+          setTimeout(() => {
+            el.style.display = 'none';
+          }, 200);
+        }
+      });
+      
+      // Show selected tab with fade in
+      setTimeout(() => {
+        const targetTab = document.getElementById(tabName);
+        if(targetTab) {
+          targetTab.style.display = 'block';
+          setTimeout(() => {
+            targetTab.style.opacity = '1';
+            targetTab.style.transform = 'translateY(0)';
+          }, 50);
+        }
+      }, 200);
+      
+      // Update button states with enhanced effects
+      document.querySelectorAll('nav.side button').forEach(b => {
+        b.classList.remove('active');
+        b.style.transform = '';
+      });
+      
+      const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+      if(activeBtn) {
+        activeBtn.classList.add('active');
+      }
+    }
+
+    // Enhanced button listeners
+    document.querySelector('[data-tab="home"]').addEventListener('click', () => showTab('home'));
+    document.querySelector('[data-tab="games"]').addEventListener('click', () => showTab('games'));
+    document.querySelector('[data-tab="tools"]').addEventListener('click', () => showTab('tools'));
+
+    /* ---------------------------
+       EPIC LAUNCH BUTTON
+       --------------------------- */
+    const launch = document.getElementById('launchGames');
+    if(launch){
+      function onEnter(){
+        launch.classList.remove('idle');
+        launch.classList.add('hovered');
+        launch.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
+      
+      function onLeave(){
+        launch.classList.remove('hovered');
+        launch.classList.add('idle');
+      }
+      
+      launch.addEventListener('mouseenter', onEnter);
+      launch.addEventListener('mouseleave', onLeave);
+      
+      launch.addEventListener('click', ()=>{
+        // Epic click feedback
+        launch.style.transform = 'scale(0.92) rotateX(10deg)';
+        launch.style.transition = 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        // Add screen flash effect
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+          position: fixed; inset: 0; z-index: 9999; 
+          background: radial-gradient(circle, rgba(142,246,193,0.1), transparent 70%);
+          pointer-events: none; animation: flash 0.3s ease-out;
+        `;
+        document.body.appendChild(flash);
+        
+        setTimeout(() => flash.remove(), 300);
+        
+        setTimeout(()=> {
+          launch.style.transform = '';
+          launch.style.transition = '';
+          window.location.href = 'games.html';
+        }, 150);
+      });
+    }
+
+    // Add flash keyframe
+    const flashStyle = document.createElement('style');
+    flashStyle.textContent = `
+      @keyframes flash {
+        0% { opacity: 0; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+    `;
+    document.head.appendChild(flashStyle);
+
+    /* ---------------------------
+       ENHANCED SIGN OUT
+       --------------------------- */
+    const signoutBtn = document.getElementById('signout');
+    if(signoutBtn) {
+      signoutBtn.addEventListener('click', ()=>{
+        if(confirm('Are you sure you want to sign out of your sanctuary?')) {
+          try { 
+            localStorage.removeItem('bedrock_auth'); 
+          } catch(_) {}
+          
+          // Epic exit transition
+          document.body.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          document.body.style.opacity = '0';
+          document.body.style.transform = 'scale(0.95)';
+          document.body.style.filter = 'blur(8px)';
+          setTimeout(() => location.href = 'index.html', 600);
+        }
+      });
+    }
+
+    /* ---------------------------
+       PREMIUM EXTERNAL LINKS
+       --------------------------- */
+    function openExternal(url){ 
+      // Visual feedback
+      const originalCursor = document.body.style.cursor;
+      document.body.style.cursor = 'wait';
+      
+      // Success indicator
+      const indicator = document.createElement('div');
+      indicator.style.cssText = `
+        position: fixed; top: 20px; right: 20px; z-index: 9999;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        color: #0a0a0a; padding: 12px 20px; border-radius: 12px;
+        font-weight: 700; font-size: 14px; box-shadow: var(--shadow-medium);
+        transform: translateX(100%); transition: transform 0.3s ease;
+      `;
+      indicator.textContent = '🚀 Opening tool...';
+      document.body.appendChild(indicator);
+      
+      setTimeout(() => {
+        indicator.style.transform = 'translateX(0)';
+      }, 100);
+      
+      window.open(url, '_blank', 'noopener,noreferrer');
+      
+      setTimeout(() => {
+        document.body.style.cursor = originalCursor;
+        indicator.style.transform = 'translateX(100%)';
+        setTimeout(() => indicator.remove(), 300);
+      }, 1000);
+    }
+
+    /* ---------------------------
+       ADVANCED INTERACTIONS
+       --------------------------- */
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.activeElement.blur();
+      }
+      
+      // Quick navigation
+      if (e.altKey) {
+        switch(e.key) {
+          case '1': showTab('home'); e.preventDefault(); break;
+          case '2': showTab('games'); e.preventDefault(); break;
+          case '3': showTab('tools'); e.preventDefault(); break;
+        }
+      }
+      
+      // Arrow key navigation for nav buttons
+      if (e.target.matches('nav.side button')) {
+        const buttons = Array.from(document.querySelectorAll('nav.side button'));
+        const current = buttons.indexOf(e.target);
+        
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          const next = buttons[(current + 1) % buttons.length];
+          next.focus();
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prev = buttons[(current - 1 + buttons.length) % buttons.length];
+          prev.focus();
+        }
+      }
+    });
+
+    // Mouse tracking for subtle parallax
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX / window.innerWidth;
+      const y = e.clientY / window.innerHeight;
+      
+      document.querySelector('.vignette').style.transform = 
+        `translate(${x * 10}px, ${y * 10}px)`;
+        
+      document.querySelector('.card').style.transform = 
+        `perspective(1000px) rotateX(${(y - 0.5) * 2}deg) rotateY(${(x - 0.5) * 2}deg)`;
+    });
+
+    // Performance monitoring
+    let frameCount = 0;
+    let lastTime = performance.now();
+    
+    function checkPerformance() {
+      frameCount++;
+      const now = performance.now();
+      
+      if (now - lastTime > 1000) {
+        const fps = Math.round((frameCount * 1000) / (now - lastTime));
+        
+        if (fps < 30) {
+          // Reduce effects for performance
+          document.querySelector('.vignette').style.animation = 'none';
+          document.querySelectorAll('.particle').forEach(p => p.remove());
+        }
+        
+        frameCount = 0;
+        lastTime = now;
+      }
+      
+      requestAnimationFrame(checkPerformance);
+    }
+    
+    checkPerformance();
+
+    // Initialize with smooth entry
+    setTimeout(() => {
+      document.body.style.opacity = '1';
+    }, 100);
+  </script>
+</body>
+</html>

@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+  /* --- Root Variables & Base Styles --- */
   :root{
     --bg: #04040a;
     --bg-secondary: #0a0a12;
@@ -21,124 +22,61 @@
     --tile-purple: rgba(138,75,230,0.14);
     --tile-purple-hover: rgba(138,75,230,0.28);
     --glass-border: rgba(255,255,255,0.08);
-    --glass-bg: rgba(255,255,255,0.02);
     --shadow-strong: 0 25px 80px rgba(0,0,0,0.7);
     --shadow-medium: 0 15px 50px rgba(0,0,0,0.4);
-    --shadow-soft: 0 8px 25px rgba(0,0,0,0.2);
     font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
   html,body{height:100%;margin:0;background:var(--bg);color:#eef2f5;overflow-x:hidden;scroll-behavior:smooth;}
   *{box-sizing:border-box} a{color:inherit;text-decoration:none}
-  canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block;filter:brightness(1.1);}
+
+  /* --- Canvas Background --- */
+  canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block;filter: brightness(1.1);}
   .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:
-      radial-gradient(45% 45% at 15% 15%, rgba(150,85,255,0.2), transparent 25%),
-      radial-gradient(55% 55% at 85% 85%, rgba(122,58,210,0.16), transparent 30%),
-      radial-gradient(35% 35% at 50% 50%, rgba(140,246,193,0.08), transparent 20%),
-      linear-gradient(180deg, rgba(8,6,14,0.06), rgba(2,2,6,0.12));
+    radial-gradient(45% 45% at 15% 15%, rgba(150,85,255,0.2), transparent 25%),
+    radial-gradient(55% 55% at 85% 85%, rgba(122,58,210,0.16), transparent 30%),
+    radial-gradient(35% 35% at 50% 50%, rgba(140,246,193,0.08), transparent 20%),
+    linear-gradient(180deg, rgba(8,6,14,0.06), rgba(2,2,6,0.12));
     mix-blend-mode:screen;
     animation: vignette-pulse 8s ease-in-out infinite;}
   @keyframes vignette-pulse {0%,100%{opacity:1;}50%{opacity:0.85;}}
+
+  /* --- Card & Layout --- */
   .wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px;animation:fade-in 0.8s ease-out;}
-  @keyframes fade-in {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fade-in{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
   .card{width:100%;max-width:1180px;padding:24px;border-radius:20px;background:
-      linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%),
-      linear-gradient(180deg, var(--bg-secondary), var(--bg));
-    border:1px solid var(--glass-border);box-shadow:var(--shadow-strong);position:relative;overflow:visible;backdrop-filter: blur(20px);}
-  .card::before{content:"";position:absolute;inset:-12px;border-radius:24px;z-index:-1;background: linear-gradient(135deg, var(--purple-strong), var(--purple-glow));filter:blur(20px);pointer-events:none;animation:glow-pulse 4s ease-in-out infinite;}
-  @keyframes glow-pulse {0%,100%{opacity:0.8;}50%{opacity:1;}}
+    linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 100%),
+    linear-gradient(180deg, var(--bg-secondary), var(--bg));
+    border:1px solid var(--glass-border);
+    box-shadow:var(--shadow-strong);position:relative;overflow:visible;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+  .card::before{content:"";position:absolute;inset:-12px;border-radius:24px;z-index:-1;background: linear-gradient(135deg,var(--purple-strong),var(--purple-glow));filter:blur(20px);pointer-events:none;animation:glow-pulse 4s ease-in-out infinite;}
+  @keyframes glow-pulse{0%,100%{opacity:0.8;}50%{opacity:1;}}
+
+  /* --- Header --- */
   .hdr{display:flex;align-items:center;gap:16px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);}
   .logo{width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,#1a1a24,#0f1419);display:grid;place-items:center;color:var(--accent);font-weight:700;box-shadow:var(--shadow-medium);border:1px solid rgba(255,255,255,0.1);}
   .logo img{width:50px;height:50px;border-radius:10px;display:block;}
   h1{margin:0;font-size:22px;font-weight:800;background: linear-gradient(135deg, #ffffff, var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
   .muted{color:var(--muted);font-size:14px;font-weight:500;}
+
+  /* --- Navigation --- */
   .cols{display:grid;grid-template-columns:260px 1fr;gap:24px;}
-  nav.side{padding:16px;border-radius:16px;display:flex;flex-direction:column;gap:10px;background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);height: fit-content;}
+  nav.side{padding:16px;border-radius:16px;display:flex;flex-direction:column;gap:10px;background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);height:fit-content;}
   nav .brand{display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin-bottom:8px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06);}
-  nav button{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;font-weight:600;font-size:14px;position: relative;overflow: hidden;}
-  nav button::before {content: '';position: absolute;top: 0;left: -100%;width: 100%;height: 100%;background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);transition: left 0.5s ease;}
-  nav button:hover::before {left: 100%;}
-  nav button:hover{background: rgba(255,255,255,0.05);border-color: rgba(255,255,255,0.08);transform:translateY(-1px);color:var(--muted-hover);}
-  nav button.active{background: linear-gradient(135deg, rgba(142,246,193,0.08), rgba(140,90,240,0.08));color:var(--accent);border-color: rgba(142,246,193,0.2);box-shadow:0 12px 40px rgba(140,90,240,0.1);transform:translateY(-2px);}
-  .content{min-height:520px;padding:20px;border-radius:16px;display:flex;flex-direction:column;background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);}
-  .tab{display:none;flex-direction:column;}
-  .tab.active{display:flex;}
-  .footRow{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);color:var(--muted);font-size:13px;font-weight:500;}
-</style>
-</head>
-<body>
-  <canvas id="bg" aria-hidden="true"></canvas>
-  <div class="vignette" aria-hidden="true"></div>
+  nav button{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;border:1px solid transparent;background:transparent;color:inherit;cursor:pointer;font-weight:600;font-size:14px;position: relative;overflow: hidden;transition:all 0.2s;}
+  nav button.active{background:linear-gradient(135deg, rgba(142,246,193,0.08), rgba(140,90,240,0.08));color:var(--accent);border-color: rgba(142,246,193,0.2);box-shadow:0 12px 40px rgba(140,90,240,0.1);transform:translateY(-2px);}
+  nav button:hover{background: rgba(255,255,255,0.05);border-color: rgba(255,255,255,0.08);color:var(--muted-hover);transform:translateY(-1px);}
 
-  <div class="wrap">
-    <div class="card" role="main" aria-live="polite">
-      <div class="hdr">
-        <div class="logo" aria-hidden="true"><img src="favicon.png" alt="Bedrock logo"></div>
-        <div>
-          <h1>Bedrock Portal</h1>
-          <div class="muted" id="who">friends-only lobby</div>
-        </div>
-        <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
-          <button id="signout" class="smallBtn" title="Sign out">← Sign out</button>
-        </div>
-      </div>
+  /* --- Content Tabs --- */
+  .content{min-height:520px;padding:20px;border-radius:16px;display:flex;flex-direction:column;background:linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(10px);}
+  .tab{display:none;}
+  .tab.active{display:block;}
 
-      <div class="cols">
-        <nav class="side" aria-label="categories">
-          <div class="brand">
-            <strong style="letter-spacing:2px;color:var(--accent);font-size:14px">BEDROCK</strong>
-            <span class="muted" style="font-size:12px">portal</span>
-          </div>
-          <button data-tab="home" class="active">🏠 Home</button>
-          <button data-tab="games">🎮 Games</button>
-          <button data-tab="tools">🛠️ Tools</button>
-        </nav>
+  /* --- Launch Button --- */
+  .launchBig{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:20px 36px;border-radius:20px;border:0;background: linear-gradient(135deg, var(--accent), var(--accent-hover));color:#041010;font-weight:900;cursor:pointer;box-shadow: 0 20px 50px rgba(10,20,20,0.6);font-size:18px;transition: all 0.15s cubic-bezier(.2,.9,.3,1);position: relative;overflow: hidden;}
+  .launchBig.idle{animation: idlePulse 3s ease-in-out infinite;}
+  @keyframes idlePulse{0%{transform:scale(1);box-shadow:0 20px 50px rgba(10,20,20,0.6);}50%{transform:scale(1.04);box-shadow:0 25px 60px rgba(150,85,255,0.15);}100%{transform:scale(1);box-shadow:0 20px 50px rgba(10,20,20,0.6);}}
 
-        <section class="content" id="content">
-          <div id="home" class="tab active">
-            <h2 style="margin-top:0;font-weight:700">Welcome back</h2>
-            <p class="muted">Your personal portal is ready. Navigate using the sidebar to access Games or Tools.</p>
-          </div>
-
-          <div id="games" class="tab">
-            <h2 style="margin-top:0;font-weight:700">Games Hub</h2>
-            <p class="muted">Launch games here.</p>
-          </div>
-
-          <div id="tools" class="tab">
-            <h2 style="margin-top:0;font-weight:700">Productivity Tools</h2>
-            <p class="muted">Open any tool in a new tab.</p>
-          </div>
-
-          <div class="footRow">
-            <div>Made with ❤️ for friends • low-stakes, high-vibes</div>
-            <div>Bedrock Portal • 2025</div>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // TAB SWITCHING
-    document.addEventListener('DOMContentLoaded', () => {
-      const navBtns = document.querySelectorAll('nav.side button');
-      const tabs = document.querySelectorAll('.tab');
-
-      function showTab(tabId){
-        tabs.forEach(t => t.classList.remove('active'));
-        const el = document.getElementById(tabId);
-        if(el) el.classList.add('active');
-      }
-
-      navBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          navBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const tabId = btn.getAttribute('data-tab');
-          showTab(tabId);
-        });
-      });
-    });
-  </script>
-</body>
-</html>
+  /* --- Tools Tiles --- */
+  .toolsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:20px;}
+  .toolTile{border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);min-height:130px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;background:linear-gradient(135deg, var(--tile-purple), rgba(138,75,230,0.08)),linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(10px);}
+  .toolTile:hover{background:linear-gradient(135deg, var(--tile-purple-hover), rgba(138,75,230,0.16)),linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));transform:translateY(-8px) scale(1.02);box-shadow:

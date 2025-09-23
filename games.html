@@ -1252,10 +1252,15 @@
     }
 
     /* ---------------------------
-       ENHANCED GAME POPULATION
+       ENHANCED GAME POPULATION - FIXED
        --------------------------- */
     function populateGames(gamesToShow = games) {
       const container = document.getElementById('allGames');
+      if (!container) {
+        console.error('Container allGames not found');
+        return;
+      }
+      
       container.innerHTML = '';
 
       if (gamesToShow.length === 0) {
@@ -1291,6 +1296,8 @@
         
         container.appendChild(gameCard);
       });
+      
+      console.log(`Populated ${gamesToShow.length} games`);
     }
 
     /* ---------------------------
@@ -1413,32 +1420,39 @@
        INITIALIZE EVERYTHING
        --------------------------- */
     
-    // Initialize everything immediately - Multiple approaches
-    function initializeGames() {
-      console.log('Initializing games...');
-      populateGames();
-      
-      // Welcome message
-      setTimeout(() => {
-        showNotification('🎮 Welcome to your gaming sanctuary!');
-      }, 1000);
-    }
-
-    // Try multiple initialization methods
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeGames);
-    } else {
-      initializeGames();
-    }
-
-    // Backup initialization after a delay
-    setTimeout(() => {
-      const container = document.getElementById('allGames');
-      if (!container || container.children.length === 0) {
-        console.log('Backup initialization triggered');
-        populateGames();
-      }
-    }, 500); function() {
+    // FORCE IMMEDIATE INITIALIZATION 
+    console.log('Games array length:', games.length);
+    console.log('DOM ready state:', document.readyState);
+    
+    // Run immediately
+    populateGames();
+    
+    // Also set up event handlers immediately
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const category = btn.dataset.category;
+        const filteredGames = category === 'all' ? games : games.filter(g => g.category === category);
+        
+        const header = document.querySelector('.category-section h2');
+        if (header) {
+          const categoryNames = {
+            'all': 'All Games',
+            'arcade': 'Arcade Games',
+            'puzzle': 'Puzzle Games', 
+            'strategy': 'Strategy Games',
+            'multiplayer': 'Multiplayer Games',
+            'classic': 'Classic Games',
+            'creative': 'Creative Games'
+          };
+          header.textContent = categoryNames[category] || 'Games';
+        }
+        
+        populateGames(filteredGames);
+      });
+    }); function() {
         populateGames();
       });
     } else {

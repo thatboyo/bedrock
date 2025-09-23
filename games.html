@@ -1413,19 +1413,32 @@
        INITIALIZE EVERYTHING
        --------------------------- */
     
-    // Initialize everything immediately
-    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize everything immediately - Multiple approaches
+    function initializeGames() {
+      console.log('Initializing games...');
       populateGames();
       
       // Welcome message
       setTimeout(() => {
         showNotification('🎮 Welcome to your gaming sanctuary!');
-      }, 1500);
-    });
+      }, 1000);
+    }
 
-    // Also run immediately in case DOMContentLoaded already fired
+    // Try multiple initialization methods
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', initializeGames);
+    } else {
+      initializeGames();
+    }
+
+    // Backup initialization after a delay
+    setTimeout(() => {
+      const container = document.getElementById('allGames');
+      if (!container || container.children.length === 0) {
+        console.log('Backup initialization triggered');
+        populateGames();
+      }
+    }, 500); function() {
         populateGames();
       });
     } else {

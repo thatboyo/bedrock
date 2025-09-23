@@ -3,310 +3,86 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Access Portal — BEDROCK</title>
+<title>Bedrock Access Portal</title>
 <link rel="icon" href="favicon.png" type="image/png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg: linear-gradient(135deg,#020208 0%,#0a0a15 50%,#04040a 100%);
-    --accent: #8ef6c1;
-    --accent-hover: #a8ffdb;
-    --glass-border: rgba(255,255,255,0.12);
-    --glass-bg: rgba(255,255,255,0.04);
-    --shadow-epic: 0 35px 100px rgba(0,0,0,0.8), 0 15px 60px rgba(150,85,255,0.08);
-    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0a0a15;
+    color: #f8fafc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
   }
-  html,body{height:100%;margin:0;background:var(--bg);color:#f8fafc;overflow:hidden}
-  *{box-sizing:border-box}
-
-/* Background canvas + ornament */
-  canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block;filter:brightness(1.15) contrast(1.06)}
-  .spinning-square{position:fixed;width:420px;height:420px;left:calc(50% - 210px);top:calc(38% - 210px);z-index:1;pointer-events:none;transform:rotate(14deg);border-radius:22px;background:linear-gradient(135deg,rgba(142,246,193,0.04),rgba(150,85,255,0.03));filter:blur(10px);box-shadow:0 40px 120px rgba(0,0,0,0.6);animation:spinSquare 22s linear infinite;opacity:0.95}
-  @keyframes spinSquare{0%{transform:rotate(0deg)}50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
-  .vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:
-    radial-gradient(50% 50% at 20% 20%, rgba(150,85,255,0.25), transparent 30%),
-    radial-gradient(60% 60% at 80% 80%, rgba(122,58,210,0.20), transparent 35%),
-    radial-gradient(40% 40% at 50% 10%, rgba(142,246,193,0.12), transparent 25%);mix-blend-mode:screen;animation:vignette-dance 15s ease-in-out infinite}
-  @keyframes vignette-dance{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.85;transform:scale(1.03)}}
-
-/* Card UI (kept from your original) */
-  .auth-wrap{position:relative;z-index:3;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;animation:grand-entrance 1.2s cubic-bezier(0.23,1,0.32,1)}
-  @keyframes grand-entrance{0%{opacity:0;transform:translateY(60px) scale(.98);filter:blur(18px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
-  .auth-card{width:100%;max-width:480px;padding:40px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));border:1px solid var(--glass-border);box-shadow:var(--shadow-epic);position:relative;overflow:visible;backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);text-align:center}
-  .auth-card::before{content:"";position:absolute;inset:-20px;border-radius:36px;z-index:-1;background:linear-gradient(135deg,rgba(150,85,255,0.28),rgba(142,246,193,0.05));filter:blur(30px);pointer-events:none}
-  .auth-title{font-size:32px;font-weight:900;margin:0 0 12px;background:linear-gradient(135deg,#fff,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .auth-subtitle{color:rgba(255,255,255,0.7);font-size:16px;margin-bottom:40px;font-weight:500}
-  .key-input{width:100%;padding:18px 24px;border-radius:16px;border:1px solid rgba(255,255,255,0.1);background:var(--glass-bg);color:#f8fafc;font-size:16px;font-weight:700;text-align:center;letter-spacing:2px;margin-bottom:24px;transition:all .3s;backdrop-filter:blur(10px)}
-  .key-input:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,0.08);box-shadow:0 0 30px rgba(142,246,193,0.18);transform:scale(1.02)}
-  .access-btn{width:100%;padding:18px 32px;border-radius:16px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-hover));color:#071018;font-weight:900;font-size:18px;cursor:pointer;position:relative;overflow:hidden;letter-spacing:1px}
-  .access-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transition:left .6s ease}
-  .access-btn:hover::before{left:100%}
-  .status-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:16px}
-  .loading{display:none}
-  .spinner{width:24px;height:24px;border:2px solid rgba(142,246,193,0.18);border-top:2px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite}
-  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-  .error-msg{color:#ff6b6b;font-size:14px;font-weight:600;margin-top:16px;opacity:0;transition:opacity .3s;text-shadow:0 0 10px rgba(255,107,107,0.3)}
-  .error-msg.show{opacity:1;animation:shake .5s}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-  .success-msg{color:var(--accent);font-size:14px;font-weight:600;margin-top:16px;opacity:0;transition:opacity .3s;text-shadow:0 0 10px rgba(142,246,193,0.2)}
-  .success-msg.show{opacity:1;animation:success-pulse .6s}
-  @keyframes success-pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
-  .small{font-size:12px;color:rgba(255,255,255,0.6);margin-top:10px}
-
-  @media (max-width:520px){.auth-card{padding:28px;border-radius:20px}.auth-title{font-size:28px}}
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+  }
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+  }
+  button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #8ef6c1;
+    font-weight: bold;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
-  <canvas id="bg" aria-hidden="true"></canvas>
-  <div class="spinning-square" aria-hidden="true"></div>
-  <div class="vignette" aria-hidden="true"></div>
-
-  <div class="auth-wrap">
-    <div class="auth-card" role="main" aria-labelledby="bedrock-title">
-      <h1 id="bedrock-title" class="auth-title">BEDROCK</h1>
-      <p class="auth-subtitle">Enter your access key to continue</p>
-
-      <input id="keyInput" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off" inputmode="text" aria-label="Access key">
-
-      <button id="accessBtn" class="access-btn" type="button">GRANT ACCESS</button>
-
-      <div class="status-row" aria-live="polite">
-        <div id="loading" class="loading" aria-hidden="true"><div class="spinner" aria-hidden="true"></div></div>
-        <div id="successMsg" class="success-msg" aria-hidden="true">Access granted. Launching Bedrock...</div>
-        <div id="errorMsg" class="error-msg" aria-hidden="true">Invalid access key. Please try again.</div>
-      </div>
-
-      <p class="small" id="hint" aria-hidden="true"></p>
-    </div>
+  <div class="card">
+    <h1>BEDROCK ACCESS</h1>
+    <input id="keyInput" type="password" placeholder="Enter Access Key">
+    <button onclick="validateKey()">GRANT ACCESS</button>
   </div>
 
 <script>
-/*
-  Full package:
-  - UI from your original
-  - key = BED25 (hidden)
-  - opens about:blank immediately, fetches portal.html, injects base href to preserve relative assets (GH Pages safe)
-  - fallbacks: iframe -> navigation
-*/
+const VALID_KEY = "BED25";
 
-window.addEventListener('DOMContentLoaded', () => {
-  console.log('BEDROCK UI ready');
-
-  const VALID_KEY = 'BED25';
-  const keyInput = document.getElementById('keyInput');
-  const accessBtn = document.getElementById('accessBtn');
-  const loading = document.getElementById('loading');
-  const successMsg = document.getElementById('successMsg');
-  const errorMsg = document.getElementById('errorMsg');
-
-  function showLoading(on){ loading.style.display = on ? 'block' : 'none'; accessBtn.disabled = on; if(on){ successMsg.classList.remove('show'); errorMsg.classList.remove('show'); } }
-  function showSuccess(){ successMsg.classList.add('show'); errorMsg.classList.remove('show'); }
-  function showError(){ errorMsg.classList.add('show'); successMsg.classList.remove('show'); }
-
-  // GH-Pages-safe inject: fetch portal.html, inject a <base href="..."> so relative assets resolve,
-  // then write the final HTML into the about:blank tab. Fallback to iframe or nav if needed.
-  function injectCloakedPortal(win) {
-    const portalUrl = 'portal.html';
-
-    // Build base path to the current folder (handles GitHub Pages repo subpaths)
-    // Example: if current URL is https://user.github.io/repo/page.html -> base = https://user.github.io/repo/
-    const url = new URL(location.href);
-    const path = url.pathname;
-    const folder = path.endsWith('/') ? path : path.replace(/\/[^/]*$/, '/');
-    const baseHref = url.origin + folder;
-
-    console.log('[injectCloakedPortal] baseHref=', baseHref, 'portalUrl=', portalUrl);
-
-    fetch(portalUrl, { cache: 'no-store' }).then(response => {
-      if (!response.ok) throw new Error('fetch failed: ' + response.status);
-      return response.text();
-    }).then(htmlText => {
-      // If portal already has a <base>, leave as-is; otherwise insert one after <head>
-      const baseTag = `<base href="${baseHref}">`;
-      let outHtml;
-      if (/<base[^>]*>/i.test(htmlText)) {
-        outHtml = htmlText;
-      } else if (/<head[^>]*>/i.test(htmlText)) {
-        outHtml = htmlText.replace(/<head([^>]*)>/i, (m, g1) => `<head${g1}>${baseTag}`);
-      } else {
-        outHtml = `<!doctype html><head>${baseTag}</head><body>${htmlText}</body>`;
-      }
-
-      // try writing portal HTML into blank tab
-      try {
-        win.document.open();
-        win.document.write(outHtml);
-        win.document.close();
-        console.log('[injectCloakedPortal] wrote portal HTML into blank tab (with base)');
-      } catch (err) {
-        console.warn('[injectCloakedPortal] write failed, falling back to iframe', err);
-        try {
-          win.document.open();
-          win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title> </title><base href="${baseHref}"><style>html,body{height:100%;margin:0;background:#000}iframe{border:0;width:100%;height:100%}</style></head><body><iframe src="${portalUrl}" title="Portal"></iframe></body></html>`);
-          win.document.close();
-        } catch (e) {
-          console.error('[injectCloakedPortal] fallback iframe write failed', e);
-          try { win.location.href = portalUrl; } catch(e2){ console.error('[injectCloakedPortal] final nav failed', e2); }
-        }
-      }
-    }).catch(err => {
-      console.warn('[injectCloakedPortal] fetch failed — falling back to iframe/nav', err);
-      try {
-        win.document.open();
-        win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title> </title><style>html,body{height:100%;margin:0;background:#000}iframe{border:0;width:100%;height:100%}</style></head><body><iframe src="${portalUrl}" title="Portal"></iframe></body></html>`);
-        win.document.close();
-      } catch (e) {
-        console.error('[injectCloakedPortal] fallback iframe write also failed', e);
-        try { win.location.href = portalUrl; } catch(e2){ console.error('[injectCloakedPortal] final nav failed', e2); }
-      }
-    });
-  }
-
-  accessBtn.addEventListener('click', () => {
-    // open blank tab immediately (user gesture)
-    let blankTab = null;
-    try { blankTab = window.open('about:blank', '_blank'); } catch(e) { console.warn('window.open threw', e); }
-    if (!blankTab) {
-      alert('Pop-up blocked. Please allow pop-ups for this site and try again.');
+function validateKey() {
+  const input = document.getElementById("keyInput").value.trim().toUpperCase();
+  if (input === VALID_KEY) {
+    // open a blank tab immediately (user gesture)
+    const newTab = window.open("about:blank", "_blank");
+    if (!newTab) {
+      alert("Pop-up blocked. Allow pop-ups for this site.");
       return;
     }
-
-    showLoading(true);
-
-    // small UI delay for spinner animation; blankTab already created so pop-up should be allowed
-    setTimeout(() => {
-      const entered = (keyInput.value || '').trim().toUpperCase();
-      if (entered === VALID_KEY) {
-        console.log('Key valid — injecting portal into blank tab');
-        try { localStorage.setItem('bedrock_auth', 'authorized'); } catch(e){}
-        showSuccess();
-
-        setTimeout(() => {
-          if (!blankTab || blankTab.closed) {
-            alert('Could not open portal tab — it may have been blocked or closed. Try again.');
-            showLoading(false);
-            return;
-          }
-          injectCloakedPortal(blankTab);
-          // optionally close origin tab so only portal remains:
-          // try { window.close(); } catch(e) {}
-          showLoading(false);
-        }, 600);
-
-      } else {
-        // invalid: close pre-opened blank tab and show error
-        try { blankTab.close(); } catch(e) { console.warn('could not close blankTab', e); }
-        showLoading(false);
-        showError();
-        keyInput.value = '';
-        keyInput.focus();
-      }
-    }, 700);
-  });
-
-  keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); accessBtn.click(); } });
-  keyInput.focus();
-
-  // --- starfield background (guarded) ---
-  try {
-    (function starfield() {
-      const canvas = document.getElementById('bg');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      let w = canvas.width = innerWidth;
-      let h = canvas.height = innerHeight;
-      const STAR_COUNT = Math.max(80, Math.floor((w*h)/2000));
-      const stars = [];
-      const nebula = [];
-      function rand(min,max){ return Math.random()*(max-min)+min; }
-
-      for(let i=0;i<STAR_COUNT;i++){
-        const clr = Math.random() > 0.945 ? {r:142,g:246,b:193,a:0.9} :
-                    Math.random() > 0.98 ? {r:168,g:85,b:247,a:0.75} :
-                    {r:255,g:255,b:255,a:1.0};
-        stars.push({
-          x: Math.random()*w,
-          y: Math.random()*h,
-          z: rand(0.35,2.0),
-          r: rand(0.8,4.2),
-          vx: rand(-0.03,0.03),
-          vy: rand(-0.06,0.06),
-          t: Math.random()*15,
-          color: `rgba(${clr.r},${clr.g},${clr.b},${clr.a})`,
-          twinkleSpeed: rand(0.3, 1.5)
-        });
-      }
-      for(let i=0;i<6;i++){
-        nebula.push({
-          x: Math.random()*w,
-          y: Math.random()*h,
-          r: rand(120,300),
-          vx: rand(-0.015,0.015),
-          vy: rand(-0.015,0.015),
-          opacity: Math.max(0.02, Math.min(0.18, rand(0.03,0.12))),
-          colorRGB: Math.random() > 0.5 ? '142,246,193' : '168,85,247'
-        });
-      }
-      function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
-      window.addEventListener('resize', resize);
-
-      function draw(){
-        ctx.clearRect(0,0,w,h);
-        const g1 = ctx.createRadialGradient(w*0.2,h*0.2,0,w*0.2,h*0.2,Math.max(w,h)*0.8);
-        g1.addColorStop(0,'rgba(15,10,25,0.22)');
-        g1.addColorStop(0.6,'rgba(8,5,15,0.28)');
-        g1.addColorStop(1,'rgba(2,2,8,0.4)');
-        ctx.fillStyle = g1;
-        ctx.fillRect(0,0,w,h);
-
-        const t = Date.now()/4200;
-        for(const n of nebula){
-          n.x += n.vx; n.y += n.vy;
-          if(n.x < -n.r) n.x = w + n.r;
-          if(n.x > w + n.r) n.x = -n.r;
-          if(n.y < -n.r) n.y = h + n.r;
-          if(n.y > h + n.r) n.y = -n.r;
-          const pulse = Math.abs(Math.sin(t * 0.44 + n.x * 0.001));
-          ctx.beginPath();
-          ctx.globalAlpha = Math.max(0, Math.min(1, n.opacity * pulse));
-          const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-          g.addColorStop(0, `rgba(${n.colorRGB}, ${Math.min(1, n.opacity * 3)})`);
-          g.addColorStop(1, 'transparent');
-          ctx.fillStyle = g;
-          ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
-          ctx.fill();
-        }
-        for(const s of stars){
-          s.x += s.vx * (s.z*1.5);
-          s.y += s.vy * (s.z*1.5);
-          const twinkle = Math.abs(Math.sin(t * s.twinkleSpeed + s.t)) * Math.abs(Math.cos(t * s.twinkleSpeed * 0.6 + s.t * 0.4));
-          if(s.x < 0) s.x = w;
-          if(s.x > w) s.x = 0;
-          if(s.y < 0) s.y = h;
-          if(s.y > h) s.y = 0;
-          ctx.beginPath();
-          ctx.globalAlpha = 0.55 + 0.45 * s.z * (0.4 + twinkle*0.6);
-          ctx.fillStyle = s.color;
-          ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI*2);
-          ctx.fill();
-          if(s.color.indexOf('255') === -1 && twinkle > 0.68){
-            ctx.beginPath();
-            ctx.globalAlpha = 0.18 * s.z * twinkle;
-            ctx.arc(s.x, s.y, s.r * s.z * 2.6, 0, Math.PI*2);
-            ctx.fill();
-          }
-          ctx.globalAlpha = 1;
-        }
-        requestAnimationFrame(draw);
-      }
-      draw();
-    })();
-  } catch (err) {
-    console.warn('Starfield init failed (non-fatal):', err);
+    // write an iframe into it that loads portal.html
+    const html = `
+      <!doctype html>
+      <html>
+      <head><title> </title><style>
+        body,html{margin:0;padding:0;height:100%;overflow:hidden;background:#000}
+        iframe{border:none;width:100%;height:100%}
+      </style></head>
+      <body>
+        <iframe src="portal.html"></iframe>
+      </body>
+      </html>
+    `;
+    newTab.document.open();
+    newTab.document.write(html);
+    newTab.document.close();
+  } else {
+    alert("Invalid key.");
   }
-});
+}
 </script>
 </body>
 </html>

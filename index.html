@@ -1145,7 +1145,7 @@
     function playAirhorn(){ // quick simulated airhorn
      <iframe width="110" height="200" src="https://www.myinstants.com/instant/yo-phone-lining-56973/embed/" frameborder="0" scrolling="no"></iframe>
     }
-    function playBruh(){ speechSynthesis.speak(new SpeechSynthesisUtterance('bruh')); }
+    function playBruh(){ speechSynthesis.speak(new SpeechSynthesisUtterance('bru')); }
     function playGlitch(){ for(let i=0;i<6;i++){ setTimeout(()=>playOsc(200+Math.random()*200,0.08,'sawtooth'), i*80); } }
 
     document.querySelectorAll('#noiseCard button[data-snd]').forEach(b=>{
@@ -1158,7 +1158,7 @@
       });
     });
 
-    /* ---------------- PIXEL ART CANVAS ---------------- */
+    /* ---------------- PIXEL ART CANVAS ----------------- */
     const pixelCanvas = document.getElementById('pixelCanvas');
     const pctx = pixelCanvas.getContext('2d');
     const pixelSizeInput = document.getElementById('pixelSize');

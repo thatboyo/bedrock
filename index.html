@@ -920,14 +920,11 @@
     #tools .row{ display:flex; gap:8px; flex-wrap:wrap}
     /* Pixel canvas */
     #pixelCanvas{ image-rendering: pixelated; border:1px solid rgba(255,255,255,0.06); background:#000; display:block}
-    /* wheel */
-    #wheel{ width:220px; height:220px; border-radius:50%; border:6px solid rgba(255,255,255,0.06); position:relative; overflow:hidden }
-    #wheel .seg{ position:absolute; inset:0; transform-origin:center; display:flex; align-items:center; justify-content:center; font-size:12px; pointer-events:none }
 
   </style>
 
-  <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);">Fun Tools Lab</h2>
-  <div class="muted" style="font-size:15px;margin-bottom:8px">Mini playground: chaotic, useful, and just a little cursed.</div>
+  <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);">Tools</h2>
+  <div class="muted" style="font-size:15px;margin-bottom:8px">Mini playground</div>
 
   <div class="toolGrid" id="toolGrid">
     <!-- Meme Generator -->
@@ -957,18 +954,6 @@
         </div>
       </div>
       <div class="toolNote">Uses PokeAPI. Works offline-ish if cached after first use.</div>
-    </div>
-
-    <!-- AI Roast -->
-    <div class="miniCard" id="roastCard">
-      <h3>🔥 AI Roast Generator</h3>
-      <input id="roastName" placeholder="Your name or target" style="width:100%">
-      <div style="display:flex;gap:8px;margin-top:6px">
-        <button class="small" id="roastGo">Roast</button>
-        <button class="small" id="roastMild">Mild</button>
-      </div>
-      <div id="roastOut" style="margin-top:8px;font-weight:700"></div>
-      <div class="toolNote">Playful burns only. Keeps it silly not mean.</div>
     </div>
 
     <!-- Noise Maker -->
@@ -1008,32 +993,6 @@
       </div>
       <div id="mashOut" style="margin-top:8px;font-weight:800"></div>
     </div>
-
-    <!-- Wheel of Randomness -->
-    <div class="miniCard" id="wheelCard">
-      <h3>🎡 Wheel of Randomness</h3>
-      <input id="wheelInput" placeholder="Comma, separated, options" value="Do a task,Eat snack,Play game,Switch tab">
-      <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
-        <div id="wheel"></div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <button class="small" id="spinWheel">Spin</button>
-          <div id="wheelResult" style="font-weight:800"></div>
-        </div>
-      </div>
-      <div class="toolNote">Type options and spin that fate wheel.</div>
-    </div>
-
-    <!-- Chaos Button -->
-    <div class="miniCard" id="chaosCard">
-      <h3>💥 Chaos Button</h3>
-      <div style="display:flex;gap:6px">
-        <button class="small" id="chaosBtn">PRESS</button>
-        <button class="small" id="emojiRain">Emoji Rain</button>
-        <button class="small" id="shakeBtn">Screen Shake</button>
-      </div>
-      <div class="toolNote">Random visual silliness. Use responsibly.</div>
-    </div>
-
   
     <!-- ASCII Art Converter -->
     <div class="miniCard" id="asciiCard">

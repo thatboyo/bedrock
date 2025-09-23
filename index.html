@@ -923,18 +923,7 @@
     /* wheel */
     #wheel{ width:220px; height:220px; border-radius:50%; border:6px solid rgba(255,255,255,0.06); position:relative; overflow:hidden }
     #wheel .seg{ position:absolute; inset:0; transform-origin:center; display:flex; align-items:center; justify-content:center; font-size:12px; pointer-events:none }
-    /* stickers area */
-    #stickArea{ min-height:160px; border:1px dashed rgba(255,255,255,0.06); border-radius:8px; position:relative; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); }
-    .sticker{ width:64px; height:64px; position:absolute; user-select:none; touch-action:none; cursor:grab; }
-    /* chaos emoji rain */
-    .emojiRain{ position:fixed; pointer-events:none; z-index:99999; left:0; right:0; top:0; bottom:0; overflow:hidden; }
-    .emoji{ position:absolute; font-size:28px; animation: fall linear; }
-    @keyframes fall { to { transform: translateY(120vh) rotate(120deg); opacity:0 } }
-    /* fake virus */
-    #virusOverlay{ position:fixed; inset:0; z-index:99998; display:none; background:repeating-linear-gradient(45deg, rgba(255,0,0,0.03) 0 2px, transparent 2px 8px); mix-blend-mode: difference; }
-    #petBlob{ display:flex; gap:12px; align-items:center }
-    #snakeCanvas{ background:#071018; display:block; border-radius:8px; }
-    .toolNote{ font-size:12px; color:var(--muted); margin-top:6px}
+
   </style>
 
   <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);">Fun Tools Lab</h2>
@@ -1045,29 +1034,7 @@
       <div class="toolNote">Random visual silliness. Use responsibly.</div>
     </div>
 
-    <!-- Sticker Dropper -->
-    <div class="miniCard" id="stickerCard">
-      <h3>📎 Sticker Dropper</h3>
-      <div style="display:flex;gap:8px;align-items:center">
-        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f436.svg" class="stickThumb" width="40" data-src="🐶" style="cursor:pointer">
-        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f98a.svg" class="stickThumb" width="40" data-src="🦊" style="cursor:pointer">
-        <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f47b.svg" class="stickThumb" width="40" data-src="👻" style="cursor:pointer">
-        <button class="small" id="clearSticks">Clear</button>
-      </div>
-      <div id="stickArea" style="margin-top:8px"></div>
-      <div class="toolNote">Drag stickers around. Click a palette icon to spawn.</div>
-    </div>
-
-    <!-- Fake Virus Simulator -->
-    <div class="miniCard" id="virusCard">
-      <h3>🦠 Fake Virus Simulator</h3>
-      <div style="display:flex;gap:8px">
-        <button class="small" id="virusGo">Start Glitch</button>
-        <button class="small" id="virusStop">Stop</button>
-      </div>
-      <div class="toolNote">Harmless full-screen glitch visual. For pranks only.</div>
-    </div>
-
+  
     <!-- ASCII Art Converter -->
     <div class="miniCard" id="asciiCard">
       <h3>⌨️ ASCII Art Converter</h3>
@@ -1077,23 +1044,7 @@
       <div class="toolNote">Converts small images to black/white ASCII.</div>
     </div>
 
-    <!-- Pet Blob (Tamago) -->
-    <div class="miniCard" id="petCard">
-      <h3>🐾 Pet Blob</h3>
-      <div id="petBlob" style="align-items:center">
-        <div id="petVisual" style="width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,#8ef6c1,#7c3aed);display:grid;place-items:center;font-weight:900;font-size:32px;color:#04121a"></div>
-        <div style="flex:1">
-          <div id="petNameDisplay" style="font-weight:800">Blob</div>
-          <div style="display:flex;gap:6px;margin-top:6px">
-            <button class="small" id="feedPet">Feed</button>
-            <button class="small" id="playPet">Play</button>
-            <button class="small" id="renamePet">Rename</button>
-          </div>
-          <div style="margin-top:6px" class="mutedSmall">Happiness: <span id="petHappy">0</span></div>
-        </div>
-      </div>
-    </div>
-
+    
     <!-- Snake Game -->
     <div class="miniCard" id="snakeCard">
       <h3>🐍 Snake</h3>
@@ -1104,10 +1055,6 @@
       </div>
       <div class="toolNote">Arrow keys to play. Classic vibes.</div>
     </div>
-
-  <!-- emoji rain container -->
-  <div id="emojiZone" class="emojiRain" aria-hidden="true"></div>
-  <div id="virusOverlay"></div>
 
   <script>
   (function(){

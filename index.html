@@ -5,84 +5,243 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Access Portal — BEDROCK</title>
 <link rel="icon" href="favicon.png" type="image/png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-  body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: #0a0a15;
-    color: #f8fafc;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  :root{
+    --bg: linear-gradient(135deg, #020208 0%, #0a0a15 50%, #04040a 100%);
+    --accent: #8ef6c1;
+    --accent-2: #a8ffdb;
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --shadow: 0 30px 80px rgba(0,0,0,0.7);
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   }
-  .card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    padding: 32px;
-    text-align: center;
-    width: 100%;
-    max-width: 400px;
+  html,body{height:100%;margin:0;background:var(--bg);color:#f8fafc;overflow:hidden}
+  *{box-sizing:border-box}
+  /* subtle star canvas sits behind everything */
+  canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;filter:brightness(1.15);display:block}
+  .vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:
+    radial-gradient(50% 50% at 20% 20%, rgba(150,85,255,0.18), transparent 30%),
+    radial-gradient(60% 60% at 80% 80%, rgba(122,58,210,0.14), transparent 35%),
+    radial-gradient(40% 40% at 50% 10%, rgba(142,246,193,0.08), transparent 25%);
+    mix-blend-mode:screen;z-index:1}
+  .auth-wrap{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+  .auth-card{
+    width:100%;max-width:520px;padding:36px;border-radius:22px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border:1px solid var(--glass-border);box-shadow:var(--shadow);backdrop-filter:blur(16px);
+    text-align:center;position:relative;overflow:visible;
   }
-  input {
-    width: 100%;
-    padding: 12px;
-    margin: 12px 0;
-    border-radius: 8px;
-    border: none;
-    outline: none;
+  .auth-card::before{
+    content:"";position:absolute;inset:-18px;border-radius:28px;z-index:-1;background:linear-gradient(135deg, rgba(150,85,255,0.06), rgba(142,246,193,0.04));filter:blur(26px)
   }
-  button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    background: #8ef6c1;
-    font-weight: bold;
-    cursor: pointer;
-  }
+  .auth-title{font-size:34px;font-weight:800;margin:0 0 6px;background:linear-gradient(135deg,#fff,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .auth-subtitle{color:rgba(255,255,255,0.72);margin:0 0 22px;font-weight:600}
+  .key-input{width:100%;padding:16px 18px;border-radius:14px;border:1px solid rgba(255,255,255,0.06);background:var(--glass);color:#f8fafc;font-weight:700;text-align:center;letter-spacing:2px;font-size:15px;margin-bottom:18px}
+  .key-input::placeholder{color:rgba(255,255,255,0.45);letter-spacing:1px;font-weight:600}
+  .access-btn{width:100%;padding:16px 20px;border-radius:14px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#071018;font-weight:900;font-size:16px;cursor:pointer;letter-spacing:1px;position:relative;overflow:hidden}
+  .access-btn[type="button"]{ -webkit-appearance:none; }
+  .access-btn::before{content:"";position:absolute;left:-120%;top:0;width:100%;height:100%;background:linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);transform:skewX(-10deg);transition:all .7s}
+  .access-btn:hover::before{left:120%}
+  .access-btn:active{transform:translateY(1px)}
+  .status-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:16px}
+  .loading{display:none}
+  .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.12);border-top:2px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  .msg{font-size:13px;font-weight:700;opacity:0;color:var(--accent);transition:opacity .25s}
+  .msg.show{opacity:1}
+  .error{color:#ff7b7b}
+  .small{font-size:12px;color:rgba(255,255,255,0.6);margin-top:10px}
+  @media (max-width:520px){ .auth-card{padding:22px;border-radius:16px} .auth-title{font-size:26px} }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>BEDROCK ACCESS</h1>
-    <input id="keyInput" type="password" placeholder="Enter Access Key">
-    <button onclick="validateKey()">GRANT ACCESS</button>
+  <canvas id="bg"></canvas>
+  <div class="vignette"></div>
+
+  <div class="auth-wrap">
+    <div class="auth-card" role="main" aria-labelledby="title">
+      <h1 id="title" class="auth-title">BEDROCK</h1>
+      <p class="auth-subtitle">Enter your access key to continue</p>
+
+      <input id="keyInput" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off" inputmode="text" aria-label="Access key">
+
+      <button id="accessBtn" class="access-btn" type="button">GRANT ACCESS</button>
+
+      <div class="status-row">
+        <div id="loading" class="loading"><div class="spinner" aria-hidden="true"></div></div>
+        <div id="successMsg" class="msg">Access granted. Launching Bedrock...</div>
+        <div id="errorMsg" class="msg error">Invalid key. Try again.</div>
+      </div>
+
+      <p class="small">Password is <strong>BED25</strong> (case-insensitive). This will open the portal cloaked in an <code>about:blank</code> tab.</p>
+    </div>
   </div>
 
 <script>
-const VALID_KEY = "BED25";
+/*
+  Behavior:
+  - opens about:blank immediately on user click to avoid popup-blockers
+  - validates key (BED25), shows loading/success UI
+  - if invalid, closes the temporary tab and shows error
+  - if valid, writes a minimal about:blank page that contains a fullscreen iframe -> portal.html
+*/
 
-function validateKey() {
-  const input = document.getElementById("keyInput").value.trim().toUpperCase();
-  if (input === VALID_KEY) {
-    // open a blank tab immediately (user gesture)
-    const newTab = window.open("about:blank", "_blank");
-    if (!newTab) {
-      alert("Pop-up blocked. Allow pop-ups for this site.");
+window.addEventListener('DOMContentLoaded', () => {
+  console.log('BEDROCK UI ready');
+  const VALID_KEY = 'BED25';
+  const keyInput = document.getElementById('keyInput');
+  const accessBtn = document.getElementById('accessBtn');
+  const loading = document.getElementById('loading');
+  const successMsg = document.getElementById('successMsg');
+  const errorMsg = document.getElementById('errorMsg');
+
+  function showLoading(on){
+    loading.style.display = on ? 'block' : 'none';
+    accessBtn.disabled = on;
+    if (on) { successMsg.classList.remove('show'); errorMsg.classList.remove('show'); }
+  }
+  function showSuccess(){ successMsg.classList.add('show'); errorMsg.classList.remove('show'); }
+  function showError(){ errorMsg.classList.add('show'); successMsg.classList.remove('show'); }
+
+  // Helper to write the cloaked about:blank content with an iframe
+  function injectCloakedPortal(win) {
+    try {
+      const html = `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title> </title>
+  <style>
+    html,body{height:100%;margin:0;background:#000;overflow:hidden}
+    iframe{border:none;width:100vw;height:100vh;display:block}
+    /* optional small header to show "Bedrock" but you wanted blank; keep blank for max cloaking */
+  </style>
+</head>
+<body>
+  <iframe src="portal.html" title="Bedrock Portal"></iframe>
+  <script>
+    // If the iframe fails to load (404 or same-origin restrictions), show a minimal fallback message
+    window.addEventListener('error', ()=>{/*silent*/});
+  </script>
+</body>
+</html>`;
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      console.log('Cloaked portal injected into about:blank tab.');
+    } catch (err) {
+      console.error('injectCloakedPortal error:', err);
+      try { win.location.href = 'portal.html'; } catch(e){ console.warn('fallback nav failed', e); }
+    }
+  }
+
+  // Main function tied to the user click
+  accessBtn.addEventListener('click', () => {
+    // Open blank tab immediately in response to user gesture
+    let blankTab = null;
+    try {
+      blankTab = window.open('about:blank', '_blank');
+    } catch (err) {
+      console.warn('window.open threw', err);
+    }
+    if (!blankTab) {
+      alert('Pop-up blocked. Please allow pop-ups for this site and try again.');
       return;
     }
-    // write an iframe into it that loads portal.html
-    const html = `
-      <!doctype html>
-      <html>
-      <head><title> </title><style>
-        body,html{margin:0;padding:0;height:100%;overflow:hidden;background:#000}
-        iframe{border:none;width:100%;height:100%}
-      </style></head>
-      <body>
-        <iframe src="portal.html"></iframe>
-      </body>
-      </html>
-    `;
-    newTab.document.open();
-    newTab.document.write(html);
-    newTab.document.close();
-  } else {
-    alert("Invalid key.");
+
+    // Immediately show loading so UX feels responsive
+    showLoading(true);
+
+    // Validate key (simulated short delay to let spinner show)
+    setTimeout(() => {
+      const entered = (keyInput.value || '').trim().toUpperCase();
+      if (entered === VALID_KEY) {
+        console.log('Key valid — writing cloaked portal');
+        try { localStorage.setItem('bedrock_auth', 'authorized'); } catch(e){}
+        showSuccess();
+
+        // inject portal into the already-open blank tab
+        setTimeout(() => {
+          injectCloakedPortal(blankTab);
+
+          // Optionally close the auth tab so only the portal remains.
+          // Commented out to keep debugging easy — uncomment if you want it to auto-close.
+          // try { window.close(); } catch(e) { console.warn('could not close origin', e); }
+
+          // reset UI after a moment
+          showLoading(false);
+        }, 600);
+
+      } else {
+        console.log('Key invalid — closing blank tab and showing error');
+        // Close temporary tab as cleanup
+        try { blankTab.close(); } catch(e) { console.warn('could not close blankTab', e); }
+        showLoading(false);
+        showError();
+        keyInput.value = '';
+        keyInput.focus();
+      }
+    }, 850); // small delay to simulate check/animation
+  });
+
+  // allow Enter key to trigger button
+  keyInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      accessBtn.click();
+    }
+  });
+
+  keyInput.focus();
+
+  // --- starfield background (lightweight) ---
+  try {
+    (function starfield(){
+      const canvas = document.getElementById('bg');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = innerWidth;
+      let h = canvas.height = innerHeight;
+      const stars = [];
+      for (let i=0;i<120;i++){
+        stars.push({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          r: Math.random()*1.8 + 0.4,
+          vx: (Math.random()-0.5)*0.12,
+          vy: (Math.random()-0.5)*0.12,
+          alpha: Math.random()*0.7 + 0.3
+        });
+      }
+      function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
+      window.addEventListener('resize', resize);
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+        ctx.fillStyle = 'rgba(2,2,8,0.5)';
+        ctx.fillRect(0,0,w,h);
+        for(const s of stars){
+          s.x += s.vx; s.y += s.vy;
+          if(s.x < -10) s.x = w+10;
+          if(s.x > w+10) s.x = -10;
+          if(s.y < -10) s.y = h+10;
+          if(s.y > h+10) s.y = -10;
+          ctx.beginPath();
+          ctx.globalAlpha = s.alpha;
+          ctx.fillStyle = 'white';
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+  } catch (err) {
+    console.warn('Starfield failed:', err);
   }
-}
+});
 </script>
 </body>
 </html>

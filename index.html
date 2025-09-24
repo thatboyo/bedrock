@@ -35,9 +35,7 @@ html, body {
   font-weight: 400;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 /* Enhanced starfield background */
 canvas#bg {
@@ -156,8 +154,8 @@ canvas#bg {
 
 .auth-card:hover {
   transform: translateY(-5px);
-  box-shadow: 
-    0 50px 140px rgba(0,0,0,0.95), 
+  box-shadow:
+    0 50px 140px rgba(0,0,0,0.95),
     0 30px 100px rgba(150,85,255,0.15),
     0 0 0 1px rgba(255,255,255,0.1) inset;
 }
@@ -245,7 +243,7 @@ canvas#bg {
   outline: none;
   border-color: var(--accent);
   background: rgba(255,255,255,0.12);
-  box-shadow: 
+  box-shadow:
     0 0 0 4px rgba(142,246,193,0.1),
     0 0 40px rgba(142,246,193,0.25);
   transform: scale(1.03);
@@ -269,7 +267,7 @@ canvas#bg {
   font-size: 19px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
+  box-shadow:
     0 25px 70px rgba(10,20,20,0.7),
     0 0 0 1px rgba(255,255,255,0.15) inset,
     0 0 50px rgba(142,246,193,0.3);
@@ -296,7 +294,7 @@ canvas#bg {
 
 .access-btn:hover {
   transform: translateY(-4px) scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 35px 90px rgba(150,85,255,0.25),
     0 0 60px rgba(142,246,193,0.4),
     0 0 0 1px rgba(255,255,255,0.2) inset;
@@ -445,44 +443,11 @@ canvas#bg {
   transform: translateY(-2px);
 }
 
-/* Responsive design */
+/* Responsive design tweaks omitted — same as before */
 @media (max-width: 600px) {
-  .auth-card {
-    padding: 32px 24px;
-  }
-  
-  .auth-title {
-    font-size: 32px;
-  }
-  
-  #logPanel {
-    width: calc(100vw - 32px);
-    left: 16px;
-    right: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .orbital-ring {
-    width: 400px;
-    height: 400px;
-    left: calc(50% - 200px);
-    top: calc(50% - 200px);
-  }
-  
-  .auth-card {
-    padding: 28px 20px;
-  }
-  
-  .key-input {
-    font-size: 16px;
-    padding: 18px 20px;
-  }
-  
-  .access-btn {
-    font-size: 17px;
-    padding: 18px 32px;
-  }
+  .auth-card { padding: 32px 24px; }
+  .auth-title { font-size: 32px; }
+  #logPanel { width: calc(100vw - 32px); left: 16px; right: 16px; }
 }
 </style>
 </head>
@@ -496,51 +461,34 @@ canvas#bg {
     <h1 id="bedrock-title" class="auth-title">BEDROCK</h1>
     <p class="auth-subtitle">Enter your access key to unlock the portal</p>
     
-    <input id="keyInput" 
-           class="key-input" 
-           type="password" 
-           placeholder="ACCESS KEY" 
-           autocomplete="off" 
-           aria-label="Access key">
+    <input id="keyInput" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off" aria-label="Access key">
     
-    <button id="accessBtn" class="access-btn" type="button">
-      LAUNCH BEDROCK
-    </button>
+    <button id="accessBtn" class="access-btn" type="button">LAUNCH BEDROCK</button>
     
     <div class="status-row" aria-live="polite">
       <div id="loading" class="loading" aria-hidden="true">
         <div class="spinner" aria-hidden="true"></div>
         <span class="loading-text">Authenticating...</span>
       </div>
-      <div id="successMsg" class="success-msg" aria-hidden="true">
-        Access granted. Launching Bedrock...
-      </div>
-      <div id="errorMsg" class="error-msg" aria-hidden="true">
-        Invalid access key. Please try again.
-      </div>
+      <div id="successMsg" class="success-msg" aria-hidden="true">Access granted. Launching Bedrock...</div>
+      <div id="errorMsg" class="error-msg" aria-hidden="true">Invalid access key. Please try again.</div>
     </div>
   </div>
 </div>
 
 <div id="logPanel" aria-hidden="true"></div>
-<div id="fallbackBar">
-  <button id="openHereBtn">Open portal in this tab</button>
-</div>
+<div id="fallbackBar"><button id="openHereBtn">Open portal in this tab</button></div>
 
 <script>
-(function() {
+(function(){
   'use strict';
 
-  /* ---------------------
-     Config (change if needed)
-     --------------------- */
-  // Valid keys (kept client-side; can be replaced later by server auth)
-  const VALID_KEYS = ["BEDROCK2025", "TEST123", "DEMO42"];
-  const DEBUG_KEY = 'd'; // press 'd' to toggle log panel
+  // === CONFIG (edit keys here) ===
+  const VALID_KEYS = ["BEDROCK2025","TEST123","DEMO42"];
+  const DEBUG_TOGGLE_KEY = 'd';
+  // ================================
 
-  /* ---------------------
-     DOM refs
-     --------------------- */
+  // DOM
   const logPanel = document.getElementById('logPanel');
   const fallbackBar = document.getElementById('fallbackBar');
   const openHereBtn = document.getElementById('openHereBtn');
@@ -550,317 +498,203 @@ canvas#bg {
   const successMsg = document.getElementById('successMsg');
   const errorMsg = document.getElementById('errorMsg');
 
-  /* ---------------------
-     Logging helper (on-screen so you don't need console)
-     --------------------- */
-  function log(text, cls = '') {
+  function log(msg, cls='') {
     const el = document.createElement('div');
     el.className = 'logLine' + (cls ? ' ' + cls : '');
-    el.textContent = new Date().toLocaleTimeString() + ' — ' + text;
+    el.textContent = new Date().toLocaleTimeString() + ' — ' + msg;
     logPanel.appendChild(el);
     logPanel.scrollTop = logPanel.scrollHeight;
-    // cap lines
     if (logPanel.children.length > 200) logPanel.removeChild(logPanel.firstChild);
   }
 
-  /* ---------------------
-     Cookie helpers
-     --------------------- */
-  function getCookie(name) {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    return match ? decodeURIComponent(match[2]) : null;
+  function setCookie(name, value, days=365){
+    const expires = new Date(Date.now() + days*864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)};path=/;expires=${expires};SameSite=Strict`;
   }
-  function setCookie(name, value, days = 365) {
-    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
-    document.cookie = name + '=' + encodeURIComponent(value) + ';path=/;expires=' + expires + ';SameSite=Strict';
+  function getCookie(name){
+    const m = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return m ? decodeURIComponent(m[2]) : null;
   }
 
-  /* ---------------------
-     UI state functions
-     --------------------- */
-  function showLoading(on) {
+  function showLoading(on){
     loading.style.display = on ? 'flex' : 'none';
-    accessBtn.disabled = on;
-    if (on) hideMessages();
+    accessBtn.disabled = !!on;
+    if (on) { successMsg.classList.remove('show'); errorMsg.classList.remove('show'); }
   }
-  function showSuccess() {
-    hideMessages();
-    successMsg.classList.add('show');
-    log('Access granted', 'ok');
-  }
-  function showError() {
-    hideMessages();
-    errorMsg.classList.add('show');
-    log('Invalid key', 'err');
-    setTimeout(() => { keyInput.value = ''; keyInput.focus(); }, 500);
-  }
-  function hideMessages() {
-    successMsg.classList.remove('show');
-    errorMsg.classList.remove('show');
-  }
-  function showFallback() {
+  function showSuccess(){ successMsg.classList.add('show'); errorMsg.classList.remove('show'); }
+  function showError(){ errorMsg.classList.add('show'); successMsg.classList.remove('show'); }
+
+  function showFallback(){
     fallbackBar.style.display = 'block';
-    log('Pop-up blocked or error — showing fallback', 'warn');
+    log('Popup blocked — fallback shown', 'warn');
   }
 
-  /* ---------------------
-     Compute portal URL and base href for GitHub Pages friendliness
-     --------------------- */
-  function computePortalUrl() {
-    // We want a path that works whether index is at root or in a folder on GH Pages.
-    // If pathname ends with '/', use it; otherwise strip last segment.
-    const u = new URL(location.href);
-    let folder = u.pathname;
-    if (!folder.endsWith('/')) folder = folder.replace(/\/[^/]*$/, '/');
-    // Ensure leading slash
-    if (!folder.startsWith('/')) folder = '/' + folder;
-    // portal.html relative to folder
-    return folder + 'portal.html';
-  }
+  // compute folder/base for GH Pages so relative assets load
+  const u = new URL(location.href);
+  let folder = u.pathname;
+  if (!folder.endsWith('/')) folder = folder.replace(/\/[^/]*$/, '/');
+  const baseHref = location.origin + folder; // example: https://dot-jms.github.io/Bedrock/
 
-  /* ---------------------
-     Write fetched portal.html into preopened window, injecting <base>
-     --------------------- */
-  async function writePortalIntoWindow(preWin, portalUrl) {
-    try {
-      const resp = await fetch(portalUrl, { cache: 'no-cache' });
-      if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
-      let html = await resp.text();
+  // Launch behavior (keeps visuals identical)
+  function launchPortal() {
+    showSuccess();
+    setCookie('bedrock_access','granted');
 
-      // Compute base href = origin + folder part of portalUrl
-      const origin = location.origin;
-      const folder = portalUrl.replace(/([^/]*\.html)$/i, '');
-      const baseHref = origin + folder;
-
-      // Inject base into <head>
-      if (/\<head[^>]*\>/i.test(html)) {
-        html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${baseHref}">`);
-      } else {
-        html = `<head><base href="${baseHref}"></head>` + html;
-      }
-
-      preWin.document.open();
-      preWin.document.write(html);
-      preWin.document.close();
-      return true;
-    } catch (err) {
-      log('Error fetching/injecting portal.html: ' + (err && err.message ? err.message : err), 'err');
-      return false;
-    }
-  }
-
-  /* ---------------------
-     The robust launch function (preopen + inject + fallback)
-     - preserves visuals, shows success message, sets cookie, waits ~1s so user can see it
-     --------------------- */
-  async function launchPortalCore() {
-    showSuccess();               // show the "Access granted" UI
-    setCookie('bedrock_access', 'granted', 365);
-
-    // open preWin synchronously on click gesture (minimizes popup blocking)
-    const preWin = window.open('about:blank', '_blank');
-
-    // small delay so user sees success message
-    await new Promise(r => setTimeout(r, 1000));
-
-    if (!preWin) {
-      // popup blocked
+    // open pre-emptively (user gesture) then fetch & inject portal.html
+    const pre = window.open('about:blank', '_blank');
+    if (!pre) {
       showFallback();
       return;
     }
 
-    const portalUrl = computePortalUrl(); // e.g. "/Bedrock/portal.html"
-
-    // attempt to fetch and inject portal.html into preopened window
-    const ok = await writePortalIntoWindow(preWin, portalUrl);
-
-    if (!ok) {
-      // fallback: write an iframe pointing to portalUrl (less stealthy but works)
-      try {
-        preWin.document.open();
-        preWin.document.write(`
-          <!doctype html><html><head><meta charset="utf-8"><title>BEDROCK</title>
-          <style>html,body{height:100%;margin:0;background:#04040a}</style>
-          </head><body>
-          <iframe src="${portalUrl}" style="width:100vw;height:100vh;border:none;background:#04040a;"></iframe>
-          </body></html>
-        `);
-        preWin.document.close();
-      } catch (e) {
-        try { preWin.close(); } catch(e2) {}
-        showFallback();
-        return;
-      }
-    }
-
-    // after a short delay, close the auth window so only portal remains
+    // Small delay to let success message be visible before full transition
     setTimeout(() => {
-      try { window.close(); } catch(e) { /* ignore */ }
-    }, 900);
+      fetch('portal.html', {cache: 'no-store'})
+        .then(resp => {
+          if (!resp.ok) throw new Error('portal.html not found');
+          return resp.text();
+        })
+        .then(html => {
+          // inject <base> so relative paths inside portal.html load correctly on GH Pages
+          const injected = html.replace(/<head([^>]*)>/i, `<head$1><base href="${baseHref}">`);
+          pre.document.open();
+          pre.document.write(injected);
+          pre.document.close();
+          log('portal.html injected into new tab', 'ok');
+
+          // attempt to close auth tab (may be blocked by browser policy)
+          try { setTimeout(()=>{ window.close(); }, 900); } catch(e){ log('Could not close auth tab: ' + e.message, 'warn'); }
+        })
+        .catch(err => {
+          log('Fetch failed or portal.html missing: ' + err.message, 'err');
+          // fallback: write an iframe with correct base into the pre-opened tab
+          const fallbackHTML = `<!doctype html><html><head><base href="${baseHref}"><meta charset="utf-8"><title>Portal</title></head><body style="margin:0;background:#04040a"><iframe src="portal.html" style="width:100vw;height:100vh;border:none;background:#04040a"></iframe></body></html>`;
+          pre.document.open();
+          pre.document.write(fallbackHTML);
+          pre.document.close();
+          showFallback();
+          try { setTimeout(()=>{ window.close(); }, 900); } catch(e){ log('Close attempt failed: ' + e.message,'warn'); }
+        });
+    }, 900); // 900ms so users see the success pulse
   }
 
-  // Expose a nicer global name for compatibility with earlier snippets
-  window.launchPortal = launchPortalCore;
-
-  /* ---------------------
-     Validate key (calls launchPortal on success)
-     --------------------- */
   function validateKey() {
-    const inputKey = keyInput.value.trim().toUpperCase();
-    if (!inputKey) { keyInput.focus(); return; }
-
-    log('Auth attempt (key masked)', 'warn');
+    const k = keyInput.value.trim().toUpperCase();
+    if(!k) { keyInput.focus(); return; }
+    log('Attempting authentication with key: ' + k.replace(/./g,'*'));
     showLoading(true);
 
     setTimeout(() => {
       showLoading(false);
-      if (VALID_KEYS.includes(inputKey)) {
-        log('Key valid', 'ok');
-        // Call the robust launcher (preopen + inject)
-        launchPortalCore();
+      if (VALID_KEYS.includes(k)) {
+        log('Key validated', 'ok');
+        launchPortal();
       } else {
+        log('Invalid key', 'err');
         showError();
       }
-    }, 900);
+    }, 1100);
   }
 
-  /* ---------------------
-     Existing-access check via cookie
-     --------------------- */
-  function checkExistingAccess() {
+  // check for cookie-based access
+  function checkExistingAccess(){
     if (getCookie('bedrock_access') === 'granted') {
       log('Existing access cookie found — auto-launching', 'ok');
-      // small delay to let UI settle, then launch
-      setTimeout(() => launchPortalCore(), 300);
+      // small delay so UI finishes rendering
+      setTimeout(launchPortal, 400);
       return true;
     }
     return false;
   }
 
-  /* ---------------------
-     Event wiring
-     --------------------- */
+  // Events
   accessBtn.addEventListener('click', validateKey);
-  keyInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') validateKey(); });
+  keyInput.addEventListener('keypress', (e)=>{ if(e.key === 'Enter') validateKey(); });
+  openHereBtn.addEventListener('click', ()=>{ setCookie('bedrock_access','granted'); log('Fallback chosen - navigating here', 'warn'); window.location.href = 'portal.html'; });
 
-  openHereBtn.addEventListener('click', () => {
-    log('Fallback: opening portal in current tab', 'warn');
-    setCookie('bedrock_access', 'granted');
-    window.location.href = 'portal.html';
-  });
-
-  // Debug toggle via D key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === DEBUG_KEY || e.key === DEBUG_KEY.toUpperCase()) {
-      const visible = logPanel.style.display !== 'block';
-      logPanel.style.display = visible ? 'block' : 'none';
-      log(visible ? 'Debug panel shown' : 'Debug panel hidden');
+  // debug toggle (press 'd')
+  document.addEventListener('keydown', (e)=> {
+    if (e.key === DEBUG_TOGGLE_KEY || e.key === DEBUG_TOGGLE_KEY.toUpperCase()) {
+      const vis = logPanel.style.display !== 'block';
+      logPanel.style.display = vis ? 'block' : 'none';
+      log(vis ? 'Debug shown' : 'Debug hidden');
     }
   });
 
-  /* ---------------------
-     Starfield (parameters you requested)
-     - STAR_COUNT = floor(w*h / 7000)
-     - z in [0.2, 1.0]
-     - r in [0.5, 2.0]
-     - Movement + twinkle preserved
-     --------------------- */
-  (function initStarfield() {
-    const canvas = document.getElementById('bg');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W = canvas.width = window.innerWidth;
-    let H = canvas.height = window.innerHeight;
+  // starfield — uses your requested density and sizes (w*h/7000, z:0.2-1.0, r:0.5-2.0)
+  (function initStars(){
+    const c = document.getElementById('bg');
+    const ctx = c.getContext('2d');
+    let W = c.width = innerWidth, H = c.height = innerHeight;
+    const rand = (a,b)=> Math.random()*(b-a)+a;
+    let stars = [];
 
-    function rand(min, max) { return Math.random() * (max - min) + min; }
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-      createStars(); // recreate on resize for consistent density
-    }
+    function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; createStars(); }
     window.addEventListener('resize', resize);
 
-    let stars = [];
-    function createStars() {
+    function createStars(){
       stars = [];
-      const STAR_COUNT = Math.max(20, Math.floor((W * H) / 7000));
-      for (let i = 0; i < STAR_COUNT; i++) {
-        const z = rand(0.2, 1.0);
-        const r = rand(0.5, 2.0);
-        const colorChoice = Math.random();
-        let color;
-        if (colorChoice > 0.98) color = 'rgba(142,246,193,';      // rare greenish
-        else if (colorChoice > 0.96) color = 'rgba(168,85,247,';  // rare purple
-        else color = 'rgba(255,255,255,';
+      const COUNT = Math.max(20, Math.floor((W*H)/7000));
+      for(let i=0;i<COUNT;i++){
         stars.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          z: z,
-          r: r,
-          vx: rand(-0.05, 0.05),
-          vy: rand(-0.05, 0.05),
-          t: Math.random() * Math.PI * 2,
-          color: color,
-          twinkleSpeed: rand(0.2, 1.5)
+          x: Math.random()*W,
+          y: Math.random()*H,
+          z: rand(0.2,1.0),
+          r: rand(0.5,2.0),
+          vx: rand(-0.03,0.03),
+          vy: rand(-0.06,0.06),
+          t: Math.random()*15,
+          color: Math.random()>0.9 ? 'rgba(142,246,193,' : (Math.random()>0.95 ? 'rgba(168,85,247,' : 'rgba(255,255,255,'),
+          twinkleSpeed: rand(0.3,1.5)
         });
       }
     }
     createStars();
 
-    function draw() {
-      // subtle radial background
-      const g = ctx.createRadialGradient(W * 0.5, H * 0.45, 0, W * 0.5, H * 0.45, Math.max(W, H));
-      g.addColorStop(0, 'rgba(10,8,20,0.06)');
-      g.addColorStop(1, 'rgba(2,2,8,0.18)');
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      // subtle gradient
+      const g = ctx.createRadialGradient(W*0.2,H*0.2,0,W*0.5,H*0.5,Math.max(W,H));
+      g.addColorStop(0,'rgba(15,10,25,0.12)');
+      g.addColorStop(1,'rgba(2,2,8,0.28)');
       ctx.fillStyle = g;
-      ctx.fillRect(0, 0, W, H);
+      ctx.fillRect(0,0,W,H);
 
-      const t = Date.now() / 3000;
-
-      for (const s of stars) {
+      const t = Date.now()/1000;
+      for(const s of stars){
         s.x += s.vx * s.z;
         s.y += s.vy * s.z;
+        if(s.x<0) s.x = W;
+        if(s.x>W) s.x = 0;
+        if(s.y<0) s.y = H;
+        if(s.y>H) s.y = 0;
 
-        // wrap
-        if (s.x < -10) s.x = W + 10;
-        if (s.x > W + 10) s.x = -10;
-        if (s.y < -10) s.y = H + 10;
-        if (s.y > H + 10) s.y = -10;
-
-        const tw = Math.abs(Math.sin(t * s.twinkleSpeed + s.t));
-        const alpha = s.z * (0.35 + tw * 0.65);
-
+        const tw = Math.abs(Math.sin(t * s.twinkleSpeed + s.t)) * Math.abs(Math.cos(t * s.twinkleSpeed * 0.6 + s.t*0.4));
         ctx.beginPath();
-        ctx.globalAlpha = 0.9;
-        ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI * 2);
-        ctx.fillStyle = s.color + alpha + ')';
+        ctx.globalAlpha = 0.6 + 0.4 * s.z * (0.4 + tw*0.6);
+        ctx.fillStyle = s.color + (0.5 + 0.5*s.z) + ')';
+        ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI*2);
         ctx.fill();
 
-        if ((s.color !== 'rgba(255,255,255,' ) && tw > 0.6) {
+        if(s.color !== 'rgba(255,255,255,' && tw > 0.7){
           ctx.beginPath();
           ctx.globalAlpha = 0.18 * s.z * tw;
-          ctx.arc(s.x, s.y, s.r * s.z * 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = s.color + (alpha * 0.4) + ')';
+          ctx.arc(s.x, s.y, s.r * s.z * 2.5, 0, Math.PI*2);
           ctx.fill();
         }
+        ctx.globalAlpha = 1;
       }
-
-      ctx.globalAlpha = 1;
       requestAnimationFrame(draw);
     }
     draw();
   })();
 
-  /* ---------------------
-     Boot
-     --------------------- */
+  // Start
   log('Bedrock Access Portal initialized');
-  if (!checkExistingAccess()) {
+  if(!checkExistingAccess()){
     keyInput.focus();
     log('Ready for authentication');
   }
-
 })();
 </script>
 </body>

@@ -203,42 +203,150 @@ canvas#bg {
 
 <script>
 (function() {
-  const VALID_KEYS = ["BEDROCK2025","TEST123","DEMO42"];
-  const keyInput = document.getElementById('keyInput');
-  const accessBtn = document.getElementById('accessBtn');
-  const loading = document.getElementById('loading');
-  const successMsg = document.getElementById('successMsg');
-  const errorMsg = document.getElementById('errorMsg');
-  const fallbackBar = document.getElementById('fallbackBar');
-
-  function showLoading(show){loading.style.display=show?'flex':'none';accessBtn.disabled=show;}
-  function hideMessages(){successMsg.classList.remove('show');errorMsg.classList.remove('show');}
-  function showSuccess(){hideMessages();successMsg.classList.add('show');}
-  function showError(){hideMessages();errorMsg.classList.add('show');keyInput.value='';keyInput.focus();}
+  'use strict';
   
-  function launchPortal(){
+  // Configuration
+  const VALID_KEYS = ["BEDROCK2025", "TEST123", "DEMO42"];
+  const DEBUG_KEY = 'd';
+  
+  // DOM Elements
+  const elements = {
+    logPanel: document.getElementById('logPanel'),
+    fallbackBar: document.getElementById('fallbackBar'),
+    openHereBtn: document.getElementById('openHereBtn'),
+    keyInput: document.getElementById('keyInput'),
+    accessBtn: document.getElementById('accessBtn'),
+    loading: document.getElementById('loading'),
+    successMsg: document.getElementById('successMsg'),
+    errorMsg: document.getElementById('errorMsg')
+  };
+  
+  // Logging system
+  function log(message, type = '') {
+    const logLine = document.createElement('div');
+    logLine.className = 'logLine' + (type ? ' ' + type : '');
+    logLine.textContent = new Date().toLocaleTimeString() + ' — ' + message;
+    elements.logPanel.appendChild(logLine);
+    elements.logPanel.scrollTop = elements.logPanel.scrollHeight;
+    if (elements.logPanel.children.length > 100) elements.logPanel.removeChild(elements.logPanel.firstChild);
+  }
+  
+  // Cookie utilities
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+  function setCookie(name, value, days = 365) {
+    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = name + '=' + encodeURIComponent(value) + ';path=/;expires=' + expires + ';SameSite=Strict';
+  }
+  
+  // UI state management
+  function showLoading(show) {
+    elements.loading.style.display = show ? 'flex' : 'none';
+    elements.accessBtn.disabled = show;
+    if (show) hideMessages();
+  }
+  function showSuccess() { hideMessages(); elements.successMsg.classList.add('show'); log('Access granted successfully', 'ok'); }
+  function showError() { hideMessages(); elements.errorMsg.classList.add('show'); log('Access denied - invalid key', 'err'); setTimeout(() => { elements.keyInput.value = ''; elements.keyInput.focus(); }, 500); }
+  function hideMessages() { elements.successMsg.classList.remove('show'); elements.errorMsg.classList.remove('show'); }
+  
+  // Fallback handling
+  function showFallback() {
+    elements.fallbackBar.style.display = 'block';
+    log('Popup blocked - showing fallback option', 'warn');
+  }
+  
+  // Portal launching
+  function launchPortal() {
     showSuccess();
-    document.cookie = "bedrock_access=granted;path=/;SameSite=Strict";
-    const w = window.open('portal.html','_blank','noopener,noreferrer');
-    if(!w||w.closed){fallbackBar.style.display='block';}
-  }
+    setCookie('bedrock_access', 'granted');
+    
+    setTimeout(() => {
+      try {
+        const portalWindow = window.open('about:blank', '_blank', 'noopener,noreferrer');
+        if (!portalWindow || portalWindow.closed) { showFallback(); return; }
 
-  function validateKey(){
-    const input = keyInput.value.trim().toUpperCase();
-    if(!input){keyInput.focus();return;}
-    loading.style.display='flex';
+        const launchHTML = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>BEDROCK</title>
+            <meta charset="utf-8">
+            <style>
+              *{margin:0;padding:0;box-sizing:border-box;}
+              body{height:100vh;background:linear-gradient(135deg,#020208,#0a0a15,#04040a);color:#f8fafc;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+              canvas{position:fixed;inset:0;z-index:0;}
+              .launch-container{position:relative;z-index:2;text-align:center;animation:fadeIn 2.5s cubic-bezier(0.23,1,0.32,1);}
+              @keyframes fadeIn{0%{opacity:0;transform:scale(0.8) translateY(40px);}100%{opacity:1;transform:scale(1) translateY(0);}}
+              .launch-title{font-size:56px;font-weight:900;margin-bottom:32px;background:linear-gradient(135deg,#ffffff,#8ef6c1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:titleGlow 5s ease-in-out infinite;letter-spacing:3px;}
+              @keyframes titleGlow{0%,100%{filter:brightness(1) drop-shadow(0 0 20px rgba(142,246,193,0.3));}50%{filter:brightness(1.5) drop-shadow(0 0 40px rgba(142,246,193,0.5));}}
+              .launch-btn{padding:28px 56px;border-radius:28px;border:0;background:linear-gradient(135deg,#8ef6c1,#a8ffdb);color:#0a0a0a;font-weight:900;font-size:22px;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);box-shadow:0 25px 80px rgba(142,246,193,0.4);animation:breathe 4s ease-in-out infinite;letter-spacing:1px;position:relative;overflow:hidden;}
+              @keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+              .launch-btn::before{content:'';position:absolute;inset:-3px;background:conic-gradient(from 0deg,transparent,rgba(142,246,193,0.5),transparent);border-radius:31px;z-index:-1;animation:rotate 3s linear infinite;}
+              @keyframes rotate{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+              .launch-btn:hover{transform:scale(1.2) rotateX(10deg);box-shadow:0 35px 100px rgba(142,246,193,0.6);animation:none;}
+              .launch-btn:active{transform:scale(1.15);}
+            </style>
+          </head>
+          <body>
+            <canvas id="nebula"></canvas>
+            <div class="launch-container">
+              <h1 class="launch-title">BEDROCK</h1>
+              <button class="launch-btn" onclick="window.location.href='portal.html'">LAUNCH BEDROCK</button>
+            </div>
+            <script>
+              (function(){const c=document.getElementById('nebula');const ctx=c.getContext('2d');let w=c.width=innerWidth,h=c.height=innerHeight;const particles=[];for(let i=0;i<150;i++){particles.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-0.5)*0.8,vy:(Math.random()-0.5)*0.8,size:Math.random()*2+.5,hue:Math.random()>0.7?180+Math.random()*40:280+Math.random()*40,alpha:Math.random()*.8+.2})}function animate(){ctx.fillStyle='rgba(2,2,8,0.03)';ctx.fillRect(0,0,w,h);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;ctx.beginPath();ctx.fillStyle='hsla('+p.hue+',80%,70%,'+p.alpha+')';ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});requestAnimationFrame(animate);}animate();window.addEventListener('resize',()=>{w=c.width=innerWidth;h=c.height=innerHeight;});})();
+            </script>
+          </body>
+          </html>
+        `;
+        
+        portalWindow.document.open();
+        portalWindow.document.write(launchHTML);
+        portalWindow.document.close();
+        log('Portal launched successfully in new window', 'ok');
+        setTimeout(()=>window.close(),2000);
+        
+      } catch (error) {
+        log('Error launching portal: '+error.message,'err');
+        showFallback();
+      }
+    }, 1500);
+  }
+  
+  // Key validation
+  function validateKey() {
+    const inputKey = elements.keyInput.value.trim().toUpperCase();
+    if (!inputKey) { elements.keyInput.focus(); return; }
+    log('Attempting authentication with key: ' + inputKey.replace(/./g, '*'));
+    showLoading(true);
     setTimeout(()=>{
-      loading.style.display='none';
-      if(VALID_KEYS.includes(input)){launchPortal();}
-      else{showError();}
-    },1000);
+      showLoading(false);
+      if (VALID_KEYS.includes(inputKey)) { log('Key validated successfully','ok'); launchPortal(); }
+      else { log('Invalid key provided','err'); showError(); }
+    }, 1200);
   }
-
-  accessBtn.addEventListener('click',validateKey);
-  keyInput.addEventListener('keypress',e=>{if(e.key==='Enter')validateKey();});
-  document.getElementById('openHereBtn').addEventListener('click',()=>{document.cookie="bedrock_access=granted;path=/;SameSite=Strict";window.location.href='portal.html';});
-
+  
+  // Check for existing access
+  function checkExistingAccess() {
+    if (getCookie('bedrock_access')==='granted'){ log('Existing access found, auto-launching','ok'); launchPortal(); return true; }
+    return false;
+  }
+  
+  // Event handlers
+  elements.accessBtn.addEventListener('click',validateKey);
+  elements.keyInput.addEventListener('keypress',e=>{if(e.key==='Enter')validateKey();});
+  elements.openHereBtn.addEventListener('click',()=>{log('Fallback activated - opening portal in current tab','warn');setCookie('bedrock_access','granted');window.location.href='portal.html';});
+  
+  // Debug toggle
+  document.addEventListener('keydown', e=>{if(e.key===DEBUG_KEY||e.key===DEBUG_KEY.toUpperCase()){const isVisible=elements.logPanel.style.display!=='none';elements.logPanel.style.display=isVisible?'none':'block';log(isVisible?'Debug panel hidden':'Debug panel shown');}});
+  
+  // Starfield background
+  (function initStarfield(){const canvas=document.getElementById('bg');const ctx=canvas.getContext('2d');let W,H;function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}resize();window.addEventListener('resize',resize);const stars=[];const STAR_COUNT=Math.floor((W*H)/2500);for(let i=0;i<STAR_COUNT;i++){stars.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*.8+.2,r:Math.random()*2+.5,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,twinkle:Math.random()*Math.PI*2,twinkleSpeed:Math.random()*.02+.005,color:Math.random()>0.9?(Math.random()>.5?'rgba(142,246,193,':'rgba(168,85,247,'):'rgba(255,255,255,')}))}function drawStars(){ctx.clearRect(0,0,W,H);const gradient=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H));gradient.addColorStop(0,'rgba(10,8,20,0.1)');gradient.addColorStop(1,'rgba(2,2,8,0.2)');ctx.fillStyle=gradient;ctx.fillRect(0,0,W,H);const time=Date.now()*0.001;for(const star of stars){star.x+=star.vx*star.z;star.y+=star.vy*star.z;if(star.x>W)star.x=0;if(star.x<0)star.x=W;if(star.y>H)star.y=0;if(star.y<0)star.y=H;star.twinkle+=star.twinkleSpeed;const brightness=(Math.sin(star.twinkle)+1)*.5;const alpha=star.z*(.4+brightness*.6);ctx.beginPath();ctx.arc(star.x,star.y,star.r*star.z,0,Math.PI*2);ctx.fillStyle=star.color+alpha+')';ctx.fill();if(star.color!=='rgba(255,255,255,'&&brightness>.7){ctx.beginPath();ctx.arc(star.x,star.y,star.r*star.z*2,0,Math.PI*2);ctx.fillStyle=star.color+(alpha*.3)+')';ctx.fill();}}}function animate(){drawStars();requestAnimationFrame(animate);}animate();})();
+  
+  // Init
+  log('Bedrock Access Portal initialized');
+  if(!checkExistingAccess()){ elements.keyInput.focus(); log('Ready for authentication'); }
 })();
 </script>
-</body>
-</html>

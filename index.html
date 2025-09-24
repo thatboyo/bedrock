@@ -479,7 +479,11 @@ canvas#bg {
 
 <div id="logPanel" aria-hidden="true"></div>
 <div id="fallbackBar"><button id="openHereBtn">Open portal in this tab</button></div>
-<script src="portal.html"></script>
+<script>
+  document.getElementById("accessBtn").addEventListener("click", () => {
+    window.location.href = "portal.html";
+  });
+</script>
 
 
 </body>

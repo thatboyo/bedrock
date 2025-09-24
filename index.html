@@ -549,7 +549,7 @@ canvas#bg {
 
     // Small delay to let success message be visible before full transition
     setTimeout(() => {
-      fetch('portal.html', {cache: 'no-store'})
+      fetch('https://thatboyo.github.io/bedrock/portal.html', {cache: 'no-store'})
         .then(resp => {
           if (!resp.ok) throw new Error('portal.html not found');
           return resp.text();
@@ -568,7 +568,7 @@ canvas#bg {
         .catch(err => {
           log('Fetch failed or portal.html missing: ' + err.message, 'err');
           // fallback: write an iframe with correct base into the pre-opened tab
-          const fallbackHTML = `<!doctype html><html><head><base href="${baseHref}"><meta charset="utf-8"><title>Portal</title></head><body style="margin:0;background:#04040a"><iframe src="portal.html" style="width:100vw;height:100vh;border:none;background:#04040a"></iframe></body></html>`;
+          const fallbackHTML = `<!doctype html><html><head><base href="${baseHref}"><meta charset="utf-8"><title>Portal</title></head><body style="margin:0;background:#04040a"><iframe src="https://thatboyo.github.io/bedrock/portal.html" style="width:100vw;height:100vh;border:none;background:#04040a"></iframe></body></html>`;
           pre.document.open();
           pre.document.write(fallbackHTML);
           pre.document.close();
@@ -610,7 +610,7 @@ canvas#bg {
   // Events
   accessBtn.addEventListener('click', validateKey);
   keyInput.addEventListener('keypress', (e)=>{ if(e.key === 'Enter') validateKey(); });
-  openHereBtn.addEventListener('click', ()=>{ setCookie('bedrock_access','granted'); log('Fallback chosen - navigating here', 'warn'); window.location.href = 'portal.html'; });
+  openHereBtn.addEventListener('click', ()=>{ setCookie('bedrock_access','granted'); log('Fallback chosen - navigating here', 'warn'); window.location.href = 'https://thatboyo.github.io/bedrock/portal.html'; });
 
   // debug toggle (press 'd')
   document.addEventListener('keydown', (e)=> {

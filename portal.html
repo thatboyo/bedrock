@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Bedrock</title>
+<title>Bedrock Portal</title>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -834,8 +834,8 @@
           <img src="favicon.png" alt="Bedrock logo">
         </div>
         <div>
-          <h1>Bedrock</h1>
-          <div class="muted" id="who">friends-only</div>
+          <h1>Bedrock Portal</h1>
+          <div class="muted" id="who">friends-only sanctuary</div>
         </div>
 
 
@@ -849,17 +849,17 @@
           </div>
           <button data-tab="home" class="active">🏠 Home</button>
           <button data-tab="games">🎮 Games</button>
-          <button data-tab="tools">🛠️ Tools</button>
+          <button data-tab="misc">🎲 Misc</button>
         </nav>
 
         <section class="content" id="content">
           <!-- HOME -->
           <div id="home" class="tab">
             <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);text-shadow:0 0 20px rgba(142,246,193,0.3)">
-              Welcome back
+              Welcome back, friend
             </h2>
             <p class="muted" style="font-size:16px;line-height:1.6;margin-bottom:0">
-              Your personal command center is online and ready. Navigate through the cosmos using the sidebar to access your Games hub or productivity tools.
+
             </p>
             
             <div class="welcome-tip">
@@ -878,7 +878,7 @@
                 System Status
               </div>
               <div style="font-size:14px;color:var(--muted);display:flex;justify-content:space-between;align-items:center">
-                <span>Portal Status: Online (under contruction)</span>
+                <span>Portal Status: Online</span>
                 <span style="color:var(--accent);font-weight:600">All systems go</span>
               </div>
               <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient-purple);opacity:0.6"></div>
@@ -893,7 +893,7 @@
                   Games Universe
                 </h2>
                 <div class="muted" style="margin-top:12px;font-size:17px;line-height:1.5;opacity:0.9">
-                  Press the launch button to open your private gaming hub in stealth mode. Complete with emergency exits and an infinite games library (not a boring one).
+                  Press the launch button to open your private gaming hub in stealth mode. Complete with emergency exits and ninja-level discretion.
                 </div>
               </div>
 
@@ -902,443 +902,98 @@
               </button>
 
               <div style="max-width:800px;text-align:center;color:var(--muted);font-size:15px;opacity:0.7;line-height:1.4">
-                <p style="margin:0">The gaming section maintains maximum stealth with about:blank windows and quick-exit features (or rather, it will be). Clean, focused, and completely under the radar.</p>
+                <p style="margin:0">The gaming section maintains maximum stealth with about:blank windows and quick-exit features. Clean, focused, and completely under the radar.</p>
               </div>
             </div>
           </div>
 
           <!-- TOOLS -->
-         <!-- ===== REPLACE your current <div id="tools" class="tab" ...> with this block ===== -->
-<div id="tools" class="tab" style="display:none">
-  <style>
-    /* Scoped tiny toolkit styles (won't conflict much) */
-    #tools .toolGrid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:16px; margin-top:12px;}
-    #tools .miniCard{ background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,0.04); box-shadow: 0 6px 20px rgba(0,0,0,0.4); min-height:120px; display:flex; flex-direction:column; gap:8px;}
-    #tools h3{ margin:0; font-size:16px}
-    #tools .mutedSmall{ color:rgba(255,255,255,0.7); font-size:13px}
-    #tools button.small{ padding:8px 10px; border-radius:8px; border:0; cursor:pointer; font-weight:700}
-    #tools .row{ display:flex; gap:8px; flex-wrap:wrap}
-    /* Pixel canvas */
-    #pixelCanvas{ image-rendering: pixelated; border:1px solid rgba(255,255,255,0.06); background:#000; display:block}
+          <div id="tools" class="tab" style="display:none">
+            <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);text-shadow:0 0 20px rgba(142,246,193,0.3)">
+              Productivity Arsenal
+            </h2>
+            <div class="muted" style="font-size:16px;line-height:1.5;margin-bottom:8px">
+              Click any tile to launch powerful web-based tools in new tabs. All tools work flawlessly on any device, including locked-down Chromebooks.
+            </div>
 
-  </style>
+            <div class="toolsGrid">
+              <div class="toolTile" onclick="openExternal('https://www.remove.bg/')">
+                <div>
+                  <h3>🎭 Remove.bg</h3>
+                  <p>AI-powered background removal that works like pure magic. Upload any image and watch the background vanish instantly with pixel-perfect precision.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.remove.bg/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
 
-  <h2 style="margin-top:0;font-weight:800;font-size:24px;color:var(--accent);">Tools</h2>
-  <div class="muted" style="font-size:15px;margin-bottom:8px">Mini playground</div>
+              <div class="toolTile" onclick="openExternal('https://www.photopea.com/')">
+                <div>
+                  <h3>🎨 Photopea</h3>
+                  <p>Full-featured Photoshop alternative that runs entirely in your browser. Perfect for Chromebooks and professional-grade image editing without installations.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.photopea.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
 
-  <div class="toolGrid" id="toolGrid">
-    <!-- Meme Generator -->
-    <div class="miniCard" id="memeCard">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3>🖼️ Meme Generator</h3>
-        <button class="small" id="memeDownload">Save</button>
-      </div>
-      <input type="file" id="memeFile" accept="image/*">
-      <input id="memeTop" placeholder="Top text" style="width:100%">
-      <input id="memeBottom" placeholder="Bottom text" style="width:100%">
-      <canvas id="memeCanvas" width="640" height="360" style="width:100%;border-radius:6px;background:#111"></canvas>
-      <div class="toolNote">Upload an image, type text, then Save. Text auto-wraps.</div>
-    </div>
+              <div class="toolTile" onclick="openExternal('https://pixlr.com/')">
+                <div>
+                  <h3>✨ Pixlr</h3>
+                  <p>Lightning-fast image editor with Express and Pro modes. Ideal for quick touch-ups, social media content, and creative projects on the go.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://pixlr.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
 
-    <!-- Random Pokémon -->
-    <div class="miniCard" id="pokeCard">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3>🧪 Random Pokémon</h3>
-        <button class="small" id="pokeRoll">Roll</button>
-      </div>
-      <div id="pokeShow" style="display:flex;gap:10px;align-items:center">
-        <img id="pokeImg" src="" alt="" style="width:96px;height:96px;background:linear-gradient(90deg,#222,#111);border-radius:12px;object-fit:contain">
-        <div>
-          <div id="pokeName" style="font-weight:800;font-size:18px">—</div>
-          <div id="pokeTypes" class="mutedSmall"></div>
-        </div>
-      </div>
-      <div class="toolNote">Uses PokeAPI. Works offline-ish if cached after first use.</div>
-    </div>
+              <div class="toolTile" onclick="openExternal('https://tinypng.com/')">
+                <div>
+                  <h3>📦 TinyPNG</h3>
+                  <p>Compress PNG and JPG images without losing visual quality. Essential for web optimization, faster uploads, and saving precious storage space.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://tinypng.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
 
-    <!-- Noise Maker -->
-    <div class="miniCard" id="noiseCard">
-      <h3>🔊 Noise Maker</h3>
-      <div class="row">
-        <button class="small" data-snd="airhorn">Airhorn</button>
-        <button class="small" data-snd="bruh">Bruh</button>
-        <button class="small" data-snd="beep">Beep</button>
-        <button class="small" data-snd="glitch">Glitch</button>
-      </div>
-      <div class="toolNote">Uses WebAudio & SpeechSynthesis for silly sounds.</div>
-    </div>
+              <div class="toolTile" onclick="openExternal('https://www.iloveimg.com/')">
+                <div>
+                  <h3>🔧 iLoveIMG</h3>
+                  <p>Swiss army knife for images. Convert formats, resize, crop, merge into PDFs, and perform dozens of other image operations — all in one elegant platform.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.iloveimg.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
 
-    <!-- Pixel Art Canvas -->
-    <div class="miniCard" id="pixelCard">
-      <h3>🟩 Pixel Art Canvas</h3>
-      <div style="display:flex;gap:6px;align-items:center">
-        <input id="pixelSize" type="number" value="16" min="8" max="64" style="width:72px">
-        <button class="small" id="newPixel">New</button>
-        <button class="small" id="savePixel">Save PNG</button>
-        <div style="width:12px"></div>
-        <input type="color" id="pixelColor" value="#8ef6c1">
-      </div>
-      <canvas id="pixelCanvas" width="256" height="256"></canvas>
-      <div class="toolNote">Resize grid, draw pixels (drag), then save.</div>
-    </div>
-
-    <!-- Name Mashup -->
-    <div class="miniCard" id="mashCard">
-      <h3>🔀 Name Mashup</h3>
-      <input id="mashA" placeholder="Word A">
-      <input id="mashB" placeholder="Word B">
-      <div style="display:flex;gap:8px;margin-top:6px">
-        <button class="small" id="mashGo">Mash</button>
-        <button class="small" id="mashRand">Surprise</button>
-      </div>
-      <div id="mashOut" style="margin-top:8px;font-weight:800"></div>
-    </div>
-  
-    <!-- ASCII Art Converter -->
-    <div class="miniCard" id="asciiCard">
-      <h3>⌨️ ASCII Art Converter</h3>
-      <input type="file" id="asciiFile" accept="image/*">
-      <button class="small" id="asciiGo">Convert</button>
-      <pre id="asciiOut" style="max-height:160px;overflow:auto;margin:6px 0;padding:6px;background:#061018;border-radius:6px"></pre>
-      <div class="toolNote">Converts small images to black/white ASCII.</div>
-    </div>
-
-    
-    <!-- Snake Game -->
-    <div class="miniCard" id="snakeCard">
-      <h3>🐍 Snake</h3>
-      <canvas id="snakeCanvas" width="240" height="240"></canvas>
-      <div style="display:flex;gap:8px;margin-top:6px">
-        <button class="small" id="snakeStart">Start</button>
-        <button class="small" id="snakeReset">Reset</button>
-      </div>
-      <div class="toolNote">Arrow keys to play.</div>
-    </div>
-
-  <script>
-  (function(){
-    const tools = document.getElementById('tools');
-
-    /* ---------------- MEME GENERATOR ---------------- */
-    const memeFile = document.getElementById('memeFile');
-    const memeCanvas = document.getElementById('memeCanvas');
-    const mctx = memeCanvas.getContext('2d');
-    const memeTop = document.getElementById('memeTop');
-    const memeBottom = document.getElementById('memeBottom');
-    const memeDownload = document.getElementById('memeDownload');
-    let memeImg = new Image();
-
-    function renderMeme(){
-      mctx.clearRect(0,0,memeCanvas.width,memeCanvas.height);
-      // fill bg
-      mctx.fillStyle = "#000";
-      mctx.fillRect(0,0,memeCanvas.width,memeCanvas.height);
-      if(memeImg.src){
-        // draw image fit cover
-        const iw = memeImg.width, ih = memeImg.height;
-        const cw = memeCanvas.width, ch = memeCanvas.height;
-        const r = Math.max(cw/iw, ch/ih);
-        const nw = iw*r, nh = ih*r;
-        mctx.drawImage(memeImg, (cw-nw)/2, (ch-nh)/2, nw, nh);
-      }
-      const stroke = 8;
-      const fontSize = Math.floor(memeCanvas.width/12);
-      mctx.font = `700 ${fontSize}px Impact, sans-serif`;
-      mctx.textAlign = 'center';
-      mctx.fillStyle = 'white';
-      mctx.lineWidth = stroke;
-      mctx.strokeStyle = 'black';
-      // top
-      wrapText(mctx, memeTop.value.toUpperCase(), memeCanvas.width/2, fontSize, memeCanvas.width - 20, fontSize + 6, true);
-      // bottom
-      wrapText(mctx, memeBottom.value.toUpperCase(), memeCanvas.width/2, memeCanvas.height - 10 - fontSize, memeCanvas.width - 20, fontSize + 6, false);
-    }
-
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight, top){
-      const words = text.split(' ');
-      let line = '', lines = [];
-      for (let n = 0; n < words.length; n++){
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && n > 0){
-          lines.push(line);
-          line = words[n] + ' ';
-        } else { line = testLine; }
-      }
-      lines.push(line);
-      if(top) {
-        for (let i=0;i<lines.length;i++){
-          const yy = y + i*lineHeight;
-          ctx.strokeText(lines[i].trim(), x, yy);
-          ctx.fillText(lines[i].trim(), x, yy);
-        }
-      } else {
-        // bottom aligned
-        for (let i=0;i<lines.length;i++){
-          const yy = y - (lines.length-1-i)*lineHeight;
-          ctx.strokeText(lines[i].trim(), x, yy);
-          ctx.fillText(lines[i].trim(), x, yy);
-        }
-      }
-    }
-
-    memeFile.addEventListener('change', (e)=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      const url = URL.createObjectURL(f);
-      memeImg = new Image();
-      memeImg.onload = () => { renderMeme(); URL.revokeObjectURL(url); };
-      memeImg.src = url;
-    });
-    memeTop.addEventListener('input', renderMeme);
-    memeBottom.addEventListener('input', renderMeme);
-    memeDownload.addEventListener('click', ()=>{
-      const a = document.createElement('a');
-      a.href = memeCanvas.toDataURL('image/png');
-      a.download = 'meme.png';
-      a.click();
-    });
-    renderMeme();
-
-    /* ---------------- RANDOM POKEMON ---------------- */
-    const pokeRoll = document.getElementById('pokeRoll');
-    const pokeImg = document.getElementById('pokeImg');
-    const pokeName = document.getElementById('pokeName');
-    const pokeTypes = document.getElementById('pokeTypes');
-
-    async function rollPoke(){
-      const id = Math.floor(Math.random()*1010)+1; // PokeAPI supports up to ~1000+
-      pokeName.textContent = 'Loading...';
-      pokeTypes.textContent = '';
-      try {
-        const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + id);
-        if(!res.ok) throw new Error('fail');
-        const data = await res.json();
-        const img = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
-        pokeImg.src = img || '';
-        pokeName.textContent = capitalize(data.name) + ` (#${data.id})`;
-        pokeTypes.textContent = data.types.map(t=>capitalize(t.type.name)).join(' • ');
-      } catch(e){
-        pokeName.textContent = 'API error. Try again.';
-        pokeImg.src = '';
-      }
-    }
-    pokeRoll.addEventListener('click', rollPoke);
-    function capitalize(s){ return s[0]?.toUpperCase()+s.slice(1) || s; }
-    // preload one
-    rollPoke();
-
-  
-    /* ---------------- NOISE MAKER ---------------- */
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playOsc(freq, dur=0.6, type='sine'){
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = type; o.frequency.value = freq;
-      g.gain.value = 0.0001;
-      o.connect(g); g.connect(audioCtx.destination);
-      const now = audioCtx.currentTime;
-      g.gain.linearRampToValueAtTime(0.6, now+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+dur);
-      o.start(); o.stop(now+dur+0.02);
-    }
-    function playAirhorn(){ // quick simulated airhorn
-  
-    }
-    function playBruh(){ speechSynthesis.speak(new SpeechSynthesisUtterance('bru')); }
-    function playGlitch(){ for(let i=0;i<6;i++){ setTimeout(()=>playOsc(200+Math.random()*200,0.08,'sawtooth'), i*80); } }
-
-    document.querySelectorAll('#noiseCard button[data-snd]').forEach(b=>{
-      b.addEventListener('click', ()=>{
-        const k = b.dataset.snd;
-        if(k==='airhorn') playAirhorn();
-        else if(k==='bruh') playBruh();
-        else if(k==='beep') playOsc(880,0.12,'sine');
-        else if(k==='glitch') playGlitch();
-      });
-    });
-
-    /* ---------------- PIXEL ART CANVAS ----------------- */
-    const pixelCanvas = document.getElementById('pixelCanvas');
-    const pctx = pixelCanvas.getContext('2d');
-    const pixelSizeInput = document.getElementById('pixelSize');
-    const pixelColor = document.getElementById('pixelColor');
-    const newPixelBtn = document.getElementById('newPixel');
-    const savePixelBtn = document.getElementById('savePixel');
-
-    function createPixelGrid(cells=16){
-      const size = 256;
-      pixelCanvas.width = size; pixelCanvas.height = size;
-      pctx.imageSmoothingEnabled = false;
-      pctx.fillStyle = '#000'; pctx.fillRect(0,0,size,size);
-      // draw grid lines lightly
-      pctx.strokeStyle = 'rgba(255,255,255,0.03)';
-      for(let i=0;i<=cells;i++){
-        const pos = Math.round(i*(size/cells));
-        pctx.beginPath(); pctx.moveTo(pos,0); pctx.lineTo(pos,size); pctx.stroke();
-        pctx.beginPath(); pctx.moveTo(0,pos); pctx.lineTo(size,pos); pctx.stroke();
-      }
-      pixelCanvas.dataset.cells = cells;
-    }
-
-    createPixelGrid(16);
-    let drawing = false;
-    function canvasPos(e){
-      const r = pixelCanvas.getBoundingClientRect();
-      const x = Math.floor((e.clientX - r.left) / (r.width / pixelCanvas.dataset.cells));
-      const y = Math.floor((e.clientY - r.top) / (r.height / pixelCanvas.dataset.cells));
-      return {x,y};
-    }
-    function drawPixelAt(e){
-      const {x,y} = canvasPos(e);
-      const cells = Number(pixelCanvas.dataset.cells);
-      const cw = pixelCanvas.width / cells;
-      pctx.fillStyle = pixelColor.value;
-      pctx.fillRect(x*cw + 1, y*cw + 1, cw-1, cw-1);
-    }
-    pixelCanvas.addEventListener('mousedown', e=>{ drawing=true; drawPixelAt(e); });
-    window.addEventListener('mouseup', ()=>drawing=false);
-    pixelCanvas.addEventListener('mousemove', e=> drawing && drawPixelAt(e));
-    newPixelBtn.addEventListener('click', ()=>{
-      createPixelGrid(Number(pixelSizeInput.value || 16));
-    });
-    savePixelBtn.addEventListener('click', ()=>{
-      const a=document.createElement('a'); a.href=pixelCanvas.toDataURL(); a.download='pixel.png'; a.click();
-    });
-
-    /* ---------------- NAME MASHUP ---------------- */
-    const mashA = document.getElementById('mashA'), mashB = document.getElementById('mashB');
-    const mashGo = document.getElementById('mashGo'), mashRand = document.getElementById('mashRand'), mashOut = document.getElementById('mashOut');
-    function mash(a,b){
-      if(!a||!b) return 'give two words';
-      const aMid = Math.floor(a.length/2), bMid = Math.floor(b.length/2);
-      const candidates = [
-        a.slice(0,aMid) + b.slice(bMid),
-        a.slice(0,aMid+1) + b.slice(bMid+1),
-        b.slice(0,bMid) + a.slice(aMid),
-        a.slice(0,Math.max(1,aMid-1)) + b.slice(Math.min(b.length-1,bMid+1))
-      ];
-      return pick(candidates).replace(/\s+/g,'');
-    }
-    mashGo.addEventListener('click', ()=> mashOut.textContent = mash(mashA.value.trim(), mashB.value.trim()));
-    mashRand.addEventListener('click', ()=>{
-      const w1 = pick(['blip','nova','jolt','flux','sprig','miso','chrome','pico','glitch','nimbus']);
-      const w2 = pick(['burger','fox','drop','spark','byte','cloud','drift','moth','quake','blink']);
-      mashOut.textContent = mash(w1,w2);
-    });
-
-   
-    /* ---------------- ASCII CONVERTER ---------------- */
-    const asciiFile = document.getElementById('asciiFile'), asciiOut = document.getElementById('asciiOut');
-    document.getElementById('asciiGo').addEventListener('click', ()=>{
-      const f = asciiFile.files[0]; if(!f) return asciiOut.textContent='Choose an image.';
-      const img = new Image();
-      const url = URL.createObjectURL(f);
-      img.onload = ()=>{
-        // draw small version
-        const w = 80;
-        const h = Math.round(img.height * (w/img.width));
-        const c = document.createElement('canvas'); c.width = w; c.height = h;
-        const cx = c.getContext('2d'); cx.drawImage(img,0,0,w,h);
-        const data = cx.getImageData(0,0,w,h).data;
-        const chars = '@%#*+=-:. ';
-        let out='';
-        for(let y=0;y<h;y++){
-          for(let x=0;x<w;x++){
-            const i=(y*w+x)*4;
-            const r=data[i], g=data[i+1], b=data[i+2];
-            const lum = (0.2126*r+0.7152*g+0.0722*b)/255;
-            const ch = chars[Math.floor((1-lum)*(chars.length-1))];
-            out += ch;
-          }
-          out += '\\n';
-        }
-        asciiOut.textContent = out;
-        URL.revokeObjectURL(url);
-      };
-      img.src = url;
-    });
-
-  
-    /* ---------------- SNAKE GAME ---------------- */
-    const sCanvas = document.getElementById('snakeCanvas'); const sCtx = sCanvas.getContext('2d');
-    const snakeStart = document.getElementById('snakeStart'), snakeReset = document.getElementById('snakeReset');
-    let snakeGame = { running:false, dir:'right', snake:[], food:null, interval:null, speed:120 };
-    function resetSnake(){
-      snakeGame.snake = [{x:6,y:6},{x:5,y:6},{x:4,y:6}]; snakeGame.dir='right'; placeFood(); drawSnake();
-    }
-    function placeFood(){
-      snakeGame.food = { x: Math.floor(Math.random()*12)+1, y: Math.floor(Math.random()*12)+1 };
-    }
-    function drawSnake(){
-      sCtx.clearRect(0,0,sCanvas.width,sCanvas.height);
-      const cell = sCanvas.width/16;
-      sCtx.fillStyle = '#0f1720';
-      sCtx.fillRect(0,0,sCanvas.width,sCanvas.height);
-      // food
-      sCtx.fillStyle = '#ff6666';
-      sCtx.fillRect(snakeGame.food.x*cell, snakeGame.food.y*cell, cell, cell);
-      // snake
-      sCtx.fillStyle = '#8ef6c1';
-      snakeGame.snake.forEach(p=> sCtx.fillRect(p.x*cell, p.y*cell, cell-1, cell-1));
-    }
-    function stepSnake(){
-      const head = {...snakeGame.snake[0]};
-      if(snakeGame.dir==='right') head.x++;
-      if(snakeGame.dir==='left') head.x--;
-      if(snakeGame.dir==='up') head.y--;
-      if(snakeGame.dir==='down') head.y++;
-      // wrap
-      head.x = (head.x+16)%16; head.y = (head.y+16)%16;
-      snakeGame.snake.unshift(head);
-      // eat
-      if(head.x === snakeGame.food.x && head.y === snakeGame.food.y){
-        placeFood();
-      } else {
-        snakeGame.snake.pop();
-      }
-      // collision
-      for(let i=1;i<snakeGame.snake.length;i++){
-        if(snakeGame.snake[i].x===head.x && snakeGame.snake[i].y===head.y){
-          // game over
-          stopSnake();
-          alert('Game over! Press Start to play again.');
-          resetSnake();
-          return;
-        }
-      }
-      drawSnake();
-    }
-    function startSnake(){
-      if(snakeGame.running) return;
-      snakeGame.running = true;
-      snakeGame.interval = setInterval(stepSnake, snakeGame.speed);
-    }
-    function stopSnake(){ snakeGame.running=false; clearInterval(snakeGame.interval); snakeGame.interval=null; }
-    snakeStart.addEventListener('click', ()=>{ startSnake(); });
-    snakeReset.addEventListener('click', ()=>{ stopSnake(); resetSnake(); });
-    document.addEventListener('keydown', (e)=>{
-      if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
-        if(e.key==='ArrowUp' && snakeGame.dir!=='down') snakeGame.dir='up';
-        if(e.key==='ArrowDown' && snakeGame.dir!=='up') snakeGame.dir='down';
-        if(e.key==='ArrowLeft' && snakeGame.dir!=='right') snakeGame.dir='left';
-        if(e.key==='ArrowRight' && snakeGame.dir!=='left') snakeGame.dir='right';
-      }
-    });
-    resetSnake(); drawSnake();
-
-
-    /* ---------------- HELPERS ---------------- */
-    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-    function randInt(a,b){ return Math.floor(Math.random()*(b-a))+a; }
-  })();
-  </script>
-</div>
-<!-- ================= END tool block ================= -->
+              <div class="toolTile" onclick="openExternal('https://www.canva.com/')">
+                <div>
+                  <h3>🎯 Canva</h3>
+                  <p>Professional design platform with thousands of templates. Create stunning graphics, presentations, social media content, and marketing materials effortlessly.</p>
+                </div>
+                <div>
+                  <button class="smallBtn" onclick="openExternal('https://www.canva.com/'); event.stopPropagation()">
+                    Launch Tool →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div class="footRow">
-            <div>• low-stakes</div>
-            <div>Bedrock Portal • 2025 • v2.1</div>
+            <div>Crafted with ❤️ for trusted friends • low-stakes, maximum vibes</div>
+            <div>Bedrock Portal • 2025 • v2.0</div>
           </div>
         </section>
       </div>
@@ -1534,7 +1189,7 @@
     */
     
     // Temporary bypass - just set the status text
-    document.getElementById('who').textContent = 'some features will not function correctly';
+    document.getElementById('who').textContent = 'access restored ✓';
 
     /* ---------------------------
        ULTRA-SMOOTH TAB SYSTEM
@@ -1581,7 +1236,393 @@
     // Enhanced button listeners
     document.querySelector('[data-tab="home"]').addEventListener('click', () => showTab('home'));
     document.querySelector('[data-tab="games"]').addEventListener('click', () => showTab('games'));
-    document.querySelector('[data-tab="tools"]').addEventListener('click', () => showTab('tools'));
+    document.querySelector('[data-tab="misc"]').addEventListener('click', () => showTab('misc'));
+
+    // Initialize misc tools JavaScript
+    (function initMiscTools(){
+      /* ---------------- MEME GENERATOR ---------------- */
+      const memeFile = document.getElementById('memeFile');
+      const memeCanvas = document.getElementById('memeCanvas');
+      const mctx = memeCanvas.getContext('2d');
+      const memeTop = document.getElementById('memeTop');
+      const memeBottom = document.getElementById('memeBottom');
+      const memeDownload = document.getElementById('memeDownload');
+      let memeImg = new Image();
+
+      function renderMeme(){
+        mctx.clearRect(0,0,memeCanvas.width,memeCanvas.height);
+        mctx.fillStyle = "#000";
+        mctx.fillRect(0,0,memeCanvas.width,memeCanvas.height);
+        
+        if(memeImg.src){
+          const iw = memeImg.width, ih = memeImg.height;
+          const cw = memeCanvas.width, ch = memeCanvas.height;
+          const r = Math.max(cw/iw, ch/ih);
+          const nw = iw*r, nh = ih*r;
+          mctx.drawImage(memeImg, (cw-nw)/2, (ch-nh)/2, nw, nh);
+        }
+        
+        const stroke = 3;
+        const fontSize = Math.floor(memeCanvas.width/15);
+        mctx.font = `700 ${fontSize}px Impact, sans-serif`;
+        mctx.textAlign = 'center';
+        mctx.fillStyle = 'white';
+        mctx.lineWidth = stroke;
+        mctx.strokeStyle = 'black';
+        
+        // Top text
+        if(memeTop.value) {
+          mctx.strokeText(memeTop.value.toUpperCase(), memeCanvas.width/2, fontSize + 10);
+          mctx.fillText(memeTop.value.toUpperCase(), memeCanvas.width/2, fontSize + 10);
+        }
+        
+        // Bottom text
+        if(memeBottom.value) {
+          mctx.strokeText(memeBottom.value.toUpperCase(), memeCanvas.width/2, memeCanvas.height - 10);
+          mctx.fillText(memeBottom.value.toUpperCase(), memeCanvas.width/2, memeCanvas.height - 10);
+        }
+      }
+
+      memeFile.addEventListener('change', (e)=>{
+        const f = e.target.files[0];
+        if(!f) return;
+        const url = URL.createObjectURL(f);
+        memeImg = new Image();
+        memeImg.onload = () => { renderMeme(); URL.revokeObjectURL(url); };
+        memeImg.src = url;
+      });
+      
+      memeTop.addEventListener('input', renderMeme);
+      memeBottom.addEventListener('input', renderMeme);
+      
+      memeDownload.addEventListener('click', ()=>{
+        const a = document.createElement('a');
+        a.href = memeCanvas.toDataURL('image/png');
+        a.download = 'bedrock-meme.png';
+        a.click();
+      });
+      
+      renderMeme();
+
+      /* ---------------- RANDOM POKEMON ---------------- */
+      const pokeRoll = document.getElementById('pokeRoll');
+      const pokeImg = document.getElementById('pokeImg');
+      const pokeName = document.getElementById('pokeName');
+      const pokeTypes = document.getElementById('pokeTypes');
+
+      async function rollPoke(){
+        const id = Math.floor(Math.random()*1010)+1;
+        pokeName.textContent = 'Loading...';
+        pokeTypes.textContent = '';
+        
+        try {
+          const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + id);
+          if(!res.ok) throw new Error('API error');
+          const data = await res.json();
+          const img = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+          pokeImg.src = img || '';
+          pokeName.textContent = data.name.charAt(0).toUpperCase() + data.name.slice(1) + ` (#${data.id})`;
+          pokeTypes.textContent = data.types.map(t=>t.type.name.charAt(0).toUpperCase() + t.type.name.slice(1)).join(' • ');
+        } catch(e){
+          pokeName.textContent = 'API error. Try again.';
+          pokeImg.src = '';
+        }
+      }
+      
+      pokeRoll.addEventListener('click', rollPoke);
+      rollPoke(); // Load initial Pokemon
+
+      /* ---------------- NOISE MAKER ---------------- */
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      function playOsc(freq, dur=0.6, type='sine'){
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type; 
+        o.frequency.value = freq;
+        g.gain.value = 0.0001;
+        o.connect(g); 
+        g.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        g.gain.linearRampToValueAtTime(0.3, now+0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, now+dur);
+        o.start(); 
+        o.stop(now+dur+0.02);
+      }
+      
+      function playAirhorn(){ 
+        for(let i=0;i<3;i++){ 
+          setTimeout(()=>playOsc(440+i*110, 0.3, 'sawtooth'), i*100); 
+        }
+      }
+      
+      function playBruh(){ 
+        if(speechSynthesis) {
+          const utterance = new SpeechSynthesisUtterance('bruh');
+          utterance.rate = 0.8;
+          utterance.pitch = 0.7;
+          speechSynthesis.speak(utterance); 
+        }
+      }
+      
+      function playGlitch(){ 
+        for(let i=0;i<8;i++){ 
+          setTimeout(()=>playOsc(100+Math.random()*400, 0.08, 'square'), i*60); 
+        } 
+      }
+
+      document.querySelectorAll('[data-snd]').forEach(b=>{
+        b.addEventListener('click', ()=>{
+          const k = b.dataset.snd;
+          if(k==='airhorn') playAirhorn();
+          else if(k==='bruh') playBruh();
+          else if(k==='beep') playOsc(880, 0.15, 'sine');
+          else if(k==='glitch') playGlitch();
+        });
+      });
+
+      /* ---------------- PIXEL ART CANVAS ---------------- */
+      const pixelCanvas = document.getElementById('pixelCanvas');
+      const pctx = pixelCanvas.getContext('2d');
+      const pixelSizeInput = document.getElementById('pixelSize');
+      const pixelColor = document.getElementById('pixelColor');
+      const newPixelBtn = document.getElementById('newPixel');
+      const savePixelBtn = document.getElementById('savePixel');
+
+      function createPixelGrid(cells=16){
+        const size = 200;
+        pixelCanvas.width = size; 
+        pixelCanvas.height = size;
+        pctx.imageSmoothingEnabled = false;
+        pctx.fillStyle = '#000'; 
+        pctx.fillRect(0,0,size,size);
+        
+        pctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        for(let i=0;i<=cells;i++){
+          const pos = Math.round(i*(size/cells));
+          pctx.beginPath(); 
+          pctx.moveTo(pos,0); 
+          pctx.lineTo(pos,size); 
+          pctx.stroke();
+          pctx.beginPath(); 
+          pctx.moveTo(0,pos); 
+          pctx.lineTo(size,pos); 
+          pctx.stroke();
+        }
+        pixelCanvas.dataset.cells = cells;
+      }
+
+      createPixelGrid(16);
+      let drawing = false;
+      
+      function canvasPos(e){
+        const r = pixelCanvas.getBoundingClientRect();
+        const x = Math.floor((e.clientX - r.left) / (r.width / pixelCanvas.dataset.cells));
+        const y = Math.floor((e.clientY - r.top) / (r.height / pixelCanvas.dataset.cells));
+        return {x,y};
+      }
+      
+      function drawPixelAt(e){
+        const {x,y} = canvasPos(e);
+        const cells = Number(pixelCanvas.dataset.cells);
+        const cw = pixelCanvas.width / cells;
+        pctx.fillStyle = pixelColor.value;
+        pctx.fillRect(x*cw + 1, y*cw + 1, cw-1, cw-1);
+      }
+      
+      pixelCanvas.addEventListener('mousedown', e=>{ drawing=true; drawPixelAt(e); });
+      window.addEventListener('mouseup', ()=>drawing=false);
+      pixelCanvas.addEventListener('mousemove', e=> drawing && drawPixelAt(e));
+      
+      newPixelBtn.addEventListener('click', ()=>{
+        createPixelGrid(Number(pixelSizeInput.value || 16));
+      });
+      
+      savePixelBtn.addEventListener('click', ()=>{
+        const a=document.createElement('a'); 
+        a.href=pixelCanvas.toDataURL(); 
+        a.download='bedrock-pixel-art.png'; 
+        a.click();
+      });
+
+      /* ---------------- NAME MASHUP ---------------- */
+      const mashA = document.getElementById('mashA');
+      const mashB = document.getElementById('mashB');
+      const mashGo = document.getElementById('mashGo');
+      const mashRand = document.getElementById('mashRand');
+      const mashOut = document.getElementById('mashOut');
+      
+      function mash(a,b){
+        if(!a||!b) return 'Enter two words first!';
+        const aMid = Math.floor(a.length/2);
+        const bMid = Math.floor(b.length/2);
+        const candidates = [
+          a.slice(0,aMid) + b.slice(bMid),
+          a.slice(0,aMid+1) + b.slice(bMid+1),
+          b.slice(0,bMid) + a.slice(aMid),
+          a.slice(0,Math.max(1,aMid-1)) + b.slice(Math.min(b.length-1,bMid+1))
+        ];
+        return candidates[Math.floor(Math.random()*candidates.length)];
+      }
+      
+      mashGo.addEventListener('click', ()=> {
+        mashOut.textContent = mash(mashA.value.trim(), mashB.value.trim());
+      });
+      
+      mashRand.addEventListener('click', ()=>{
+        const w1 = ['cyber','nova','pixel','flux','neon','vapor','chrome','digital','quantum','matrix'][Math.floor(Math.random()*10)];
+        const w2 = ['wave','punk','core','tech','byte','dream','space','force','storm','void'][Math.floor(Math.random()*10)];
+        mashOut.textContent = mash(w1,w2);
+      });
+
+      /* ---------------- ASCII CONVERTER ---------------- */
+      const asciiFile = document.getElementById('asciiFile');
+      const asciiOut = document.getElementById('asciiOut');
+      
+      document.getElementById('asciiGo').addEventListener('click', ()=>{
+        const f = asciiFile.files[0]; 
+        if(!f) return asciiOut.textContent='Select an image first.';
+        
+        const img = new Image();
+        const url = URL.createObjectURL(f);
+        
+        img.onload = ()=>{
+          const w = 60;
+          const h = Math.round(img.height * (w/img.width));
+          const c = document.createElement('canvas'); 
+          c.width = w; 
+          c.height = h;
+          const cx = c.getContext('2d'); 
+          cx.drawImage(img,0,0,w,h);
+          const data = cx.getImageData(0,0,w,h).data;
+          const chars = '@%#*+=-:. ';
+          let out='';
+          
+          for(let y=0;y<h;y++){
+            for(let x=0;x<w;x++){
+              const i=(y*w+x)*4;
+              const r=data[i], g=data[i+1], b=data[i+2];
+              const lum = (0.299*r+0.587*g+0.114*b)/255;
+              const ch = chars[Math.floor((1-lum)*(chars.length-1))];
+              out += ch;
+            }
+            out += '\n';
+          }
+          asciiOut.textContent = out;
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      });
+
+      /* ---------------- SNAKE GAME ---------------- */
+      const sCanvas = document.getElementById('snakeCanvas');
+      const sCtx = sCanvas.getContext('2d');
+      const snakeStart = document.getElementById('snakeStart');
+      const snakeReset = document.getElementById('snakeReset');
+      
+      let snakeGame = { 
+        running: false, 
+        dir: 'right', 
+        snake: [], 
+        food: null, 
+        interval: null, 
+        speed: 150,
+        score: 0
+      };
+      
+      function resetSnake(){
+        snakeGame.snake = [{x:5,y:5},{x:4,y:5},{x:3,y:5}]; 
+        snakeGame.dir = 'right'; 
+        snakeGame.score = 0;
+        placeFood(); 
+        drawSnake();
+      }
+      
+      function placeFood(){
+        snakeGame.food = { 
+          x: Math.floor(Math.random()*15)+1, 
+          y: Math.floor(Math.random()*15)+1 
+        };
+      }
+      
+      function drawSnake(){
+        sCtx.clearRect(0,0,sCanvas.width,sCanvas.height);
+        const cell = sCanvas.width/20;
+        sCtx.fillStyle = '#0f1720';
+        sCtx.fillRect(0,0,sCanvas.width,sCanvas.height);
+        
+        // Draw food
+        sCtx.fillStyle = '#ff6666';
+        sCtx.fillRect(snakeGame.food.x*cell, snakeGame.food.y*cell, cell-1, cell-1);
+        
+        // Draw snake
+        sCtx.fillStyle = '#8ef6c1';
+        snakeGame.snake.forEach((p,i) => {
+          sCtx.fillStyle = i === 0 ? '#8ef6c1' : '#6ee7b7'; // Head slightly different
+          sCtx.fillRect(p.x*cell, p.y*cell, cell-2, cell-2);
+        });
+      }
+      
+      function stepSnake(){
+        const head = {...snakeGame.snake[0]};
+        
+        if(snakeGame.dir==='right') head.x++;
+        if(snakeGame.dir==='left') head.x--;
+        if(snakeGame.dir==='up') head.y--;
+        if(snakeGame.dir==='down') head.y++;
+        
+        // Wrap around edges
+        head.x = (head.x+20)%20; 
+        head.y = (head.y+20)%20;
+        snakeGame.snake.unshift(head);
+        
+        // Check food collision
+        if(head.x === snakeGame.food.x && head.y === snakeGame.food.y){
+          snakeGame.score++;
+          placeFood();
+        } else {
+          snakeGame.snake.pop();
+        }
+        
+        // Check self collision
+        for(let i=1;i<snakeGame.snake.length;i++){
+          if(snakeGame.snake[i].x===head.x && snakeGame.snake[i].y===head.y){
+            stopSnake();
+            setTimeout(()=>alert(`Game over! Score: ${snakeGame.score}`), 100);
+            resetSnake();
+            return;
+          }
+        }
+        drawSnake();
+      }
+      
+      function startSnake(){
+        if(snakeGame.running) return;
+        snakeGame.running = true;
+        snakeGame.interval = setInterval(stepSnake, snakeGame.speed);
+      }
+      
+      function stopSnake(){ 
+        snakeGame.running=false; 
+        clearInterval(snakeGame.interval); 
+        snakeGame.interval=null; 
+      }
+      
+      snakeStart.addEventListener('click', startSnake);
+      snakeReset.addEventListener('click', ()=>{ stopSnake(); resetSnake(); });
+      
+      document.addEventListener('keydown', (e)=>{
+        if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+          e.preventDefault();
+          if(e.key==='ArrowUp' && snakeGame.dir!=='down') snakeGame.dir='up';
+          if(e.key==='ArrowDown' && snakeGame.dir!=='up') snakeGame.dir='down';
+          if(e.key==='ArrowLeft' && snakeGame.dir!=='right') snakeGame.dir='left';
+          if(e.key==='ArrowRight' && snakeGame.dir!=='left') snakeGame.dir='right';
+        }
+      });
+      
+      resetSnake();
+    })();
 
     /* ---------------------------
        EPIC LAUNCH BUTTON

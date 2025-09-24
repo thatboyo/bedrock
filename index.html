@@ -544,7 +544,8 @@ canvas#bg {
     accessBtn: document.getElementById('accessBtn'),
     loading: document.getElementById('loading'),
     successMsg: document.getElementById('successMsg'),
-    errorMsg: document.getElementById('errorMsg')
+    errorMsg: document.getElementById('errorMsg'),
+    bgCanvas: document.getElementById('bg')
   };
   
   // Logging system
@@ -555,7 +556,6 @@ canvas#bg {
     elements.logPanel.appendChild(logLine);
     elements.logPanel.scrollTop = elements.logPanel.scrollHeight;
     
-    // Keep log manageable
     if (elements.logPanel.children.length > 100) {
       elements.logPanel.removeChild(elements.logPanel.firstChild);
     }
@@ -592,7 +592,6 @@ canvas#bg {
     elements.errorMsg.classList.add('show');
     log('Access denied - invalid key', 'err');
     
-    // Clear input and refocus
     setTimeout(() => {
       elements.keyInput.value = '';
       elements.keyInput.focus();
@@ -610,286 +609,121 @@ canvas#bg {
     log('Popup blocked - showing fallback option', 'warn');
   }
   
-  // Portal launching
-  function launchPortal() {
+  // compute absolute portal URL (works for GH Pages)
+  function computePortalUrl() {
+    const u = new URL(location.href);
+    const path = u.pathname;
+    const folder = path.endsWith('/') ? path : path.replace(/\/[^/]*$/, '/');
+    return u.origin + folder + 'portal.html';
+  }
+  
+  // Portal launching - NOTE: to avoid popup blocking we open a blank window IMMEDIATELY (user gesture)
+  function launchWithPreopenedWindow(preWindow) {
+    // Show success immediately
     showSuccess();
     setCookie('bedrock_access', 'granted');
     
+    // Small delay so user can see success
     setTimeout(() => {
+      const portalUrl = computePortalUrl();
       try {
-        const portalWindow = window.open('about:blank', '_blank', 'noopener,noreferrer');
-        
-        if (!portalWindow || portalWindow.closed) {
+        if (!preWindow || preWindow.closed) {
           showFallback();
           return;
         }
         
-        // Create enhanced launch page
-        const launchHTML = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>New Tab</title>
-            <meta charset="utf-8">
-            <style>
-              * { margin: 0; padding: 0; box-sizing: border-box; }
-              body {
-                height: 100vh;
-                background: linear-gradient(135deg, #020208, #0a0a15, #04040a);
-                color: #f8fafc;
-                font-family: 'Inter', system-ui, sans-serif;
-                overflow: hidden;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              }
-              
-              canvas { position: fixed; inset: 0; z-index: 0; }
-              
-              .launch-container {
-                position: relative;
-                z-index: 2;
-                text-align: center;
-                animation: fadeIn 2.5s cubic-bezier(0.23, 1, 0.32, 1);
-              }
-              
-              @keyframes fadeIn {
-                0% { opacity: 0; transform: scale(0.8) translateY(40px); }
-                100% { opacity: 1; transform: scale(1) translateY(0); }
-              }
-              
-              .launch-title {
-                font-size: 56px;
-                font-weight: 900;
-                margin-bottom: 32px;
-                background: linear-gradient(135deg, #ffffff, #8ef6c1, #a855f7);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                animation: titleGlow 5s ease-in-out infinite;
-                letter-spacing: 3px;
-              }
-              
-              @keyframes titleGlow {
-                0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(142,246,193,0.3)); }
-                50% { filter: brightness(1.5) drop-shadow(0 0 40px rgba(142,246,193,0.5)); }
-              }
-              
-              .launch-btn {
-                padding: 28px 56px;
-                border-radius: 28px;
-                border: 0;
-                background: linear-gradient(135deg, #8ef6c1, #a8ffdb);
-                color: #0a0a0a;
-                font-weight: 900;
-                font-size: 22px;
-                cursor: pointer;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                box-shadow: 0 25px 80px rgba(142,246,193,0.4);
-                animation: breathe 4s ease-in-out infinite;
-                letter-spacing: 1px;
-                position: relative;
-                overflow: hidden;
-              }
-              
-              @keyframes breathe {
-                0%, 100% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-              }
-              
-              .launch-btn::before {
-                content: '';
-                position: absolute;
-                inset: -3px;
-                background: conic-gradient(from 0deg, transparent, rgba(142,246,193,0.5), transparent);
-                border-radius: 31px;
-                z-index: -1;
-                animation: rotate 3s linear infinite;
-              }
-              
-              @keyframes rotate {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-              
-              .launch-btn:hover {
-                transform: scale(1.2) rotateX(10deg);
-                box-shadow: 0 35px 100px rgba(142,246,193,0.6);
-                animation: none;
-              }
-              
-              .launch-btn:active {
-                transform: scale(1.15);
-              }
-            </style>
-          </head>
-          <body>
-            <canvas id="nebula"></canvas>
-            <div class="launch-container">
-              <h1 class="launch-title">BEDROCK</h1>
-              <button class="launch-btn" onclick="launchPortal()">LAUNCH BEDROCK</button>
-            </div>
-            
-            <script>
-              // Enhanced nebula background
-              (function() {
-                const canvas = document.getElementById('nebula');
-                const ctx = canvas.getContext('2d');
-                let w = canvas.width = innerWidth;
-                let h = canvas.height = innerHeight;
-                
-                const particles = [];
-                const nebulaClouds = [];
-                
-                // Create particles
-                for(let i = 0; i < 150; i++) {
-                  particles.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.8,
-                    vy: (Math.random() - 0.5) * 0.8,
-                    size: Math.random() * 2 + 0.5,
-                    hue: Math.random() > 0.7 ? 180 + Math.random() * 40 : 280 + Math.random() * 40,
-                    alpha: Math.random() * 0.8 + 0.2
-                  });
-                }
-                
-                // Create nebula clouds
-                for(let i = 0; i < 8; i++) {
-                  nebulaClouds.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    r: Math.random() * 200 + 100,
-                    vx: (Math.random() - 0.5) * 0.3,
-                    vy: (Math.random() - 0.5) * 0.3,
-                    hue: Math.random() > 0.5 ? 190 : 290,
-                    alpha: Math.random() * 0.1 + 0.05
-                  });
-                }
-                
-                function animate() {
-                  ctx.fillStyle = 'rgba(2, 2, 8, 0.03)';
-                  ctx.fillRect(0, 0, w, h);
-                  
-                  // Draw nebula clouds
-                  nebulaClouds.forEach(cloud => {
-                    cloud.x += cloud.vx;
-                    cloud.y += cloud.vy;
-                    
-                    if(cloud.x < -cloud.r) cloud.x = w + cloud.r;
-                    if(cloud.x > w + cloud.r) cloud.x = -cloud.r;
-                    if(cloud.y < -cloud.r) cloud.y = h + cloud.r;
-                    if(cloud.y > h + cloud.r) cloud.y = -cloud.r;
-                    
-                    const gradient = ctx.createRadialGradient(cloud.x, cloud.y, 0, cloud.x, cloud.y, cloud.r);
-                    gradient.addColorStop(0, \`hsla(\${cloud.hue}, 70%, 60%, \${cloud.alpha})\`);
-                    gradient.addColorStop(1, 'transparent');
-                    
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
-                    ctx.fill();
-                  });
-                  
-                  // Draw particles
-                  particles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    
-                    if(p.x < 0 || p.x > w) p.vx *= -1;
-                    if(p.y < 0 || p.y > h) p.vy *= -1;
-                    
-                    ctx.beginPath();
-                    ctx.fillStyle = \`hsla(\${p.hue}, 80%, 70%, \${p.alpha})\`;
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Add glow
-                    ctx.shadowBlur = 0;
-                  });
-                  
-                  requestAnimationFrame(animate);
-                }
-                animate();
-                
-                window.addEventListener('resize', () => {
-                  w = canvas.width = innerWidth;
-                  h = canvas.height = innerHeight;
-                });
-              })();
-              
-              function launchPortal() {
-                // Enhanced launch effect
-                document.body.style.transition = 'all 0.8s ease-out';
-                document.body.style.filter = 'brightness(2) blur(10px)';
-                
-                setTimeout(() => {
-                  fetch('portal.html')
-                    .then(response => response.text())
-                    .then(html => {
-                      const portalWindow = window.open('about:blank', '_blank');
-                      portalWindow.document.open();
-                      portalWindow.document.write(html);
-                      portalWindow.document.close();
-                      window.close();
-                    })
-                    .catch(() => {
-                      const portalWindow = window.open('about:blank', '_blank');
-                      portalWindow.document.write('<iframe src="portal.html" style="width:100vw;height:100vh;border:none;background:#04040a;"></iframe>');
-                      window.close();
-                    });
-                }, 500);
-              }
-              
-              // Auto-focus and keyboard support
-              document.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  launchPortal();
-                }
-              });
-            </script>
-          </body>
-          </html>
-        `;
+        // Build the launch pad HTML and inject absolute portal URL
+        const launchHTML = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEDROCK — Launch Pad</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  html,body{height:100%;margin:0;background:linear-gradient(135deg,#020208,#0a0a15,#04040a);color:#f8fafc;font-family:Inter,system-ui;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  canvas{position:fixed;inset:0;z-index:0}
+  .launch-container{position:relative;z-index:2;text-align:center;animation:fadeIn 1.8s ease-out}
+  .launch-title{font-size:48px;font-weight:900;margin-bottom:20px;background:linear-gradient(135deg,#fff,#8ef6c1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .launch-btn{padding:18px 36px;border-radius:20px;border:0;background:linear-gradient(135deg,#8ef6c1,#a8ffdb);color:#071018;font-weight:900;font-size:18px;cursor:pointer;box-shadow:0 25px 80px rgba(142,246,193,0.3);transition:transform .25s}
+  .launch-btn:hover{transform:scale(1.08)}
+</style>
+</head>
+<body>
+<canvas id="nebula"></canvas>
+<div class="launch-container">
+  <h1 class="launch-title">BEDROCK</h1>
+  <button class="launch-btn" id="goBtn">LAUNCH BEDROCK</button>
+</div>
+<script>
+  (function(){const c=document.getElementById('nebula');const ctx=c.getContext('2d');let w=c.width=innerWidth,h=c.height=innerHeight;const parts=[];for(let i=0;i<120;i++)parts.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-0.5)*0.6,vy:(Math.random()-0.5)*0.6,size:Math.random()*2+0.5,hue:Math.random()>0.7?180+Math.random()*40:280+Math.random()*40,alpha:Math.random()*.7+.2});function draw(){ctx.fillStyle='rgba(2,2,8,0.03)';ctx.fillRect(0,0,w,h);parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;ctx.beginPath();ctx.fillStyle='hsla('+p.hue+',80%,70%,'+p.alpha+')';ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()});requestAnimationFrame(draw)}draw();window.addEventListener('resize',()=>{w=c.width=innerWidth;h=c.height=innerHeight})})();
+  document.getElementById('goBtn').addEventListener('click', ()=>{ location.href = "${portalUrl}"; });
+</script>
+</body>
+</html>`;
         
-        portalWindow.document.open();
-        portalWindow.document.write(launchHTML);
-        portalWindow.document.close();
+        preWindow.document.open();
+        preWindow.document.write(launchHTML);
+        preWindow.document.close();
+        log('Portal launch pad injected into new tab', 'ok');
         
-        log('Portal launched successfully in about:blank window', 'ok');
-        
-        // Close auth window after successful launch
+        // attempt to close the auth tab (best-effort)
         setTimeout(() => {
-          window.close();
-        }, 2000);
+          try {
+            window.open('', '_self');
+            window.close();
+            // if still open after a moment, show fallback
+            setTimeout(() => {
+              if (!document.hidden) showFallback();
+            }, 500);
+          } catch (err) {
+            showFallback();
+          }
+        }, 500);
         
-      } catch (error) {
-        log('Error launching portal: ' + error.message, 'err');
+      } catch (err) {
+        log('Error injecting portal: ' + err.message, 'err');
         showFallback();
       }
-    }, 1500);
+    }, 800);
   }
   
-  // Key validation
+  // Key validation (opens blank window immediately on click to avoid popup blocking)
   function validateKey() {
     const inputKey = elements.keyInput.value.trim().toUpperCase();
+    if (!inputKey) { elements.keyInput.focus(); return; }
     
-    if (!inputKey) {
-      elements.keyInput.focus();
-      return;
+    // Open blank window synchronously from user gesture
+    const preWindow = window.open('about:blank', '_blank');
+    if (!preWindow) {
+      // Pop-up blocked right away — show fallback and continue validation normally
+      log('Popup blocked at open; will show fallback if auth succeeds', 'warn');
+    } else {
+      // Focus the new tab (browser permitting)
+      try { preWindow.focus(); } catch(e){}
     }
     
     log('Attempting authentication with key: ' + inputKey.replace(/./g, '*'));
     showLoading(true);
     
-    // Simulate authentication delay for realism
+    // Simulated async auth delay (real auth would be server call)
     setTimeout(() => {
       showLoading(false);
-      
       if (VALID_KEYS.includes(inputKey)) {
         log('Key validated successfully', 'ok');
-        launchPortal();
+        if (preWindow) {
+          // we have a preopened window — inject launch pad into it
+          launchWithPreopenedWindow(preWindow);
+        } else {
+          // pop-up was blocked; show fallback bar so user can open here
+          setCookie('bedrock_access', 'granted');
+          showSuccess();
+          showFallback();
+        }
       } else {
         log('Invalid key provided', 'err');
+        // close the preopened blank window if it exists (since auth failed)
+        try { if (preWindow && !preWindow.closed) preWindow.close(); } catch(e){}
         showError();
       }
     }, 1200);
@@ -899,7 +733,22 @@ canvas#bg {
   function checkExistingAccess() {
     if (getCookie('bedrock_access') === 'granted') {
       log('Existing access found, auto-launching', 'ok');
-      launchPortal();
+      // If access cookie exists, open the portal via new tab (best-effort)
+      // Open immediately so browser sees user gesture? We can't simulate gesture — try opening a tab.
+      const pre = window.open('about:blank', '_blank');
+      if (pre) {
+        // inject direct redirect to portal
+        const portalUrl = computePortalUrl();
+        pre.document.open();
+        pre.document.write(`<!doctype html><meta http-equiv="refresh" content="0;url=${portalUrl}">`);
+        pre.document.close();
+        // attempt to close
+        setTimeout(()=>{ try{ window.open('','_self'); window.close(); }catch(e){} }, 600);
+      } else {
+        // pop-up blocked - navigate this tab as fallback
+        setCookie('bedrock_access','granted');
+        showFallback();
+      }
       return true;
     }
     return false;
@@ -917,99 +766,85 @@ canvas#bg {
   elements.openHereBtn.addEventListener('click', () => {
     log('Fallback activated - opening portal in current tab', 'warn');
     setCookie('bedrock_access', 'granted');
-    window.location.href = 'portal.html';
+    window.location.href = computePortalUrl();
   });
   
-  // Debug panel toggle
+  // Debug panel toggle (press D)
   document.addEventListener('keydown', (e) => {
     if (e.key === DEBUG_KEY || e.key === DEBUG_KEY.toUpperCase()) {
-      const isVisible = elements.logPanel.style.display !== 'none';
-      elements.logPanel.style.display = isVisible ? 'none' : 'block';
-      log(isVisible ? 'Debug panel hidden' : 'Debug panel shown');
+      const isVisible = elements.logPanel.style.display !== 'block';
+      elements.logPanel.style.display = isVisible ? 'block' : 'none';
+      log(isVisible ? 'Debug panel shown' : 'Debug panel hidden', isVisible ? 'ok' : '');
     }
   });
   
-  // Enhanced starfield
+  // Enhanced starfield (w*h/7000, z rand(0.2,1.0), r rand(0.5,2.0))
   (function initStarfield() {
-    const canvas = document.getElementById('bg');
+    const canvas = elements.bgCanvas;
     const ctx = canvas.getContext('2d');
-    let W, H;
-    
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    
-    resize();
-    window.addEventListener('resize', resize);
-    
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; initStars(); });
+
     const stars = [];
-    const STAR_COUNT = Math.floor((W * H) / 2500);
-    
-    for (let i = 0; i < STAR_COUNT; i++) {
-      stars.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        z: Math.random() * 0.8 + 0.2,
-        r: Math.random() * 2 + 0.5,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        twinkle: Math.random() * Math.PI * 2,
-        twinkleSpeed: Math.random() * 0.02 + 0.005,
-        color: Math.random() > 0.9 ? (Math.random() > 0.5 ? 'rgba(142,246,193,' : 'rgba(168,85,247,') : 'rgba(255,255,255,'
-      });
-    }
-    
-    function drawStars() {
-      ctx.clearRect(0, 0, W, H);
-      
-      // Add subtle background gradient
-      const gradient = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H));
-      gradient.addColorStop(0, 'rgba(10,8,20,0.1)');
-      gradient.addColorStop(1, 'rgba(2,2,8,0.2)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, W, H);
-      
-      const time = Date.now() * 0.001;
-      
-      for (const star of stars) {
-        // Update position
-        star.x += star.vx * star.z;
-        star.y += star.vy * star.z;
-        
-        // Wrap around edges
-        if (star.x > W) star.x = 0;
-        if (star.x < 0) star.x = W;
-        if (star.y > H) star.y = 0;
-        if (star.y < 0) star.y = H;
-        
-        // Update twinkle
-        star.twinkle += star.twinkleSpeed;
-        const brightness = (Math.sin(star.twinkle) + 1) * 0.5;
-        const alpha = star.z * (0.4 + brightness * 0.6);
-        
-        // Draw star
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.r * star.z, 0, Math.PI * 2);
-        ctx.fillStyle = star.color + alpha + ')';
-        ctx.fill();
-        
-        // Add glow for brighter stars
-        if (star.color !== 'rgba(255,255,255,' && brightness > 0.7) {
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r * star.z * 2, 0, Math.PI * 2);
-          ctx.fillStyle = star.color + (alpha * 0.3) + ')';
-          ctx.fill();
-        }
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+    function initStars(){
+      stars.length = 0;
+      const COUNT = Math.max(8, Math.floor((W * H) / 7000));
+      for (let i=0;i<COUNT;i++){
+        stars.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          z: rand(0.2, 1.0),
+          r: rand(0.5, 2.0),
+          vx: rand(-0.15, 0.15),
+          vy: rand(-0.25, 0.25),
+          t: Math.random()*20,
+          color: Math.random()>0.92 ? (Math.random()>0.5 ? 'rgba(142,246,193,' : 'rgba(168,85,247,') : 'rgba(255,255,255,',
+          twinkleSpeed: rand(0.2, 1.2)
+        });
       }
     }
-    
-    function animate() {
-      drawStars();
-      requestAnimationFrame(animate);
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      const g = ctx.createRadialGradient(W*0.2,H*0.2,0,W*0.2,H*0.2,Math.max(W,H)*0.9);
+      g.addColorStop(0,'rgba(10,8,20,0.08)');
+      g.addColorStop(1,'rgba(2,2,8,0.18)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,W,H);
+
+      const t = Date.now()/1000;
+      for (const s of stars) {
+        s.x += s.vx * s.z;
+        s.y += s.vy * s.z;
+        if (s.x < 0) s.x = W;
+        if (s.x > W) s.x = 0;
+        if (s.y < 0) s.y = H;
+        if (s.y > H) s.y = 0;
+
+        const tw = Math.abs(Math.sin(t * s.twinkleSpeed + s.t));
+        const alpha = s.z * (0.35 + tw * 0.65);
+
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI*2);
+        ctx.fillStyle = s.color + alpha + ')';
+        ctx.fill();
+
+        if (s.color !== 'rgba(255,255,255,' && tw > 0.7) {
+          ctx.beginPath();
+          ctx.globalAlpha = 0.18 * s.z * tw;
+          ctx.arc(s.x, s.y, s.r * s.z * 2.5, 0, Math.PI*2);
+          ctx.fillStyle = s.color + (alpha*0.5) + ')';
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+      requestAnimationFrame(draw);
     }
-    
-    animate();
+
+    initStars();
+    draw();
   })();
   
   // Initialize
@@ -1023,7 +858,4 @@ canvas#bg {
 })();
 </script>
 </body>
-</html> 10;
-                    ctx.shadowColor = \`hsla(\${p.hue}, 80%, 70%, 0.5)\`;
-                    ctx.fill();
-                    ctx.shadowBlur =
+</html>

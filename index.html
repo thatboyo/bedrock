@@ -7,197 +7,804 @@
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg: linear-gradient(135deg,#020208 0%,#0a0a15 50%,#04040a 100%);
-    --accent: #8ef6c1;
-    --accent-hover: #a8ffdb;
-    --glass-border: rgba(255,255,255,0.12);
-    --glass-bg: rgba(255,255,255,0.04);
-    --shadow-epic: 0 35px 100px rgba(0,0,0,0.8), 0 15px 60px rgba(150,85,255,0.08);
-    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+:root {
+  --bg: linear-gradient(135deg, #020208 0%, #0a0a15 50%, #04040a 100%);
+  --accent: #8ef6c1;
+  --accent-hover: #a8ffdb;
+  --accent-glow: rgba(142,246,193,0.4);
+  --purple-strong: rgba(150,85,255,0.35);
+  --purple-glow: rgba(150,85,255,0.15);
+  --glass-border: rgba(255,255,255,0.15);
+  --glass-bg: rgba(255,255,255,0.06);
+  --shadow-epic: 0 40px 120px rgba(0,0,0,0.9), 0 20px 80px rgba(150,85,255,0.1);
+  --gradient-accent: linear-gradient(135deg, var(--accent), #6ee7b7, var(--accent-hover));
+  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%);
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-feature-settings: 'liga' 1, 'kern' 1, 'ss01' 1;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  background-attachment: fixed;
+  color: #f8fafc;
+  overflow: hidden;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Enhanced starfield background */
+canvas#bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+  filter: brightness(1.3) contrast(1.15);
+}
+
+/* Animated geometric element */
+.orbital-ring {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  left: calc(50% - 300px);
+  top: calc(50% - 300px);
+  z-index: 1;
+  pointer-events: none;
+  border: 2px solid rgba(142,246,193,0.08);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(142,246,193,0.02), transparent 70%);
+  animation: orbital-spin 45s linear infinite;
+}
+
+.orbital-ring::before {
+  content: "";
+  position: absolute;
+  inset: -100px;
+  border: 1px solid rgba(150,85,255,0.06);
+  border-radius: 50%;
+  animation: orbital-spin 60s linear infinite reverse;
+}
+
+.orbital-ring::after {
+  content: "";
+  position: absolute;
+  inset: 100px;
+  border: 1px solid rgba(142,246,193,0.12);
+  border-radius: 50%;
+  animation: orbital-spin 30s linear infinite;
+}
+
+@keyframes orbital-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced vignette */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(50% 50% at 20% 20%, rgba(150,85,255,0.3), transparent 35%),
+    radial-gradient(60% 60% at 80% 80%, rgba(122,58,210,0.25), transparent 40%),
+    radial-gradient(40% 40% at 50% 10%, rgba(142,246,193,0.15), transparent 30%),
+    radial-gradient(30% 30% at 10% 90%, rgba(236,72,153,0.1), transparent 25%);
+  mix-blend-mode: screen;
+  animation: vignette-dance 20s ease-in-out infinite;
+}
+
+@keyframes vignette-dance {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  33% { opacity: 0.9; transform: scale(1.05) rotate(1deg); }
+  66% { opacity: 0.85; transform: scale(0.98) rotate(-1deg); }
+}
+
+/* Authentication container */
+.auth-wrap {
+  position: relative;
+  z-index: 3;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  animation: grand-entrance 1.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes grand-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(80px) scale(0.95);
+    filter: blur(25px);
   }
-  html,body{height:100%;margin:0;background:var(--bg);color:#f8fafc;overflow:hidden}
-  *{box-sizing:border-box}
+  60% {
+    opacity: 0.8;
+    transform: translateY(20px) scale(0.98);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
 
-  /* bg canvas */
-  canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block;filter:brightness(1.12) contrast(1.06)}
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 48px;
+  border-radius: 32px;
+  background: var(--gradient-glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-epic);
+  position: relative;
+  overflow: visible;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  /* spinning ornament */
-  .spinning-square{position:fixed;width:420px;height:420px;left:calc(50% - 210px);top:calc(38% - 210px);z-index:1;pointer-events:none;transform:rotate(14deg);border-radius:22px;background:linear-gradient(135deg,rgba(142,246,193,0.04),rgba(150,85,255,0.03));filter:blur(10px);box-shadow:0 40px 120px rgba(0,0,0,0.6);animation:spinSquare 22s linear infinite;opacity:0.95}
-  @keyframes spinSquare{0%{transform:rotate(0deg)}50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
-  .vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:
-    radial-gradient(50% 50% at 20% 20%, rgba(150,85,255,0.25), transparent 30%),
-    radial-gradient(60% 60% at 80% 80%, rgba(122,58,210,0.20), transparent 35%),
-    radial-gradient(40% 40% at 50% 10%, rgba(142,246,193,0.12), transparent 25%);
-    mix-blend-mode: screen;animation:vignette-dance 15s ease-in-out infinite}
-  @keyframes vignette-dance{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.85;transform:scale(1.03)}}
+.auth-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 50px 140px rgba(0,0,0,0.95), 
+    0 30px 100px rgba(150,85,255,0.15),
+    0 0 0 1px rgba(255,255,255,0.1) inset;
+}
 
-  /* card UI */
-  .auth-wrap{position:relative;z-index:3;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;animation:grand-entrance 1.2s cubic-bezier(0.23,1,0.32,1)}
-  @keyframes grand-entrance{0%{opacity:0;transform:translateY(60px) scale(.98);filter:blur(18px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
-  .auth-card{width:100%;max-width:480px;padding:40px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));border:1px solid var(--glass-border);box-shadow:var(--shadow-epic);position:relative;overflow:visible;backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);text-align:center}
-  .auth-card::before{content:"";position:absolute;inset:-20px;border-radius:36px;z-index:-1;background:linear-gradient(135deg,rgba(150,85,255,0.28),rgba(142,246,193,0.05));filter:blur(30px);pointer-events:none}
-  .auth-title{font-size:32px;font-weight:900;margin:0 0 12px;background:linear-gradient(135deg,#fff,var(--accent),#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .auth-subtitle{color:rgba(255,255,255,0.7);font-size:16px;margin-bottom:40px;font-weight:500}
-  .key-input{width:100%;padding:18px 24px;border-radius:16px;border:1px solid rgba(255,255,255,0.1);background:var(--glass-bg);color:#f8fafc;font-size:16px;font-weight:700;text-align:center;letter-spacing:2px;margin-bottom:24px;transition:all .3s;backdrop-filter:blur(10px)}
-  .key-input:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,0.08);box-shadow:0 0 30px rgba(142,246,193,0.18);transform:scale(1.02)}
-  .access-btn{width:100%;padding:18px 32px;border-radius:16px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-hover));color:#071018;font-weight:900;font-size:18px;cursor:pointer;position:relative;overflow:hidden;letter-spacing:1px;transition:all .3s}
-  .access-btn:hover{transform:scale(1.05)}
-  .access-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transition:left .6s ease}
-  .access-btn:hover::before{left:100%}
-  .status-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:16px}
-  .loading{display:none}
-  .spinner{width:24px;height:24px;border:2px solid rgba(142,246,193,0.18);border-top:2px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite}
-  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-  .error-msg{color:#ff6b6b;font-size:14px;font-weight:600;margin-top:16px;opacity:0;transition:opacity .3s;text-shadow:0 0 10px rgba(255,107,107,0.3)}
-  .error-msg.show{opacity:1;animation:shake .5s}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-  .success-msg{color:var(--accent);font-size:14px;font-weight:600;margin-top:16px;opacity:0;transition:opacity .3s;text-shadow:0 0 10px rgba(142,246,193,0.2)}
-  .success-msg.show{opacity:1;animation:success-pulse .6s}
-  @keyframes success-pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
-  .small{font-size:12px;color:rgba(255,255,255,0.6);margin-top:10px}
+.auth-card::before {
+  content: "";
+  position: absolute;
+  inset: -25px;
+  border-radius: 40px;
+  z-index: -1;
+  background: linear-gradient(135deg, var(--purple-strong), var(--purple-glow), rgba(142,246,193,0.2));
+  filter: blur(35px);
+  pointer-events: none;
+  animation: glow-breathe 10s ease-in-out infinite;
+}
 
-  /* debug panel toggle */
-  #logPanel{position:fixed;left:14px;bottom:14px;width:320px;max-height:40vh;overflow:auto;background:rgba(6,12,18,0.86);color:#e6fff3;border:1px solid rgba(142,246,193,0.08);padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace;font-size:12px;line-height:1.35;z-index:9999;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6);display:none}
-  #logPanel .logLine{margin-bottom:6px}
-  #logPanel .warn{color:#ffd580}
-  #logPanel .err{color:#ff8b8b}
-  #logPanel .ok{color:#9df0b8}
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
 
-  #fallbackBar{position:fixed;left:14px;bottom:calc(14px + 12vh);z-index:10000;display:none}
-  #fallbackBar button{padding:8px 12px;border-radius:8px;border:0;background:#8ef6c1;color:#071018;font-weight:700;cursor:pointer}
-  @media (max-width:520px){#logPanel{width:90vw;left:5vw;right:5vw;bottom:12px}}
+.auth-card::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 35px;
+  z-index: -1;
+  background: conic-gradient(from 0deg, transparent, rgba(142,246,193,0.15), transparent, rgba(150,85,255,0.15), transparent);
+  animation: border-glow 15s linear infinite;
+}
+
+@keyframes border-glow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced typography */
+.auth-title {
+  font-size: 42px;
+  font-weight: 900;
+  margin: 0 0 16px 0;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent) 40%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  text-shadow: 0 0 40px rgba(142,246,193,0.3);
+  animation: title-glow 8s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes title-glow {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(142,246,193,0.2)); }
+  50% { filter: brightness(1.4) drop-shadow(0 0 40px rgba(142,246,193,0.4)); }
+}
+
+.auth-subtitle {
+  color: rgba(255,255,255,0.8);
+  font-size: 17px;
+  margin-bottom: 48px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+
+/* Enhanced input styling */
+.key-input {
+  width: 100%;
+  padding: 22px 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+  color: #f8fafc;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-bottom: 28px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(15px);
+  text-transform: uppercase;
+}
+
+.key-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.12);
+  box-shadow: 
+    0 0 0 4px rgba(142,246,193,0.1),
+    0 0 40px rgba(142,246,193,0.25);
+  transform: scale(1.03);
+}
+
+.key-input::placeholder {
+  color: rgba(255,255,255,0.5);
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+/* Enhanced button */
+.access-btn {
+  width: 100%;
+  padding: 22px 40px;
+  border-radius: 18px;
+  border: 0;
+  background: var(--gradient-accent);
+  color: #071018;
+  font-weight: 900;
+  font-size: 19px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 25px 70px rgba(10,20,20,0.7),
+    0 0 0 1px rgba(255,255,255,0.15) inset,
+    0 0 50px rgba(142,246,193,0.3);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 1.5px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.access-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.8s ease;
+}
+
+.access-btn:hover::before {
+  left: 100%;
+}
+
+.access-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 
+    0 35px 90px rgba(150,85,255,0.25),
+    0 0 60px rgba(142,246,193,0.4),
+    0 0 0 1px rgba(255,255,255,0.2) inset;
+}
+
+.access-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.access-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Status indicators */
+.status-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  min-height: 32px;
+}
+
+.loading {
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(142,246,193,0.2);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.error-msg {
+  color: #ff8b8b;
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0;
+  transition: all 0.4s ease;
+  text-shadow: 0 0 15px rgba(255,139,139,0.4);
+}
+
+.error-msg.show {
+  opacity: 1;
+  animation: error-shake 0.6s ease-in-out;
+}
+
+@keyframes error-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+.success-msg {
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0;
+  transition: all 0.4s ease;
+  text-shadow: 0 0 15px var(--accent-glow);
+}
+
+.success-msg.show {
+  opacity: 1;
+  animation: success-pulse 0.8s ease-out;
+}
+
+@keyframes success-pulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.1); filter: brightness(1.3); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Debug panel */
+#logPanel {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: 360px;
+  max-height: 45vh;
+  overflow: auto;
+  background: rgba(6,12,18,0.92);
+  color: #e6fff3;
+  border: 1px solid rgba(142,246,193,0.1);
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  z-index: 9999;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  backdrop-filter: blur(10px);
+  display: none;
+}
+
+#logPanel .logLine {
+  margin-bottom: 6px;
+  opacity: 0.9;
+}
+
+#logPanel .warn { color: #ffd580; }
+#logPanel .err { color: #ff8b8b; }
+#logPanel .ok { color: #9df0b8; }
+
+#fallbackBar {
+  position: fixed;
+  left: 16px;
+  bottom: calc(16px + 20vh);
+  z-index: 10000;
+  display: none;
+}
+
+#fallbackBar button {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--accent);
+  color: #071018;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#fallbackBar button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 32px 24px;
+  }
+  
+  .auth-title {
+    font-size: 32px;
+  }
+  
+  #logPanel {
+    width: calc(100vw - 32px);
+    left: 16px;
+    right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .orbital-ring {
+    width: 400px;
+    height: 400px;
+    left: calc(50% - 200px);
+    top: calc(50% - 200px);
+  }
+  
+  .auth-card {
+    padding: 28px 20px;
+  }
+  
+  .key-input {
+    font-size: 16px;
+    padding: 18px 20px;
+  }
+  
+  .access-btn {
+    font-size: 17px;
+    padding: 18px 32px;
+  }
+}
 </style>
 </head>
 <body>
 <canvas id="bg" aria-hidden="true"></canvas>
-<div class="spinning-square" aria-hidden="true"></div>
+<div class="orbital-ring" aria-hidden="true"></div>
 <div class="vignette" aria-hidden="true"></div>
 
 <div class="auth-wrap">
   <div class="auth-card" role="main" aria-labelledby="bedrock-title">
     <h1 id="bedrock-title" class="auth-title">BEDROCK</h1>
-    <p class="auth-subtitle">Enter your access key to continue</p>
-
-    <input id="keyInput" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off" inputmode="text" aria-label="Access key">
-
-    <button id="accessBtn" class="access-btn" type="button">LAUNCH BEDROCK</button>
-
+    <p class="auth-subtitle">Enter your access key to unlock the portal</p>
+    
+    <input id="keyInput" 
+           class="key-input" 
+           type="password" 
+           placeholder="ACCESS KEY" 
+           autocomplete="off" 
+           aria-label="Access key">
+    
+    <button id="accessBtn" class="access-btn" type="button">
+      LAUNCH BEDROCK
+    </button>
+    
     <div class="status-row" aria-live="polite">
-      <div id="loading" class="loading" aria-hidden="true"><div class="spinner" aria-hidden="true"></div></div>
-      <div id="successMsg" class="success-msg" aria-hidden="true">Access granted. Launching Bedrock...</div>
-      <div id="errorMsg" class="error-msg" aria-hidden="true">Invalid access key. Please try again.</div>
+      <div id="loading" class="loading" aria-hidden="true">
+        <div class="spinner" aria-hidden="true"></div>
+        <span class="loading-text">Authenticating...</span>
+      </div>
+      <div id="successMsg" class="success-msg" aria-hidden="true">
+        Access granted. Launching Bedrock...
+      </div>
+      <div id="errorMsg" class="error-msg" aria-hidden="true">
+        Invalid access key. Please try again.
+      </div>
     </div>
-
-    <p class="small" id="hint" aria-hidden="true"></p>
   </div>
 </div>
 
-<div id="logPanel" aria-hidden="false"></div>
-<div id="fallbackBar"><button id="openHereBtn">Open portal in this tab</button></div>
+<div id="logPanel" aria-hidden="true"></div>
+<div id="fallbackBar">
+  <button id="openHereBtn">Open portal in this tab</button>
+</div>
 
 <script>
-/* ------------------ STAR FIELD ------------------ */
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-let stars = [];
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  initStars();
-}
-function initStars() {
-  stars = [];
-  const numStars = Math.floor((canvas.width * canvas.height) / 7000);
-  for (let i = 0; i < numStars; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      z: 0.2 + Math.random() * 0.8,
-      r: 0.5 + Math.random() * 1.5,
-      dx: (Math.random()-0.5)*0.2,
-      dy: (Math.random()-0.5)*0.2
-    });
-  }
-}
-function updateStars() {
-  stars.forEach(s => {
-    s.x += s.dx;
-    s.y += s.dy;
-    if(s.x<0)s.x=canvas.width;if(s.x>canvas.width)s.x=0;
-    if(s.y<0)s.y=canvas.height;if(s.y>canvas.height)s.y=0;
-    s.z += (Math.random()-0.5)*0.02;
-    if(s.z<0.2)s.z=0.2;
-    if(s.z>1.0)s.z=1.0;
-  });
-}
-function drawStars() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  stars.forEach(s=>{
-    ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r,0,2*Math.PI);
-    ctx.fillStyle=`rgba(255,255,255,${s.z})`;
-    ctx.fill();
-  });
-}
-function animateStars() { updateStars(); drawStars(); requestAnimationFrame(animateStars);}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-animateStars();
-/* ------------------ ACCESS SYSTEM ------------------ */
-(function(){
-  const LOG = document.getElementById('logPanel');
-  const fallbackBar = document.getElementById('fallbackBar');
-  const openHereBtn = document.getElementById('openHereBtn');
-  let debugVisible=false;
-
-  function log(text, cls){const el=document.createElement('div');el.className='logLine'+(cls?' '+cls:'');el.textContent=(new Date()).toLocaleTimeString()+' — '+text;LOG.appendChild(el);LOG.scrollTop=LOG.scrollHeight;}
-  function showFallbackOption(){fallbackBar.style.display='block';log('Fallback: pop-ups blocked. Use "Open portal in this tab" or allow pop-ups.','warn');}
-  openHereBtn.addEventListener('click',()=>{log('Fallback clicked: navigating to portal.html','warn');location.href='portal.html';});
-  document.addEventListener('keydown',e=>{if(e.key==='d'||e.key==='D'){debugVisible=!debugVisible;LOG.style.display=debugVisible?'block':'none';}});
+(function() {
+  'use strict';
   
-  const keysAllowed=['BED25','GAM3','ALPHA']; // multiple codes
-  const keyInput = document.getElementById('keyInput');
-  const accessBtn = document.getElementById('accessBtn');
-  const loading = document.getElementById('loading');
-  const successMsg = document.getElementById('successMsg');
-  const errorMsg = document.getElementById('errorMsg');
-
-  function showLoading(on){loading.style.display=on?'block':'none';accessBtn.disabled=on;if(on){successMsg.classList.remove('show');errorMsg.classList.remove('show');}}
-  function showSuccess(){successMsg.classList.add('show');errorMsg.classList.remove('show');}
-  function showError(){errorMsg.classList.add('show');successMsg.classList.remove('show');}
-
-  function launchPortal(){
-    const newTab = window.open('about:blank','_blank');
-    if(!newTab){showFallbackOption();return;}
-    const html=`
-      <!doctype html>
-      <html>
-      <head><title> </title><style>body,html{margin:0;padding:0;height:100%;overflow:hidden;background:#000}iframe{border:none;width:100%;height:100%}</style></head>
-      <body><iframe src="portal.html"></iframe></body>
-      </html>`;
-    newTab.document.open();
-    newTab.document.write(html);
-    newTab.document.close();
-    setTimeout(()=>{window.close();},1000);
-  }
-
-  accessBtn.addEventListener('click',()=>{
-    const val = keyInput.value.trim().toUpperCase();
-    if(keysAllowed.includes(val)){
-      showLoading(true);
-      setTimeout(()=>{
-        showLoading(false);
-        showSuccess();
-        launchPortal();
-      },400);
-    }else{
-      showError();
+  // Configuration
+  const VALID_KEYS = ["BEDROCK2025", "TEST123", "DEMO42"];
+  const DEBUG_KEY = 'd';
+  
+  // DOM Elements
+  const elements = {
+    logPanel: document.getElementById('logPanel'),
+    fallbackBar: document.getElementById('fallbackBar'),
+    openHereBtn: document.getElementById('openHereBtn'),
+    keyInput: document.getElementById('keyInput'),
+    accessBtn: document.getElementById('accessBtn'),
+    loading: document.getElementById('loading'),
+    successMsg: document.getElementById('successMsg'),
+    errorMsg: document.getElementById('errorMsg')
+  };
+  
+  // Logging system
+  function log(message, type = '') {
+    const logLine = document.createElement('div');
+    logLine.className = 'logLine' + (type ? ' ' + type : '');
+    logLine.textContent = new Date().toLocaleTimeString() + ' — ' + message;
+    elements.logPanel.appendChild(logLine);
+    elements.logPanel.scrollTop = elements.logPanel.scrollHeight;
+    
+    // Keep log manageable
+    if (elements.logPanel.children.length > 100) {
+      elements.logPanel.removeChild(elements.logPanel.firstChild);
     }
-  });
-})();
-</script>
-</body>
-</html>
+  }
+  
+  // Cookie utilities
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+  
+  function setCookie(name, value, days = 365) {
+    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = name + '=' + encodeURIComponent(value) + ';path=/;expires=' + expires + ';SameSite=Strict';
+  }
+  
+  // UI state management
+  function showLoading(show) {
+    elements.loading.style.display = show ? 'flex' : 'none';
+    elements.accessBtn.disabled = show;
+    if (show) {
+      hideMessages();
+    }
+  }
+  
+  function showSuccess() {
+    hideMessages();
+    elements.successMsg.classList.add('show');
+    log('Access granted successfully', 'ok');
+  }
+  
+  function showError() {
+    hideMessages();
+    elements.errorMsg.classList.add('show');
+    log('Access denied - invalid key', 'err');
+    
+    // Clear input and refocus
+    setTimeout(() => {
+      elements.keyInput.value = '';
+      elements.keyInput.focus();
+    }, 500);
+  }
+  
+  function hideMessages() {
+    elements.successMsg.classList.remove('show');
+    elements.errorMsg.classList.remove('show');
+  }
+  
+  // Fallback handling
+  function showFallback() {
+    elements.fallbackBar.style.display = 'block';
+    log('Popup blocked - showing fallback option', 'warn');
+  }
+  
+  // Portal launching
+  function launchPortal() {
+    showSuccess();
+    setCookie('bedrock_access', 'granted');
+    
+    setTimeout(() => {
+      try {
+        const portalWindow = window.open('about:blank', '_blank', 'noopener,noreferrer');
+        
+        if (!portalWindow || portalWindow.closed) {
+          showFallback();
+          return;
+        }
+        
+        // Create enhanced launch page
+        const launchHTML = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>New Tab</title>
+            <meta charset="utf-8">
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                height: 100vh;
+                background: linear-gradient(135deg, #020208, #0a0a15, #04040a);
+                color: #f8fafc;
+                font-family: 'Inter', system-ui, sans-serif;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              
+              canvas { position: fixed; inset: 0; z-index: 0; }
+              
+              .launch-container {
+                position: relative;
+                z-index: 2;
+                text-align: center;
+                animation: fadeIn 2.5s cubic-bezier(0.23, 1, 0.32, 1);
+              }
+              
+              @keyframes fadeIn {
+                0% { opacity: 0; transform: scale(0.8) translateY(40px); }
+                100% { opacity: 1; transform: scale(1) translateY(0); }
+              }
+              
+              .launch-title {
+                font-size: 56px;
+                font-weight: 900;
+                margin-bottom: 32px;
+                background: linear-gradient(135deg, #ffffff, #8ef6c1, #a855f7);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: titleGlow 5s ease-in-out infinite;
+                letter-spacing: 3px;
+              }
+              
+              @keyframes titleGlow {
+                0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(142,246,193,0.3)); }
+                50% { filter: brightness(1.5) drop-shadow(0 0 40px rgba(142,246,193,0.5)); }
+              }
+              
+              .launch-btn {
+                padding: 28px 56px;
+                border-radius: 28px;
+                border: 0;
+                background: linear-gradient(135deg, #8ef6c1, #a8ffdb);
+                color: #0a0a0a;
+                font-weight: 900;
+                font-size: 22px;
+                cursor: pointer;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 25px 80px rgba(142,246,193,0.4);
+                animation: breathe 4s ease-in-out infinite;
+                letter-spacing: 1px;
+                position: relative;
+                overflow: hidden;
+              }
+              
+              @keyframes breathe {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+              }
+              
+              .launch-btn::before {
+                content: '';
+                position: absolute;
+                inset: -3px;
+                background: conic-gradient(from 0deg, transparent, rgba(142,246,193,0.5), transparent);
+                border-radius: 31px;
+                z-index: -1;
+                animation: rotate 3s linear infinite;
+              }
+              
+              @keyframes rotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+              
+              .launch-btn:hover {
+                transform: scale(1.2) rotateX(10deg);
+                box-shadow: 0 35px 100px rgba(142,246,193,0.6);
+                animation: none;
+              }
+              
+              .launch-btn:active {
+                transform: scale(1.15);
+              }
+            </style>
+          </head>
+          <body>
+            <canvas id="nebula"></canvas>
+            <div class="launch-container">
+              <h1 class="launch-title">BEDROCK</h1>
+              <button class="launch-btn" onclick="launchPortal()">LAUNCH BEDROCK</button>
+            </div>
+            
+            <script>
+              // Enhanced nebula background
+              (function() {
+                const canvas = document.getElementById('nebula');
+                const ctx = canvas.getContext('2d');
+                let w = canvas.width = innerWidth;
+                let h = canvas.height = innerHeight;
+                
+                const particles = [];
+                const nebulaClouds = [];
+                
+                // Create particles
+                for(let i = 0; i < 150; i++) {
+                  particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.8,
+                    vy: (Math.random() - 0.5) * 0.8,
+                    size: Math.random() * 2 + 0.5,
+                    hue: Math.random() > 0.7 ? 180 + Math.random() * 40 : 280 + Math.random() * 40,
+                    alpha: Math.random() * 0.8 + 0.2
+                  });
+                }
+                
+                // Create nebula clouds
+                for(let i = 0; i < 8; i++) {
+                  nebulaClouds.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    r: Math.random() * 200 + 100,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    hue: Math.random() > 0.5 ? 190 : 290,
+                    alpha: Math.random() * 0.1 + 0.05
+                  });
+                }
+                
+                function animate() {
+                  ctx.fillStyle = 'rgba(2, 2, 8, 0.03)';
+                  ctx.fillRect(0, 0, w, h);
+                  
+                  // Draw nebula clouds
+                  nebulaClouds.forEach(cloud => {
+                    cloud.x += cloud.vx;
+                    cloud.y += cloud.vy;
+                    
+                    if(cloud.x < -cloud.r) cloud.x = w + cloud.r;
+                    if(cloud.x > w + cloud.r) cloud.x = -cloud.r;
+                    if(cloud.y < -cloud.r) cloud.y = h + cloud.r;
+                    if(cloud.y > h + cloud.r) cloud.y = -cloud.r;
+                    
+                    const gradient = ctx.createRadialGradient(cloud.x, cloud.y, 0, cloud.x, cloud.y, cloud.r);
+                    gradient.addColorStop(0, \`hsla(\${cloud.hue}, 70%, 60%, \${cloud.alpha})\`);
+                    gradient.addColorStop(1, 'transparent');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
+                    ctx.fill();
+                  });
+                  
+                  // Draw particles
+                  particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    
+                    if(p.x < 0 || p.x > w) p.vx *= -1;
+                    if(p.y < 0 || p.y > h) p.vy *= -1;
+                    
+                    ctx.beginPath();
+                    ctx.fillStyle = \`hsla(\${p.hue}, 80%, 70%, \${p.alpha})\`;
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Add glow
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = \`hsla(\${p.hue}, 80%, 70%, 0.5)\`;
+                    ctx.fill();
+                    ctx.shadowBlur =

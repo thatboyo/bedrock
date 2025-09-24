@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Access Portal — BEDROCK (Debug UI)</title>
+<title>Access Portal — BEDROCK</title>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,9 @@
   }
   html,body{height:100%;margin:0;background:var(--bg);color:#f8fafc;overflow:hidden}
   *{box-sizing:border-box}
+
   canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none;display:block;filter:brightness(1.12) contrast(1.06)}
+
   .spinning-square{position:fixed;width:420px;height:420px;left:calc(50% - 210px);top:calc(38% - 210px);z-index:1;pointer-events:none;transform:rotate(14deg);border-radius:22px;background:linear-gradient(135deg,rgba(142,246,193,0.04),rgba(150,85,255,0.03));filter:blur(10px);box-shadow:0 40px 120px rgba(0,0,0,0.6);animation:spinSquare 22s linear infinite;opacity:0.95}
   @keyframes spinSquare{0%{transform:rotate(0deg)}50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
   .vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:
@@ -29,6 +31,7 @@
     radial-gradient(40% 40% at 50% 10%, rgba(142,246,193,0.12), transparent 25%);
     mix-blend-mode: screen;animation:vignette-dance 15s ease-in-out infinite}
   @keyframes vignette-dance{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.85;transform:scale(1.03)}}
+
   .auth-wrap{position:relative;z-index:3;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;animation:grand-entrance 1.2s cubic-bezier(0.23,1,0.32,1)}
   @keyframes grand-entrance{0%{opacity:0;transform:translateY(60px) scale(.98);filter:blur(18px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
   .auth-card{width:100%;max-width:480px;padding:40px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));border:1px solid var(--glass-border);box-shadow:var(--shadow-epic);position:relative;overflow:visible;backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);text-align:center}
@@ -37,10 +40,10 @@
   .auth-subtitle{color:rgba(255,255,255,0.7);font-size:16px;margin-bottom:40px;font-weight:500}
   .key-input{width:100%;padding:18px 24px;border-radius:16px;border:1px solid rgba(255,255,255,0.1);background:var(--glass-bg);color:#f8fafc;font-size:16px;font-weight:700;text-align:center;letter-spacing:2px;margin-bottom:24px;transition:all .3s;backdrop-filter:blur(10px)}
   .key-input:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,0.08);box-shadow:0 0 30px rgba(142,246,193,0.18);transform:scale(1.02)}
-  .access-btn{width:100%;padding:18px 32px;border-radius:16px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-hover));color:#071018;font-weight:900;font-size:18px;cursor:pointer;position:relative;overflow:hidden;letter-spacing:1px;transition:all .2s ease-in-out}
+  .access-btn{width:100%;padding:18px 32px;border-radius:16px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-hover));color:#071018;font-weight:900;font-size:18px;cursor:pointer;position:relative;overflow:hidden;letter-spacing:1px;transition:transform .2s}
+  .access-btn:hover{transform:scale(1.05)}
   .access-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);transition:left .6s ease}
   .access-btn:hover::before{left:100%}
-  .access-btn:hover{transform:scale(1.05)}
   .status-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:16px}
   .loading{display:none}
   .spinner{width:24px;height:24px;border:2px solid rgba(142,246,193,0.18);border-top:2px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite}
@@ -52,93 +55,85 @@
   .success-msg.show{opacity:1;animation:success-pulse .6s}
   @keyframes success-pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
   .small{font-size:12px;color:rgba(255,255,255,0.6);margin-top:10px}
-  #logPanel{position:fixed;left:14px;bottom:14px;width:320px;max-height:40vh;overflow:auto;background:rgba(6,12,18,0.86);color:#e6fff3;border:1px solid rgba(142,246,193,0.08);padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace;font-size:12px;line-height:1.35;z-index:9999;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6);display:none;}
+  #logPanel{position:fixed;left:14px;bottom:14px;width:320px;max-height:40vh;overflow:auto;background:rgba(6,12,18,0.86);color:#e6fff3;border:1px solid rgba(142,246,193,0.08);padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace;font-size:12px;line-height:1.35;z-index:9999;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6);display:none}
   #logPanel .logLine{margin-bottom:6px}
   #logPanel .warn{color:#ffd580}
   #logPanel .err{color:#ff8b8b}
   #logPanel .ok{color:#9df0b8}
-  @media(max-width:520px){#logPanel{width:90vw;left:5vw;right:5vw;bottom:12px}}
+  #fallbackBar{position:fixed;left:14px;bottom:calc(14px + 12vh);z-index:10000;display:none}
+  #fallbackBar button{padding:8px 12px;border-radius:8px;border:0;background:#8ef6c1;color:#071018;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
-<canvas id="bg"></canvas>
-<div class="spinning-square"></div>
-<div class="vignette"></div>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="spinning-square" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
 
 <div class="auth-wrap">
-  <div class="auth-card">
-    <h1 class="auth-title">BEDROCK</h1>
+  <div class="auth-card" role="main" aria-labelledby="bedrock-title">
+    <h1 id="bedrock-title" class="auth-title">BEDROCK</h1>
     <p class="auth-subtitle">Enter your access key to continue</p>
-
-    <input id="keyInput" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off">
+    <input id="keyInput" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off" inputmode="text" aria-label="Access key">
     <button id="accessBtn" class="access-btn" type="button">LAUNCH BEDROCK</button>
-
-    <div class="status-row">
-      <div id="loading" class="loading"><div class="spinner"></div></div>
-      <div id="successMsg" class="success-msg">Access granted. Launching Bedrock...</div>
-      <div id="errorMsg" class="error-msg">Invalid access key. Please try again.</div>
+    <div class="status-row" aria-live="polite">
+      <div id="loading" class="loading" aria-hidden="true"><div class="spinner" aria-hidden="true"></div></div>
+      <div id="successMsg" class="success-msg" aria-hidden="true">Access granted. Launching Bedrock...</div>
+      <div id="errorMsg" class="error-msg" aria-hidden="true">Invalid access key. Please try again.</div>
     </div>
+    <p class="small" id="hint" aria-hidden="true"></p>
   </div>
 </div>
 
-<div id="logPanel"></div>
+<div id="logPanel" aria-hidden="true"></div>
+<div id="fallbackBar"><button id="openHereBtn">Open portal in this tab</button></div>
 
 <script>
+const _k3ys = ["BED25","ROCK42","GEMS99"]; // obfuscated variable for valid keys
+const keyInput = document.getElementById("keyInput");
+const accessBtn = document.getElementById("accessBtn");
+const loading = document.getElementById("loading");
+const successMsg = document.getElementById("successMsg");
+const errorMsg = document.getElementById("errorMsg");
 const LOG = document.getElementById('logPanel');
-let debugVisible = false;
-document.addEventListener('keydown', e => { if(e.key==='d'||e.key==='D'){ debugVisible=!debugVisible; LOG.style.display=debugVisible?'block':'none'; }});
+const fallbackBar = document.getElementById('fallbackBar');
+const openHereBtn = document.getElementById('openHereBtn');
 
-function log(msg,cls){ const el=document.createElement('div'); el.className='logLine'+(cls?' '+cls:''); el.textContent=(new Date()).toLocaleTimeString()+' — '+msg; LOG.appendChild(el); LOG.scrollTop=LOG.scrollHeight; }
+function log(text,cls){const el=document.createElement('div');el.className='logLine'+(cls?' '+cls:'');el.textContent=(new Date()).toLocaleTimeString()+' — '+text;LOG.appendChild(el);LOG.scrollTop=LOG.scrollHeight;}
 
-const codes = ['BED25','ACCESS1','SECRETX'];
-const keyInput = document.getElementById('keyInput');
-const accessBtn = document.getElementById('accessBtn');
-const loading = document.getElementById('loading');
-const successMsg = document.getElementById('successMsg');
-const errorMsg = document.getElementById('errorMsg');
+function showLoading(on){loading.style.display=on?'block':'none';accessBtn.disabled=on;if(on){successMsg.classList.remove('show');errorMsg.classList.remove('show');}}
+function showSuccess(){successMsg.classList.add('show');errorMsg.classList.remove('show');}
+function showError(){errorMsg.classList.add('show');successMsg.classList.remove('show');}
 
-function showLoading(on){ loading.style.display=on?'block':'none'; accessBtn.disabled=on; successMsg.classList.remove('show'); errorMsg.classList.remove('show'); }
-function showSuccess(){ successMsg.classList.add('show'); errorMsg.classList.remove('show'); }
-function showError(){ errorMsg.classList.add('show'); successMsg.classList.remove('show'); }
+function showFallback(){fallbackBar.style.display='block';log('Fallback: pop-ups blocked.', 'warn');}
 
-function launchPortal(){
-  const newTab = window.open('about:blank','_blank');
-  if(!newTab){ alert('Pop-up blocked. Allow pop-ups for this site.'); return; }
-  const html = `<!doctype html><html><head><title></title><base href="./"><style>body,html{margin:0;padding:0;height:100%;overflow:hidden;background:#000}iframe{border:none;width:100%;height:100%}</style></head><body><iframe src="portal.html"></iframe></body></html>`;
-  newTab.document.open(); newTab.document.write(html); newTab.document.close();
-  showSuccess();
-  setTimeout(()=>{ try{ window.close(); }catch(e){ log('Unable to close tab, but portal opened','warn'); } },1000);
+openHereBtn.addEventListener('click',()=>{log('Fallback opened in this tab','warn');location.href='portal.html';});
+
+function validateKey(){
+  const val=keyInput.value.trim().toUpperCase();
+  if(_k3ys.includes(val)){
+    showLoading(true);
+    showSuccess();
+    setTimeout(()=>{
+      let newTab=window.open('about:blank','_blank');
+      if(newTab){
+        const html=`<!doctype html><html><head><title></title><style>body,html{margin:0;padding:0;height:100%;overflow:hidden;background:#000}iframe{border:none;width:100%;height:100%}</style></head><body><iframe src="portal.html"></iframe></body></html>`;
+        newTab.document.open(); newTab.document.write(html); newTab.document.close();
+        setTimeout(()=>{try{newTab.close()}catch(e){log('Unable to close tab','warn');}},1000);
+      } else showFallback();
+      showLoading(false);
+    },1000);
+  } else {showError();}
 }
 
-accessBtn.addEventListener('click',()=>{
-  const val = keyInput.value.trim().toUpperCase();
-  showLoading(true);
-  if(codes.includes(val)){ launchPortal(); }else{ showLoading(false); showError(); log('Invalid key: '+val,'err'); }
-});
-
-// ---- stars ----
-const canvas=document.getElementById('bg');
-const ctx=canvas.getContext('2d');
-let W,H;
-function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight;}
-window.addEventListener('resize',resize); resize();
-
-let stars=[];
-for(let i=0;i<W*H/7000;i++){
-  stars.push({x:Math.random()*W, y:Math.random()*H, z:Math.random()*0.8+0.2, r:Math.random()*1.5+0.5, dx:(Math.random()-0.5)/3, dy:(Math.random()-0.5)/3, alpha:Math.random()});
-}
-
-function updateStars(){
-  ctx.clearRect(0,0,W,H);
-  for(let s of stars){
-    s.x+=s.dx; s.y+=s.dy; s.alpha+=Math.random()*0.04-0.02; if(s.alpha>1)s.alpha=1; if(s.alpha<0)s.alpha=0;
-    if(s.x<0)s.x=W; if(s.x>W)s.x=0; if(s.y<0)s.y=H; if(s.y>H)s.y=0;
-    ctx.fillStyle=`rgba(255,255,255,${s.alpha})`;
-    ctx.beginPath(); ctx.arc(s.x,s.y,s.r*s.z,0,2*Math.PI); ctx.fill();
-  }
-  requestAnimationFrame(updateStars);
-}
-updateStars();
+accessBtn.addEventListener('click',validateKey);
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='d'){LOG.style.display=LOG.style.display==='none'?'block':'none';}});
+</script>
+<script>
+/* STAR CANVAS */
+const canvas=document.getElementById('bg');const ctx=canvas.getContext('2d');let w,h,stars=[];
+function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;stars=[];for(let i=0;i<w*h/7000;i++){stars.push({x:Math.random()*w,y:Math.random()*h,z:0.2+Math.random()*0.8,r:0.5+Math.random()*1.5,a:Math.random()})}}
+window.addEventListener('resize',resize);resize();
+function draw(){ctx.clearRect(0,0,w,h);for(const s of stars){s.a+=0.02;const alpha=(Math.sin(s.a)+1)/2;ctx.fillStyle=`rgba(255,255,255,${alpha})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();s.x+=0.1;s.y+=0.05;if(s.x>w)s.x=0;if(s.y>h)s.y=0}}function animate(){draw();requestAnimationFrame(animate);}animate();
 </script>
 </body>
 </html>

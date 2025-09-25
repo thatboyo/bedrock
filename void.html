@@ -434,11 +434,14 @@
     return escapeHtml(s).replace(/\n/g,' ');
   }
 
+  // Update screen display when selection changes
   function updateScreen(){
     const opt = gameSelect.options[gameSelect.selectedIndex];
     const title = opt && opt.text ? opt.text : 'No cartridge inserted';
-    const val = opt && opt.value ? opt.value : '';
-    const thumb = opt && opt.dataset && opt.dataset.thumb ? opt.dataset.thumb : '';
+    // Prefer explicit data-url if present, otherwise use value
+    const valRaw = (opt && (opt.dataset && opt.dataset.url)) ? opt.dataset.url : (opt && opt.value ? opt.value : '');
+    const val = valRaw ? String(valRaw).trim() : '';
+    const thumb = opt && opt.dataset && (opt.dataset.thumb || opt.dataset.thumb) ? (opt.dataset.thumb || opt.dataset.thumb) : '';
 
     gameTitle.textContent = title;
     gamePath.textContent = val || '—';
@@ -452,31 +455,55 @@
     openDirect.dataset.url = val || '';
   }
 
+  // Initialize
   gameSelect.addEventListener('change', updateScreen);
+  // Also update on focus/blur just in case selection changed by keyboard
+  gameSelect.addEventListener('blur', updateScreen);
   updateScreen();
 
   openDirect.addEventListener('click', () => {
-    const url = openDirect.dataset.url;
+    const url = (openDirect.dataset && openDirect.dataset.url) ? openDirect.dataset.url.trim() : '';
     if(!url) return;
     window.open(url, '_blank', 'noopener');
   });
 
+  // Helper to get the effective URL of currently selected option
+  function getSelectedUrl(){
+    const opt = gameSelect.options[gameSelect.selectedIndex];
+    if(!opt) return '';
+    // support data-url attribute as higher priority
+    const dataUrl = opt.dataset && opt.dataset.url ? String(opt.dataset.url).trim() : '';
+    const valueUrl = opt.value ? String(opt.value).trim() : '';
+    return dataUrl || valueUrl || '';
+  }
+
+  // Prevent double clicks
+  let opening = false;
+
   startBtn.addEventListener('click', (e) => {
-    const url = gameSelect.value;
-    const title = gameSelect.options[gameSelect.selectedIndex]?.text || 'Game';
-    if(!url){ 
-      alert('Insert a game cartridge first!'); 
-      return; 
-    }
+    if(opening) return;
+    opening = true;
+    try {
+      const url = getSelectedUrl();
+      const title = gameSelect.options[gameSelect.selectedIndex]?.text?.trim() || 'Game';
+      if(!url){
+        alert('Insert a game cartridge first!');
+        opening = false;
+        return;
+      }
 
-    const w = window.open('about:blank', '_blank');
+      // Try to open a blank tab (user gesture). If popup blocked, w will be null.
+      const w = window.open('about:blank', '_blank');
+      if(!w){
+        // friendly guidance for popup-blocked case
+        alert('Popup blocked — allow popups for this site or use the Direct Link button.');
+        console.error('Void Arcade: popup blocked when attempting to open about:blank.');
+        opening = false;
+        return;
+      }
 
-    if(!w){
-      alert('Popup blocked — allow popups for this site or try the direct link.');
-      return;
-    }
-
-    const newTabHtml = `<!doctype html>
+      // Compose the injected page. Keep embed/fallback behavior but with safer checks.
+      const newTabHtml = `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -485,17 +512,21 @@
 <style>
   html,body{height:100%;margin:0;background:linear-gradient(135deg, #020208 0%, #0a0a15 50%, #04040a 100%);color:#f8fafc;font-family:'Inter',system-ui,Arial;}
   .wrap{display:flex;flex-direction:column;height:100%;}
-  header{padding:12px 20px;background:linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);font-weight:700;color:#8ef6c1;text-shadow:0 0 10px rgba(142,246,193,0.3);}
+  header{padding:12px 20px;background:linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);font-weight:700;color:#8ef6c1;text-shadow:0 0 10px rgba(142,246,193,0.3);position:relative;}
   .frame{flex:1;display:flex;align-items:center;justify-content:center;background:#08111b;}
   iframe{width:100%;height:100%;border:none;}
   .fallback{padding:24px;text-align:center;background:rgba(255,255,255,0.05);border-radius:16px;margin:20px;border:1px solid rgba(255,255,255,0.1);}
   a.btn{display:inline-block;margin-top:16px;padding:12px 20px;border-radius:12px;background:linear-gradient(135deg, #8ef6c1, #6ee7b7);color:#0a0a0a;text-decoration:none;font-weight:700;transition:all 0.2s ease;}
   a.btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(142,246,193,0.4);}
+  #closeLauncherBtn{position:absolute;right:12px;top:10px;padding:8px 12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:#8ef6c1;cursor:pointer;font-weight:700;}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header>🎮 Void Arcade — ${escapeHtml(title)}</header>
+    <header>
+      🎮 Void Arcade — ${escapeHtml(title)}
+      <button id="closeLauncherBtn" title="Close launcher tab (if allowed)">Close Launcher</button>
+    </header>
     <div class="frame" id="frame">
       <iframe id="gameframe" src="${escapeAttr(url)}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
     </div>
@@ -507,32 +538,86 @@
   </div>
 
 <script>
-  const iframe = document.getElementById('gameframe');
-  const fallback = document.getElementById('fallback');
+  (function(){
+    const iframe = document.getElementById('gameframe');
+    const fallback = document.getElementById('fallback');
+    const closeLauncherBtn = document.getElementById('closeLauncherBtn');
 
-  function checkIframeBlocked(){
-    try {
-      const cw = iframe.contentWindow;
-      setTimeout(() => {
-        try {
-          const doc = iframe.contentDocument || cw.document;
-        } catch (err) {
-          fallback.style.display = 'block';
-        }
-      }, 1000);
-    } catch (err) {
+    function showFallback(){
       fallback.style.display = 'block';
     }
-  }
 
-  iframe.addEventListener('load', checkIframeBlocked);
+    function checkIframeBlocked(){
+      try {
+        const cw = iframe.contentWindow;
+        // try to read a property — will throw if cross-origin and disallowed
+        setTimeout(() => {
+          try {
+            const doc = iframe.contentDocument || cw.document;
+            // if access succeeds, embedding works (same-origin)
+          } catch (err) {
+            showFallback();
+          }
+        }, 700);
+      } catch (err) {
+        showFallback();
+      }
+    }
+
+    iframe.addEventListener('load', () => {
+      checkIframeBlocked();
+      tryCloseOpener();
+    });
+
+    function tryCloseOpener(){
+      try {
+        if(window.opener && !window.opener.closed){
+          try { window.opener.focus(); } catch(e) {}
+          try { window.opener.close(); } catch(e) {}
+        }
+      } catch(e){}
+    }
+
+    // Retry closing opener a few times (best-effort)
+    tryCloseOpener();
+    setTimeout(tryCloseOpener, 250);
+    setTimeout(tryCloseOpener, 750);
+
+    closeLauncherBtn.addEventListener('click', () => {
+      tryCloseOpener();
+      try { window.close(); } catch(e) {}
+    });
+
+    setInterval(() => {
+      try {
+        if(!window.opener || window.opener.closed){
+          closeLauncherBtn.style.display = 'none';
+        }
+      } catch(e){}
+    }, 700);
+  })();
 </script>
 </body>
 </html>`;
 
-    w.document.open();
-    w.document.write(newTabHtml);
-    w.document.close();
+      // write the injected page into the new window (this is synchronous enough)
+      try {
+        w.document.open();
+        w.document.write(newTabHtml);
+        w.document.close();
+        // try to focus the new tab (best-effort)
+        try { w.focus(); } catch(e){}
+      } catch (err){
+        console.error('Void Arcade: error injecting new tab HTML', err);
+        alert('An error occurred while launching the game. Check console for details.');
+      } finally {
+        // allow future opens after a short delay
+        setTimeout(() => { opening = false; }, 600);
+      }
+    } catch (outerErr){
+      console.error('Void Arcade: unexpected error in start handler', outerErr);
+      opening = false;
+    }
   });
 
 })();

@@ -280,30 +280,3 @@
 </script>
 </body>
 </html>`;
-
-    // Write it into the new tab
-    try {
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
-    } catch (err) {
-      // Writing might fail (rare). In that case, just navigate the new tab directly.
-      console.error('Could not write to new tab:', err);
-      w.location.href = url;
-    }
-  });
-
-  // Open direct button
-  openDirect.addEventListener('click', () => {
-    const url = openDirect.dataset.url;
-    if(url) window.open(url, '_blank');
-  });
-
-  // small helper functions
-  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-  function escapeAttr(s){ return escapeHtml(s).replace(/\n/g,''); }
-})();
-</script>
-</body>
-</html>
-

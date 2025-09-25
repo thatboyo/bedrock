@@ -9,6 +9,22 @@
     --screen-w: 360px;   /* width of the GBA screen area */
     --screen-h: 240px;   /* height of the GBA screen area */
   }
+
+  /* FRONT-OF-EVERYTHING GBA IMAGE */
+  .gba-front{
+    position: fixed;           /* sit on top of the whole page */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 740px;              /* tune this to match .gba-shell or whatever you want */
+    max-width: calc(100vw - 48px);
+    height: auto;
+    z-index: 2147483647;       /* extremely high so nothing covers it */
+    pointer-events: none;      /* clicks go through to the UI beneath */
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
   body{
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     background: linear-gradient(180deg,#0b0f1a 0%, #071025 100%);
@@ -30,13 +46,12 @@
     grid-template-columns: 1fr 320px;
     gap:18px;
     align-items:center;
+    position:relative; /* keep it under the fixed .gba-front */
   }
 
-  /* Left: the GBA image / screen */
   .gba-frame{
     position:relative;
-    background:
-      url('GBA.png') center/contain no-repeat; /* optional: your GBA image */
+    /* If you're using the floating .gba-front image, don't also set a background GBA image here. */
     height: 420px;
     display:flex;
     align-items:center;
@@ -126,9 +141,15 @@
   @media (max-width:900px){
     .gba-shell{ grid-template-columns: 1fr; }
   }
+
+  /* Small helper so keyboard focus is visible even though .gba-front blocks nothing */
+  :focus { outline: 3px solid rgba(85,163,255,0.25); outline-offset: 2px; }
 </style>
 </head>
 <body>
+  <!-- FRONT-OF-EVERYTHING IMAGE: sits above everything but doesn't block clicks -->
+  <img src="GBA.png" alt="GBA shell" class="gba-front">
+
   <div class="gba-shell" role="application" aria-label="Void Arcade GBA hub">
     <div class="gba-frame">
       <!-- Screen: we show the currently selected game's thumbnail/title -->
@@ -183,6 +204,16 @@
   const startBtn = document.getElementById('startBtn');
   const openDirect = document.getElementById('openDirect');
 
+  function escapeHtml(s){
+    if(!s) return '';
+    return s.replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
+    });
+  }
+  function escapeAttr(s){
+    return escapeHtml(s).replace(/\n/g,' ');
+  }
+
   function updateScreen(){
     const opt = gameSelect.options[gameSelect.selectedIndex];
     const title = opt && opt.text ? opt.text : 'No game selected';
@@ -192,9 +223,9 @@
     gameTitle.textContent = title;
     gamePath.textContent = val || '—';
     if(thumb){
-      screen.innerHTML = `<img src="${thumb}" alt="${title} thumbnail" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+      screen.innerHTML = `<img src="${escapeAttr(thumb)}" alt="${escapeAttr(title)} thumbnail" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
     } else {
-      screen.innerHTML = `<div style="padding:6px;">${val ? title : 'SELECT A GAME'}</div>`;
+      screen.innerHTML = `<div style="padding:6px;">${val ? escapeHtml(title) : 'SELECT A GAME'}</div>`;
     }
 
     openDirect.style.display = val ? 'inline-block' : 'none';
@@ -203,6 +234,12 @@
 
   gameSelect.addEventListener('change', updateScreen);
   updateScreen();
+
+  openDirect.addEventListener('click', () => {
+    const url = openDirect.dataset.url;
+    if(!url) return;
+    window.open(url, '_blank', 'noopener');
+  });
 
   // START button behavior:
   // 1) open a new about:blank tab (user-initiated)
@@ -222,7 +259,8 @@
     }
 
     // HTML we will write into the new tab. Uses an iframe to keep top-level location about:blank.
-    const html = `<!doctype html>
+    // You can paste additional markup for the new tab between the START OTHERTHING / END OTHERTHING markers below.
+    const newTabHtml = `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -250,6 +288,11 @@
     </div>
   </div>
 
+  <!-- START OTHERTHING -->
+  <!-- If you want to inject extra HTML/CSS/JS into the about:blank page, paste it here.
+       Example: a script that auto-closes after successful load, or custom controls. -->
+  <!-- END OTHERTHING -->
+
 <script>
   // Detect if iframe blocked by trying to access its contentWindow after load.
   const iframe = document.getElementById('gameframe');
@@ -257,15 +300,12 @@
 
   function checkIframeBlocked(){
     try {
-      // Attempt to read a property. If cross-origin or blocked, this may throw.
       const cw = iframe.contentWindow;
-      // If contentWindow exists and location can be accessed, assume OK
-      // However many servers prevent access to location — use a time-based fallback:
       setTimeout(() => {
-        // If iframe's document can't be accessed, this will throw and go to catch.
         try {
           const doc = iframe.contentDocument || cw.document;
           // If we can get doc, it's likely NOT blocked and the game loaded.
+          // (Some cross-origin pages will still throw when reading doc; fallback handles that.)
         } catch (err) {
           fallback.style.display = 'block';
         }
@@ -276,7 +316,6 @@
   }
 
   iframe.addEventListener('load', checkIframeBlocked);
-  // If iframe errors early (like refused to frame) the load may still fire; fallback handles it.
 </script>
 </body>
 </html>`;

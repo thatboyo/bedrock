@@ -441,7 +441,7 @@
     // Prefer explicit data-url if present, otherwise use value
     const valRaw = (opt && (opt.dataset && opt.dataset.url)) ? opt.dataset.url : (opt && opt.value ? opt.value : '');
     const val = valRaw ? String(valRaw).trim() : '';
-    const thumb = opt && opt.dataset && (opt.dataset.thumb || opt.dataset.thumb) ? (opt.dataset.thumb || opt.dataset.thumb) : '';
+    const thumb = opt && opt.dataset && opt.dataset.thumb ? opt.dataset.thumb : '';
 
     gameTitle.textContent = title;
     gamePath.textContent = val || '—';
@@ -503,6 +503,8 @@
       }
 
       // Compose the injected page. Keep embed/fallback behavior but with safer checks.
+      // IMPORTANT: any literal closing </script> inside this template must be escaped as <\/script>
+      // so the outer HTML parser doesn't end the outer script tag prematurely.
       const newTabHtml = `<!doctype html>
 <html>
 <head>
@@ -596,9 +598,9 @@
       } catch(e){}
     }, 700);
   })();
-</script>
+<\/script>
 </body>
-</html>`;
+</html>`; 
 
       // write the injected page into the new window (this is synchronous enough)
       try {

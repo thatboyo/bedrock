@@ -10,16 +10,16 @@
     --screen-h: 240px;   /* height of the GBA screen area */
   }
 
-  /* FRONT-OF-EVERYTHING GBA IMAGE */
+  /* FRONT-OF-EVERYTHING GBA IMAGE (now positioned relative to .gba-frame so it scrolls) */
   .gba-front{
-    position: absolute;           /* sit on top of the whole page */
+    position: absolute;           /* absolute inside .gba-frame so it scrolls with page */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 740px;              /* tune this to match .gba-shell or whatever you want */
-    max-width: calc(100vw - 48px);
+    max-width: calc(100% - 48px);
     height: auto;
-    z-index: 2147483647;       /* extremely high so nothing covers it */
+    z-index: 10;               /* sits above the frame contents but below the controls panel */
     pointer-events: none;      /* clicks go through to the UI beneath */
     user-select: none;
     -webkit-user-drag: none;
@@ -46,20 +46,20 @@
     grid-template-columns: 1fr 320px;
     gap:18px;
     align-items:center;
-    position:relative; /* keep it under the fixed .gba-front */
+    position:relative;
   }
 
   .gba-frame{
-    position:relative;
-    /* If you're using the floating .gba-front image, don't also set a background GBA image here. */
+    position:relative;        /* the .gba-front is absolute relative to this */
     height: 420px;
     display:flex;
     align-items:center;
     justify-content:center;
     padding:24px;
+    overflow:visible;         /* allow the image to overflow the frame if needed */
   }
 
-  /* Screen overlay */
+  /* Screen overlay (kept above the image so text is readable) */
   .screen{
     width:var(--screen-w);
     height:var(--screen-h);
@@ -75,6 +75,8 @@
     text-align:center;
     position:relative;
     overflow:hidden;
+    z-index: 20; /* ensure the "SELECT A GAME" content sits on top of the GBA image */
+    background-clip: padding-box;
   }
 
   /* Faux scanlines */
@@ -93,6 +95,7 @@
     flex-direction:column;
     gap:12px;
     padding:12px 8px;
+    z-index: 30; /* ensure controls sit above the frame image */
   }
   label{ font-size:13px; color:#cfe0ff; }
   select, button{
@@ -142,16 +145,16 @@
     .gba-shell{ grid-template-columns: 1fr; }
   }
 
-  /* Small helper so keyboard focus is visible even though .gba-front blocks nothing */
+  /* Small helper so keyboard focus is visible */
   :focus { outline: 3px solid rgba(85,163,255,0.25); outline-offset: 2px; }
 </style>
 </head>
 <body>
-  <!-- FRONT-OF-EVERYTHING IMAGE: sits above everything but doesn't block clicks -->
-  <img src="GBA.png" alt="GBA shell" class="gba-front">
-
   <div class="gba-shell" role="application" aria-label="Void Arcade GBA hub">
     <div class="gba-frame">
+      <!-- GBA image is now inside the frame so it scrolls and centers over the screen -->
+      <img src="GBA.png" alt="GBA shell" class="gba-front">
+
       <!-- Screen: we show the currently selected game's thumbnail/title -->
       <div class="screen" id="screen">
         <div id="screenContent">
@@ -166,7 +169,7 @@
         <select id="gameSelect" aria-label="Choose game">
           <!-- Example entries. Replace the value with your game's URL/path -->
           <option value=""> — select — </option>
-          <option value="Kirbymirror.htmk" data-thumb="thumbs/tetris.png">Kirby's Amazing Mirror)</option>
+          <option value="Kirbymirror.html" data-thumb="thumbs/tetris.png">Kirby's Amazing Mirror)</option>
           <option value="games/pokemon-red/index.html" data-thumb="thumbs/pokemon-red.png">Pocket Monster: Red</option>
           <option value="games/zelda-minish/index.html" data-thumb="thumbs/zelda-minish.png">Zelda — Mini Quest</option>
           <option value="games/mario-kart/index.html" data-thumb="thumbs/mario-kart.png">Mario Kart-ish</option>
@@ -319,3 +322,13 @@
 </script>
 </body>
 </html>`;
+
+    w.document.open();
+    w.document.write(newTabHtml);
+    w.document.close();
+  });
+
+})();
+</script>
+</body>
+</html>

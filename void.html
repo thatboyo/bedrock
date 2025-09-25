@@ -1,1 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Void Arcade</title>
+<style>
+  :root{
+    --screen-w: 360px;   /* width of the GBA screen area */
+    --screen-h: 240px;   /* height of the GBA screen area */
+  }
+  body{
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#0b0f1a 0%, #071025 100%);
+    color:#e6eef8;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px;
+  }
+  .gba-shell{
+    width: 740px;
+    max-width:calc(100% - 48px);
+    background: #2b2f38;
+    border-radius:18px;
+    padding:20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 -6px 18px rgba(0,0,0,0.25);
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:18px;
+    align-items:center;
+  }
+
+  /* Left: the GBA image / screen */
+  .gba-frame{
+    position:relative;
+    background:
+      url('GBA.png') center/contain no-repeat; /* optional: your GBA image */
+    height: 420px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  /* Screen overlay */
+  .screen{
+    width:var(--screen-w);
+    height:var(--screen-h);
+    background:#0b1220;
+    border-radius:8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 6px 12px rgba(255,255,255,0.02);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#a8c7ff;
+    font-weight:600;
+    letter-spacing:0.6px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* Faux scanlines */
+  .screen::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image: linear-gradient(rgba(0,0,0,0.07) 1px, rgba(0,0,0,0) 1px);
+    background-size: 100% 4px;
+    pointer-events:none;
+    mix-blend-mode: overlay;
+  }
+
+  /* Controls area */
+  .controls{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding:12px 8px;
+  }
+  label{ font-size:13px; color:#cfe0ff; }
+  select, button{
+    font-size:15px;
+    padding:10px 12px;
+    border-radius:8px;
+    border: none;
+    outline: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  select{
+    background:#0f1b2d; color:#dbe9ff;
+  }
+  .start-row{
+    display:flex; gap:8px; align-items:center;
+  }
+  .start-btn{
+    background: linear-gradient(180deg,#55a3ff,#1c6edb);
+    color:white;
+    cursor:pointer;
+    padding:12px 18px;
+    font-weight:700;
+    transition:transform .08s ease;
+  }
+  .start-btn:active{ transform:translateY(1px) scale(.997); }
+  .open-direct{
+    background:transparent;
+    color:#cfe0ff;
+    text-decoration:underline;
+    padding:8px;
+  }
+  .meta{
+    font-size:12px;
+    color:#9fb7df;
+  }
+  .game-list{
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .game-entry{
+    display:flex; justify-content:space-between; gap:10px; align-items:center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
+    padding:8px 10px; border-radius:8px;
+    font-size:13px;
+  }
+  .note{ font-size:12px; color:#8fa9d6; }
+  @media (max-width:900px){
+    .gba-shell{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="gba-shell" role="application" aria-label="Void Arcade GBA hub">
+    <div class="gba-frame">
+      <!-- Screen: we show the currently selected game's thumbnail/title -->
+      <div class="screen" id="screen">
+        <div id="screenContent">
+          SELECT A GAME
+        </div>
+      </div>
+    </div>
+
+    <div class="controls" aria-hidden="false">
+      <div>
+        <label for="gameSelect">Cartridge slot — pick a game</label>
+        <select id="gameSelect" aria-label="Choose game">
+          <!-- Example entries. Replace the value with your game's URL/path -->
+          <option value=""> — select — </option>
+          <option value="Kirbymirror.htmk" data-thumb="thumbs/tetris.png">Kirby's Amazing Mirror)</option>
+          <option value="games/pokemon-red/index.html" data-thumb="thumbs/pokemon-red.png">Pocket Monster: Red</option>
+          <option value="games/zelda-minish/index.html" data-thumb="thumbs/zelda-minish.png">Zelda — Mini Quest</option>
+          <option value="games/mario-kart/index.html" data-thumb="thumbs/mario-kart.png">Mario Kart-ish</option>
+        </select>
+        <div class="meta note" style="margin-top:8px;">Tip: host these `games/...` pages in the same repo to avoid framing issues.</div>
+      </div>
+
+      <div class="start-row" style="margin-top:8px;">
+        <button id="startBtn" class="start-btn" type="button" aria-label="Start game">▶ START</button>
+        <button id="openDirect" class="open-direct" type="button" style="display:none">Open raw page</button>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div class="meta">Loaded game preview</div>
+        <div class="game-list" id="gameInfo">
+          <div class="game-entry">
+            <div id="gameTitle">No game selected</div>
+            <div id="gamePath" style="font-size:11px; color:#9fb7df;">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div class="note">Behavior: clicking START opens a new tab and writes an <code>about:blank</code> document containing an iframe that loads the chosen game. If the game refuses to be framed, a direct link appears.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const gameSelect = document.getElementById('gameSelect');
+  const screen = document.getElementById('screenContent');
+  const gameTitle = document.getElementById('gameTitle');
+  const gamePath = document.getElementById('gamePath');
+  const startBtn = document.getElementById('startBtn');
+  const openDirect = document.getElementById('openDirect');
+
+  function updateScreen(){
+    const opt = gameSelect.options[gameSelect.selectedIndex];
+    const title = opt && opt.text ? opt.text : 'No game selected';
+    const val = opt && opt.value ? opt.value : '';
+    const thumb = opt && opt.dataset && opt.dataset.thumb ? opt.dataset.thumb : '';
+
+    gameTitle.textContent = title;
+    gamePath.textContent = val || '—';
+    if(thumb){
+      screen.innerHTML = `<img src="${thumb}" alt="${title} thumbnail" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+    } else {
+      screen.innerHTML = `<div style="padding:6px;">${val ? title : 'SELECT A GAME'}</div>`;
+    }
+
+    openDirect.style.display = val ? 'inline-block' : 'none';
+    openDirect.dataset.url = val || '';
+  }
+
+  gameSelect.addEventListener('change', updateScreen);
+  updateScreen();
+
+  // START button behavior:
+  // 1) open a new about:blank tab (user-initiated)
+  // 2) write a minimal HTML into it that contains an iframe pointing to the game URL
+  // 3) if framing is blocked, show a message + direct link
+  startBtn.addEventListener('click', (e) => {
+    const url = gameSelect.value;
+    const title = gameSelect.options[gameSelect.selectedIndex]?.text || 'Game';
+    if(!url){ alert('Pick a game first, champ.'); return; }
+
+    // Open a new about:blank tab/window (must be synchronous to avoid popup blockers)
+    const w = window.open('about:blank', '_blank');
+
+    if(!w){
+      alert('Popup blocked — allow popups for this site or try opening the link directly.');
+      return;
+    }
+
+    // HTML we will write into the new tab. Uses an iframe to keep top-level location about:blank.
+    const html = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHtml(title)} — Void Arcade</title>
+<style>
+  html,body{height:100%;margin:0;background:#000;color:#fff;font-family:system-ui,Arial;}
+  .wrap{display:flex;flex-direction:column;height:100%;}
+  header{padding:10px;background:linear-gradient(90deg,#061b2b,#07243d);font-weight:700;}
+  .frame{flex:1;display:flex;align-items:center;justify-content:center;background:#08111b;}
+  iframe{width:100%;height:100%;border:none;}
+  .fallback{padding:18px;text-align:center;}
+  a.btn{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:#1f65c8;color:white;text-decoration:none;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>Void Arcade — ${escapeHtml(title)}</header>
+    <div class="frame" id="frame">
+      <iframe id="gameframe" src="${escapeAttr(url)}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+    </div>
+    <div class="fallback" id="fallback" style="display:none;">
+      <div>It looks like this game can't be embedded in an iframe on this site (CSP or X-Frame-Options).</div>
+      <a class="btn" href="${escapeAttr(url)}" target="_blank" rel="noopener">Open game in a new tab</a>
+    </div>
+  </div>
+
+<script>
+  // Detect if iframe blocked by trying to access its contentWindow after load.
+  const iframe = document.getElementById('gameframe');
+  const fallback = document.getElementById('fallback');
+
+  function checkIframeBlocked(){
+    try {
+      // Attempt to read a property. If cross-origin or blocked, this may throw.
+      const cw = iframe.contentWindow;
+      // If contentWindow exists and location can be accessed, assume OK
+      // However many servers prevent access to location — use a time-based fallback:
+      setTimeout(() => {
+        // If iframe's document can't be accessed, this will throw and go to catch.
+        try {
+          const doc = iframe.contentDocument || cw.document;
+          // If we can get doc, it's likely NOT blocked and the game loaded.
+        } catch (err) {
+          fallback.style.display = 'block';
+        }
+      }, 800);
+    } catch (err) {
+      fallback.style.display = 'block';
+    }
+  }
+
+  iframe.addEventListener('load', checkIframeBlocked);
+  // If iframe errors early (like refused to frame) the load may still fire; fallback handles it.
+</script>
+</body>
+</html>`;
+
+    // Write it into the new tab
+    try {
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+    } catch (err) {
+      // Writing might fail (rare). In that case, just navigate the new tab directly.
+      console.error('Could not write to new tab:', err);
+      w.location.href = url;
+    }
+  });
+
+  // Open direct button
+  openDirect.addEventListener('click', () => {
+    const url = openDirect.dataset.url;
+    if(url) window.open(url, '_blank');
+  });
+
+  // small helper functions
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/\n/g,''); }
+})();
+</script>
+</body>
+</html>
 

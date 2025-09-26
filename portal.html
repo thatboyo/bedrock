@@ -1910,45 +1910,34 @@
           const gamesWindow = window.open('about:blank', '_blank');
           
           // Fetch the games.html content and inject it
-          <script>
-  (function(){
-    const startBtn = document.getElementById('startBtn');
-    let gamesWindow;
-
-    startBtn.addEventListener('click', () => {
-      gamesWindow = window.open('about:blank', '_blank');
-
-      setTimeout(() => {
-        fetch('https://dot-jms.github.io/Bedrock-games/')
-          .then(response => response.text())
-          .then(html => {
-            gamesWindow.document.open();
-            gamesWindow.document.write(html);
-            gamesWindow.document.close();
-          })
-          .catch(() => {
-            // Fallback: create a simple redirect page
-            gamesWindow.document.write(`
-              <!DOCTYPE html>
-              <html>
-              <head>
-                <title>New Tab</title>
-                <style>
-                  body { margin: 0; padding: 0; overflow: hidden; }
-                  iframe { width: 100vw; height: 100vh; border: none; }
-                </style>
-              </head>
-              <body>
-                <iframe src="https://dot-jms.github.io/Bedrock-games/"></iframe>
-              </body>
-              </html>
-            `);
-          });
-      }, 150);
-    });
-  })();
-</script>
-
+          fetch('games.html')
+            .then(response => response.text())
+            .then(html => {
+              gamesWindow.document.open();
+              gamesWindow.document.write(html);
+              gamesWindow.document.close();
+            })
+            .catch(() => {
+              // Fallback: create a simple redirect page
+              gamesWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <title>New Tab</title>
+                  <style>
+                    body { margin: 0; padding: 0; overflow: hidden; }
+                    iframe { width: 100vw; height: 100vh; border: none; }
+                  </style>
+                </head>
+                <body>
+                  <iframe src="games.html"></iframe>
+                </body>
+                </html>
+              `);
+            });
+        }, 150);
+      });
+    }
 
     /* ---------------------------
        VOID LAUNCH BUTTON

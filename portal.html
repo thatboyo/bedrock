@@ -1910,7 +1910,7 @@
           const gamesWindow = window.open('about:blank', '_blank');
           
           // Fetch the games.html content and inject it
-          fetch('games.html')
+          fetch('https://dot-jms.github.io/Bedrock-games/')
             .then(response => response.text())
             .then(html => {
               gamesWindow.document.open();
@@ -1930,7 +1930,7 @@
                   </style>
                 </head>
                 <body>
-                  <iframe src="games.html"></iframe>
+                  <iframe src="https://dot-jms.github.io/Bedrock-games/"></iframe>
                 </body>
                 </html>
               `);

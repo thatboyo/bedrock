@@ -1949,7 +1949,7 @@
           voidBtn.style.transition = '';
           
           // Open void in cloaked about:blank window
-          const voidWindow = 
+          const voidWindow = window.open('about:blank', '_blank');
           
           voidWindow.document.open();
           voidWindow.document.write(`

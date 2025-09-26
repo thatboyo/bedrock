@@ -1,3 +1,4 @@
+<!doctype html>
 
 <!doctype html>
 <html lang="en">
@@ -220,6 +221,20 @@ canvas#bg {
   font-weight: 500;
   line-height: 1.4;
   letter-spacing: 0.5px;
+}
+
+/* Small credit line added directly beneath the BEDROCK title.
+   This is the only UI change introduced. */
+.auth-credit {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65); /* lighter */
+  margin-top: 4px;                /* closer to title */
+  margin-bottom: 8px;
+  letter-spacing: 0.4px;
+  text-transform: none;
+  opacity: 0.95;
+  line-height: 1;
 }
 
 /* Enhanced input styling */
@@ -460,6 +475,7 @@ canvas#bg {
 <div class="auth-wrap">
   <div class="auth-card" role="main" aria-labelledby="bedrock-title">
     <h1 id="bedrock-title" class="auth-title">BEDROCK</h1>
+    <div class="auth-credit" aria-hidden="true">made by james george</div>
     <p class="auth-subtitle">Enter your access key to unlock the portal</p>
     
     <input id="keyInput" class="key-input" type="password" placeholder="ACCESS KEY" autocomplete="off" aria-label="Access key">

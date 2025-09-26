@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Void GBA</title>
+  <title>Void NES</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root{
-      --screen-w: 360px;
-      --screen-h: 240px;
+      --screen-w: 240px;
+      --screen-h: 160px;
       --bg: linear-gradient(135deg, #020208 0%, #0a0a15 50%, #04040a 100%);
       --muted: #9aa3a8;
       --muted-hover: #b8c1c6;
@@ -74,11 +74,10 @@
   </style>
 </head>
 <body>
-  <div class="gba-shell" role="application" aria-label="Void Arcade GBA hub">
+  <div class="gba-shell" role="application" aria-label="Void Arcade NES hub">
     <div class="gba-frame">
-      <img src="GBA.png" alt="GBA shell" class="gba-front">
+      <img src="NES.png" alt="GBA shell" class="gba-front">
       <div class="screen" id="screen">
-        <div id="screenContent"> SELECT A GAME </div>
       </div>
     </div>
     <div class="controls" aria-hidden="false">
